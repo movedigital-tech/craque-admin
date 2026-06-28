@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Craque — Responsável</title>
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/colors.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/typography.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/base.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/styles.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/_ds_bundle.js"></script>
+<style>
+  html,body{margin:0;height:100%}
+  body{background:radial-gradient(circle at 50% 0%, #EEF1F4 0%, #E4E7EC 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;box-sizing:border-box;font-family:var(--font-ui)}
+  *::-webkit-scrollbar{width:0;height:0}
+  .mbody{font-family:var(--font-ui)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="resp/ios-frame.jsx"></script>
+
+<!-- ── MOBILE PRIMITIVES ──────────────────────────────────── -->
+<script type="text/babel">
+const NAVY='var(--navy-900)', ACC='var(--accent)', INK='var(--text-primary)', INK2='var(--text-secondary)';
+
+function Cta({children, icon, variant='primary', onClick, style}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':2}}); });
+  const base={width:'100%',height:52,borderRadius:14,fontFamily:'var(--font-ui)',fontSize:16,fontWeight:'var(--fw-bold)',display:'flex',alignItems:'center',justifyContent:'center',gap:8,cursor:'pointer',border:'none',whiteSpace:'nowrap',transition:'filter .15s'};
+  const styles={
+    primary:{background:ACC,color:NAVY},
+    ghost:{background:'var(--surface-card)',color:INK,border:'1px solid var(--border-default)'},
+    dark:{background:'rgba(255,255,255,.12)',color:'#fff',border:'1px solid rgba(255,255,255,.22)'},
+    wa:{background:'#25D366',color:'#fff'},
+    danger:{background:'var(--surface-card)',color:'var(--danger)',border:'1px solid var(--border-default)'},
+  };
+  return <button onClick={onClick} style={{...base,...styles[variant],...style}}>{icon&&<i data-lucide={icon} width="18" height="18"></i>}{children}</button>;
+}
+window.Cta=Cta;
+
+function MCard({children, dark, style, onClick}) {
+  return <div onClick={onClick} style={{background:dark?NAVY:'var(--surface-card)',color:dark?'#fff':INK,border:dark?'none':'1px solid var(--border-subtle)',borderRadius:18,padding:18,boxShadow:dark?'none':'var(--shadow-card)',position:dark?'relative':'static',overflow:dark?'hidden':'visible',...style}}>{children}</div>;
+}
+window.MCard=MCard;
+
+function KV({k, v, strong, last}) {
+  return <div style={{display:'flex',justifyContent:'space-between',gap:12,padding:'11px 0',borderBottom:last?'none':'1px solid var(--border-subtle)',fontSize:14}}>
+    <span style={{color:INK2}}>{k}</span><strong style={{textAlign:'right',color:strong||INK}}>{v}</strong>
+  </div>;
+}
+window.KV=KV;
+
+function Seg({tabs, value, onChange}) {
+  return <div style={{display:'flex',background:'var(--surface-muted)',borderRadius:13,padding:4,gap:4,marginBottom:16}}>
+    {tabs.map(([v,l,ico])=>(<button key={v} onClick={()=>onChange(v)} style={{flex:1,textAlign:'center',padding:'9px 6px',borderRadius:9,fontSize:13.5,fontWeight:'var(--fw-bold)',fontFamily:'var(--font-ui)',border:'none',cursor:'pointer',background:value===v?'var(--surface-card)':'transparent',color:value===v?INK:INK2,boxShadow:value===v?'var(--shadow-sm)':'none',display:'flex',alignItems:'center',justifyContent:'center',gap:5}}>{ico&&<i data-lucide={ico} width="14" height="14"></i>}{l}</button>))}
+  </div>;
+}
+window.Seg=Seg;
+
+function Toggle({on, onClick}) {
+  return <div onClick={onClick} style={{width:42,height:24,borderRadius:99,background:on?ACC:'var(--gray-300)',cursor:'pointer',position:'relative',transition:'background .2s',flexShrink:0}}>
+    <span style={{position:'absolute',top:3,left:on?21:3,width:18,height:18,borderRadius:'50%',background:'#fff',transition:'left .2s',boxShadow:'0 1px 3px rgba(0,0,0,.25)'}}/>
+  </div>;
+}
+window.Toggle=Toggle;
+
+function TRow({label, sub, defaultOn=true, last}) {
+  const [on,setOn]=React.useState(defaultOn);
+  return <div style={{display:'flex',alignItems:'center',gap:14,padding:'13px 0',borderBottom:last?'none':'1px solid var(--border-subtle)'}}>
+    <div style={{flex:1}}><div style={{fontWeight:'var(--fw-semibold)',fontSize:14}}>{label}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:2}}>{sub}</div></div>
+    <Toggle on={on} onClick={()=>setOn(!on)}/>
+  </div>;
+}
+window.TRow=TRow;
+
+function Field({label, value}) {
+  const [focus,setFocus]=React.useState(false);
+  return <div style={{display:'flex',flexDirection:'column',gap:7}}>
+    <label style={{fontSize:13,fontWeight:'var(--fw-semibold)',color:INK}}>{label}</label>
+    <input defaultValue={value} onFocus={()=>setFocus(true)} onBlur={()=>setFocus(false)} style={{height:48,padding:'0 15px',border:`1px solid ${focus?ACC:'var(--border-default)'}`,borderRadius:12,background:'var(--surface-card)',fontFamily:'var(--font-ui)',fontSize:15,color:INK,outline:'none',boxShadow:focus?'0 0 0 3px var(--accent-tint)':'none',transition:'all .14s'}}/>
+  </div>;
+}
+window.Field=Field;
+
+function Note({children}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return <div style={{padding:'13px 14px',background:'var(--info-tint)',borderRadius:12,borderLeft:'3px solid var(--info)',display:'flex',gap:9,alignItems:'flex-start'}}>
+    <i data-lucide="info" width="15" height="15" style={{color:'var(--info)',flexShrink:0,marginTop:1}}></i>
+    <p style={{margin:0,fontSize:13,color:INK2,lineHeight:1.6}}>{children}</p>
+  </div>;
+}
+window.Note=Note;
+
+function ListRow({icon, label, sub, onClick, last}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.8}}); });
+  return <div onClick={onClick} style={{display:'flex',alignItems:'center',gap:13,padding:'13px 0',borderBottom:last?'none':'1px solid var(--border-subtle)',cursor:'pointer'}}>
+    <span style={{width:40,height:40,borderRadius:11,background:'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide={icon} width="19" height="19" style={{color:INK2}}></i></span>
+    <div style={{flex:1,minWidth:0}}><div style={{fontWeight:'var(--fw-semibold)',fontSize:15}}>{label}</div>{sub&&<div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{sub}</div>}</div>
+    <i data-lucide="chevron-right" width="18" height="18" style={{color:'var(--gray-500)',flexShrink:0}}></i>
+  </div>;
+}
+window.ListRow=ListRow;
+</script>
+
+<!-- ── SCREENS: CORE FLOW ─────────────────────────────────── -->
+<script type="text/babel">
+const ST={paid:{label:'Pago',tone:'success'},late:{label:'Atrasado',tone:'danger'},pending:{label:'A vencer',tone:'warning'}};
+
+function ScrLogin({nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return (
+    <div style={{height:'100%',display:'flex',flexDirection:'column',padding:'70px 22px 30px',boxSizing:'border-box',background:'var(--surface-canvas)'}}>
+      <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',textAlign:'center',gap:12}}>
+        <span style={{width:66,height:66,borderRadius:19,background:NAVY,display:'grid',placeItems:'center'}}><i data-lucide="trophy" width="32" height="32" style={{color:ACC}}></i></span>
+        <div><div style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:26,lineHeight:1}}>Craque</div>
+        <div style={{fontSize:14,color:INK2,marginTop:4}}>Área do responsável</div></div>
+        <div style={{fontSize:21,fontWeight:'var(--fw-bold)',lineHeight:1.3,maxWidth:280,marginTop:16}}>Acompanhe e pague as mensalidades em segundos.</div>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:14}}>
+        <Field label="Celular ou e-mail" value="(11) 9xxxx-xxxx"/>
+        <Field label="Senha" value="••••••••"/>
+        <Cta icon="log-in" onClick={()=>nav('home')} style={{marginTop:4}}>Entrar</Cta>
+        <div style={{textAlign:'center',color:'var(--success)',fontWeight:'var(--fw-bold)',fontSize:14}}>Entrar com código por SMS</div>
+        <Note>Recebeu um <strong>convite da escolinha</strong>? Toque no link do WhatsApp para ativar o acesso.</Note>
+      </div>
+    </div>
+  );
+}
+window.ScrLogin=ScrLogin;
+
+function AlunoCard({ini, nome, idade, turma, valor, vence, status, nav}) {
+  const {Avatar,Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const s=ST[status];
+  return <MCard style={{marginBottom:14,cursor:'pointer'}} onClick={()=>nav('aluno')}>
+    <div style={{display:'flex',gap:12,alignItems:'center'}}>
+      <Avatar name={nome} size={46}/>
+      <div style={{flex:1,minWidth:0}}><div style={{fontWeight:'var(--fw-bold)',fontSize:16}}>{nome}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{idade} · {turma}</div></div>
+      <Badge tone="success" dot>Ativo</Badge>
+    </div>
+    <div style={{borderTop:'1px solid var(--border-subtle)',marginTop:13,paddingTop:13,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+      <div><div style={{fontSize:'var(--fs-xs)',color:INK2}}>Próxima cobrança</div><div style={{fontWeight:'var(--fw-bold)',fontSize:15,marginTop:2}}>{valor} · {vence}</div></div>
+      <Badge tone={s.tone} dot>{s.label}</Badge>
+    </div>
+  </MCard>;
+}
+
+function ScrHome({nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return (
+    <div>
+      <MCard dark style={{marginBottom:18}}>
+        <div style={{position:'absolute',top:-30,right:-30,width:110,height:110,borderRadius:'50%',background:'rgba(200,238,68,.1)'}}/>
+        <div style={{fontSize:13,color:'rgba(255,255,255,.6)'}}>Total em aberto</div>
+        <div style={{fontSize:34,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums',marginTop:4,lineHeight:1.1}}>R$ 470,00</div>
+        <div style={{fontSize:13,color:'rgba(255,255,255,.6)',marginTop:3}}>2 mensalidades · vence 05 mai</div>
+        <Cta icon="wallet" onClick={()=>nav('checkout')} style={{marginTop:15}}>Pagar agora</Cta>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'4px 2px 12px'}}>Alunos vinculados</div>
+      <AlunoCard ini="LP" nome="Lucas Pereira" idade="9 anos" turma="Sub-9" valor="R$ 250,00" vence="vence 05 mai" status="late" nav={nav}/>
+      <AlunoCard ini="MP" nome="Marina Pereira" idade="7 anos" turma="Sub-7" valor="R$ 220,00" vence="vence 05 mai" status="pending" nav={nav}/>
+    </div>
+  );
+}
+window.ScrHome=ScrHome;
+
+function ScrAluno({nav}) {
+  const {Avatar,Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [seg,setSeg]=React.useState('dados');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return (
+    <div>
+      <div style={{textAlign:'center',padding:'4px 0 16px'}}>
+        <Avatar name="Lucas Pereira" size={76}/>
+        <div style={{fontWeight:'var(--fw-bold)',fontSize:20,marginTop:10}}>Lucas Pereira</div>
+        <div style={{fontSize:'var(--fs-sm)',color:INK2}}>9 anos · FC Estrela</div>
+        <div style={{marginTop:8,display:'flex',justifyContent:'center'}}><Badge tone="success" dot>Matrícula ativa</Badge></div>
+      </div>
+      <Seg tabs={[['dados','Dados'],['turmas','Turmas'],['pag','Pagamento']]} value={seg} onChange={setSeg}/>
+      {seg==='dados'&&<MCard>
+        <KV k="Nome" v="Lucas Pereira"/><KV k="Nascimento" v="12/03/2017"/><KV k="Matrícula" v="#A-1042"/>
+        <KV k="Escolinha" v="FC Estrela"/><KV k="Responsável" v="Marcos Pereira"/><KV k="Contato" v="(11) 98xxx-xx01" last/>
+      </MCard>}
+      {seg==='turmas'&&<div>
+        <MCard style={{marginBottom:12}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}><div style={{fontWeight:'var(--fw-bold)',fontSize:16}}>Sub-9</div><Badge tone="neutral">8 a 9 anos</Badge></div>
+          {[['calendar','Quarta · 18h–19h30'],['map-pin','Campo 2 · Unidade Centro'],['graduation-cap','Prof. Lucas Martins']].map(([i,t])=>(
+            <div key={t} style={{fontSize:'var(--fs-sm)',color:INK2,marginTop:8,display:'flex',gap:8,alignItems:'center'}}><i data-lucide={i} width="14" height="14"></i>{t}</div>
+          ))}
+        </MCard>
+        <Note>Um aluno pode estar em <strong>mais de uma turma</strong>. Fale com a escolinha para incluir.</Note>
+      </div>}
+      {seg==='pag'&&<div>
+        <MCard>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+            <div><div style={{fontSize:'var(--fs-xs)',color:INK2}}>Mensalidade · abril</div><div style={{fontSize:26,fontWeight:'var(--fw-bold)',marginTop:4,fontVariantNumeric:'tabular-nums'}}>R$ 250,00</div></div>
+            <Badge tone="danger" dot>Atrasado</Badge>
+          </div>
+          <div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:6}}>Venceu em 05 abr 2026</div>
+          <Cta icon="wallet" onClick={()=>nav('checkout')} style={{marginTop:14}}>Pagar agora</Cta>
+        </MCard>
+        <div style={{textAlign:'center',marginTop:14}}><span onClick={()=>nav('pagamentos')} style={{color:'var(--success)',fontWeight:'var(--fw-bold)',fontSize:14,cursor:'pointer'}}>Ver histórico de pagamentos</span></div>
+      </div>}
+    </div>
+  );
+}
+window.ScrAluno=ScrAluno;
+
+function ScrPagamentos({nav}) {
+  const {Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [seg,setSeg]=React.useState('open');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const charge=(nome,ref,valor,vence)=>(
+    <MCard style={{marginBottom:12}}>
+      <div style={{display:'flex',gap:12,alignItems:'center'}}>
+        <Avatar name={nome} size={42}/>
+        <div style={{flex:1,minWidth:0}}><div style={{fontWeight:'var(--fw-bold)',fontSize:15}}>{nome}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{ref} · vence {vence}</div></div>
+        <div style={{fontWeight:'var(--fw-bold)'}}>{valor}</div>
+      </div>
+      <Cta onClick={()=>nav('checkout')} style={{marginTop:13,height:46,fontSize:15}}>{`Pagar ${valor}`}</Cta>
+    </MCard>
+  );
+  const hist=(ref,data,valor,met)=>(
+    <div onClick={()=>nav('comprovante')} style={{display:'flex',alignItems:'center',gap:12,padding:'13px 0',borderBottom:'1px solid var(--border-subtle)',cursor:'pointer'}}>
+      <span style={{width:40,height:40,borderRadius:11,background:'var(--accent-tint)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="check" width="18" height="18" style={{color:'var(--success)'}}></i></span>
+      <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:15}}>{ref}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{data} · {met}</div></div>
+      <div style={{textAlign:'right'}}><div style={{fontWeight:'var(--fw-bold)'}}>{valor}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--success)',fontWeight:'var(--fw-semibold)'}}>Recibo</div></div>
+    </div>
+  );
+  return (
+    <div>
+      <Seg tabs={[['open','Em aberto'],['hist','Histórico']]} value={seg} onChange={setSeg}/>
+      {seg==='open'?<div>
+        <MCard dark style={{marginBottom:16}}>
+          <div style={{fontSize:13,color:'rgba(255,255,255,.6)'}}>2 mensalidades em aberto</div>
+          <div style={{fontSize:34,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums',marginTop:4,lineHeight:1.1}}>R$ 470,00</div>
+          <Cta icon="wallet" onClick={()=>nav('checkout')} style={{marginTop:14}}>Pagar tudo</Cta>
+        </MCard>
+        {charge('Lucas Pereira','Mensalidade abr','R$ 250,00','05 mai')}
+        {charge('Marina Pereira','Mensalidade abr','R$ 220,00','05 mai')}
+      </div>:<MCard style={{padding:'4px 16px'}}>
+        {hist('Mensalidade · março','06 mar 2026','R$ 250,00','Pix')}
+        {hist('Mensalidade · fevereiro','05 fev 2026','R$ 250,00','Cartão')}
+        {hist('Matrícula','20 jan 2026','R$ 100,00','Boleto')}
+        <div onClick={()=>nav('comprovante')} style={{display:'flex',alignItems:'center',gap:12,padding:'13px 0',cursor:'pointer'}}>
+          <span style={{width:40,height:40,borderRadius:11,background:'var(--accent-tint)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="check" width="18" height="18" style={{color:'var(--success)'}}></i></span>
+          <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:15}}>Mensalidade · janeiro</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>06 jan 2026 · Pix</div></div>
+          <div style={{textAlign:'right'}}><div style={{fontWeight:'var(--fw-bold)'}}>R$ 250,00</div><div style={{fontSize:'var(--fs-xs)',color:'var(--success)',fontWeight:'var(--fw-semibold)'}}>Recibo</div></div>
+        </div>
+      </MCard>}
+    </div>
+  );
+}
+window.ScrPagamentos=ScrPagamentos;
+
+function ScrCheckout({nav}) {
+  const [seg,setSeg]=React.useState('pix');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const qr=(h=172)=>(<div style={{width:h,height:h,margin:'4px auto 0',border:'1px solid var(--border-default)',borderRadius:14,display:'grid',placeItems:'center',background:'repeating-linear-gradient(45deg,transparent,transparent 7px,var(--surface-muted) 7px,var(--surface-muted) 14px)'}}><i data-lucide={h>120?'qr-code':'file-text'} width="46" height="46" style={{color:'var(--gray-500)'}}></i></div>);
+  return (
+    <div>
+      <MCard style={{textAlign:'center',marginBottom:16}}>
+        <div style={{fontSize:'var(--fs-xs)',color:INK2}}>Mensalidade · abril</div>
+        <div style={{fontSize:34,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums',marginTop:6,lineHeight:1.1}}>R$ 250,00</div>
+        <div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:4}}>Lucas Pereira · Sub-9 · FC Estrela</div>
+      </MCard>
+      <Seg tabs={[['pix','Pix','qr-code'],['card','Cartão','credit-card'],['boleto','Boleto','file-text']]} value={seg} onChange={setSeg}/>
+      {seg==='pix'&&<div>
+        <MCard style={{textAlign:'center'}}>
+          {qr()}
+          <div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:12}}>Aponte a câmera do seu banco ou copie o código</div>
+          <Cta variant="ghost" icon="copy" style={{marginTop:12,height:46,fontSize:15}}>Copiar código Pix</Cta>
+        </MCard>
+        <div style={{display:'flex',gap:8,alignItems:'center',justifyContent:'center',marginTop:12,color:INK2,fontSize:13}}><i data-lucide="zap" width="15" height="15" style={{color:'var(--success)'}}></i>Confirmação na hora — baixa automática</div>
+      </div>}
+      {seg==='card'&&<div>
+        <MCard><div style={{display:'flex',flexDirection:'column',gap:13}}>
+          <Field label="Número do cartão" value="0000 0000 0000 0000"/>
+          <div style={{display:'flex',gap:12}}><div style={{flex:1}}><Field label="Validade" value="MM/AA"/></div><div style={{flex:1}}><Field label="CVV" value="123"/></div></div>
+          <Field label="Nome no cartão" value="Como está no cartão"/>
+          <Field label="Parcelas" value="1x de R$ 250,00 sem juros"/>
+        </div></MCard>
+        <div style={{display:'flex',gap:8,alignItems:'center',justifyContent:'center',marginTop:12,color:INK2,fontSize:13}}><i data-lucide="zap" width="15" height="15" style={{color:'var(--success)'}}></i>Aprovação imediata — baixa automática</div>
+      </div>}
+      {seg==='boleto'&&<div>
+        <MCard style={{textAlign:'center'}}>
+          {qr(100)}
+          <div style={{fontSize:13,fontWeight:'var(--fw-bold)',marginTop:12}}>Boleto vence em <span style={{color:'var(--success)'}}>3 dias úteis</span></div>
+          <div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:4}}>Após o pagamento, a confirmação pode levar até 2 dias úteis.</div>
+          <Cta variant="ghost" icon="copy" style={{marginTop:12,height:46,fontSize:15}}>Copiar código de barras</Cta>
+          <Cta variant="ghost" icon="download" style={{marginTop:10,height:46,fontSize:15}}>Baixar boleto PDF</Cta>
+        </MCard>
+        <div style={{display:'flex',gap:8,alignItems:'center',justifyContent:'center',marginTop:12,color:'var(--gray-500)',fontSize:12}}><i data-lucide="clock" width="14" height="14"></i>Confirmação em até 2 dias úteis após o pagamento</div>
+      </div>}
+      <Cta icon="lock" onClick={()=>nav('comprovante')} style={{marginTop:18}}>Confirmar pagamento</Cta>
+      <div style={{display:'flex',gap:7,alignItems:'center',justifyContent:'center',marginTop:12,color:'var(--gray-500)',fontSize:12}}><i data-lucide="shield-check" width="14" height="14"></i>Pagamento seguro · dados protegidos (LGPD)</div>
+    </div>
+  );
+}
+window.ScrCheckout=ScrCheckout;
+
+function ScrComprovante({nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':2}}); });
+  return (
+    <div>
+      <div style={{textAlign:'center',padding:'18px 0 12px'}}>
+        <span style={{width:74,height:74,borderRadius:'50%',background:'var(--accent-tint)',display:'inline-grid',placeItems:'center'}}><i data-lucide="check" width="34" height="34" style={{color:'var(--success)'}}></i></span>
+        <div style={{fontWeight:'var(--fw-bold)',fontSize:21,marginTop:14}}>Pagamento confirmado</div>
+        <div style={{fontSize:'var(--fs-sm)',color:INK2}}>R$ 250,00 · 24 abr 2026, 14h32</div>
+      </div>
+      <MCard>
+        <KV k="Aluno" v="Lucas Pereira"/><KV k="Referência" v="Mensalidade · abril"/><KV k="Escolinha" v="FC Estrela"/>
+        <KV k="Método" v="Pix"/><KV k="ID da transação" v="#TX-90412"/><KV k="Status" v="Pago" strong="var(--success)" last/>
+      </MCard>
+      <Cta variant="ghost" icon="download" style={{marginTop:14}}>Baixar comprovante</Cta>
+      <Cta onClick={()=>nav('home')} style={{marginTop:10}}>Voltar aos alunos</Cta>
+    </div>
+  );
+}
+window.ScrComprovante=ScrComprovante;
+</script>
+
+<!-- ── SCREENS: PERFIL & SUPORTE ──────────────────────────── -->
+<script type="text/babel">
+function ScrPerfil({nav}) {
+  const {Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return (
+    <div>
+      <MCard style={{display:'flex',gap:14,alignItems:'center',marginBottom:18}}>
+        <Avatar name="Marcos Pereira" size={54}/>
+        <div><div style={{fontWeight:'var(--fw-bold)',fontSize:18}}>Marcos Pereira</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>marcos@email.com</div><div style={{fontSize:'var(--fs-xs)',color:INK2}}>(11) 98xxx-xx01</div></div>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'8px 2px 10px'}}>Conta</div>
+      <MCard style={{padding:'4px 16px',marginBottom:18}}>
+        <ListRow icon="user" label="Meus dados" sub="Nome, contato e senha" onClick={()=>nav('meus-dados')}/>
+        <ListRow icon="users" label="Alunos vinculados" sub="2 alunos" onClick={()=>nav('alunos-vinculados')}/>
+        <ListRow icon="credit-card" label="Métodos de pagamento" sub="Pix e cartão salvos" onClick={()=>nav('metodos')}/>
+        <ListRow icon="bell" label="Notificações" sub="Lembretes e recibos" onClick={()=>nav('notificacoes')} last/>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'8px 2px 10px'}}>Suporte</div>
+      <MCard style={{padding:'4px 16px',marginBottom:18}}>
+        <ListRow icon="life-buoy" label="Central de ajuda" onClick={()=>nav('ajuda')}/>
+        <ListRow icon="message-circle" label="Falar no WhatsApp" sub="Resposta em até 1 dia útil" onClick={()=>nav('whatsapp')}/>
+        <ListRow icon="help-circle" label="Perguntas frequentes" onClick={()=>nav('faq')} last/>
+      </MCard>
+      <Cta variant="danger" icon="log-out" onClick={()=>nav('login')}>Sair</Cta>
+    </div>
+  );
+}
+window.ScrPerfil=ScrPerfil;
+
+function ScrMeusDados({nav}) {
+  const {Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:13}}>
+      <div style={{textAlign:'center',padding:'6px 0 8px'}}>
+        <div style={{position:'relative',display:'inline-block'}}>
+          <Avatar name="Marcos Pereira" size={72}/>
+          <span style={{position:'absolute',bottom:0,right:0,width:26,height:26,borderRadius:'50%',background:ACC,border:'2px solid var(--surface-card)',display:'grid',placeItems:'center'}}><i data-lucide="camera" width="13" height="13" style={{color:NAVY}}></i></span>
+        </div>
+      </div>
+      <Field label="Nome completo" value="Marcos Pereira"/>
+      <Field label="E-mail" value="marcos@email.com"/>
+      <Field label="Celular / WhatsApp" value="(11) 98xxx-xx01"/>
+      <Field label="CPF" value="000.000.000-00"/>
+      <div style={{borderTop:'1px solid var(--border-subtle)',paddingTop:14,marginTop:4,display:'flex',flexDirection:'column',gap:13}}>
+        <div style={{fontWeight:'var(--fw-bold)',fontSize:15}}>Alterar senha</div>
+        <Field label="Senha atual" value="••••••••"/>
+        <Field label="Nova senha" value="••••••••"/>
+        <Field label="Confirmar nova senha" value="••••••••"/>
+      </div>
+      <Cta icon="check" onClick={()=>nav('perfil')} style={{marginTop:6}}>Salvar alterações</Cta>
+    </div>
+  );
+}
+window.ScrMeusDados=ScrMeusDados;
+
+function ScrAlunosVinc({nav}) {
+  const {Avatar,Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const alunos=[['Lucas Pereira','9 anos','Sub-9 · FC Estrela'],['Marina Pereira','7 anos','Sub-7 · FC Estrela']];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:12}}>
+      {alunos.map(a=>(
+        <MCard key={a[0]} style={{cursor:'pointer'}} onClick={()=>nav('aluno')}>
+          <div style={{display:'flex',gap:12,alignItems:'center'}}>
+            <Avatar name={a[0]} size={48}/>
+            <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:16}}>{a[0]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{a[1]} · {a[2]}</div></div>
+            <Badge tone="success" dot>Ativa</Badge>
+          </div>
+          <div style={{display:'flex',gap:8,marginTop:12}}>
+            <Cta variant="ghost" icon="user" onClick={(e)=>{e.stopPropagation();nav('aluno');}} style={{flex:1,height:40,fontSize:13}}>Ver dados</Cta>
+            <Cta icon="wallet" onClick={(e)=>{e.stopPropagation();nav('checkout');}} style={{flex:1,height:40,fontSize:13}}>Pagar</Cta>
+          </div>
+        </MCard>
+      ))}
+      <MCard style={{borderStyle:'dashed',borderColor:'var(--border-default)',textAlign:'center',padding:22,cursor:'pointer'}}>
+        <i data-lucide="user-plus" width="28" height="28" style={{color:'var(--gray-500)',display:'block',margin:'0 auto 10px'}}></i>
+        <div style={{fontWeight:'var(--fw-bold)'}}>Vincular outro aluno</div>
+        <div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:2}}>Use o link de convite da escolinha</div>
+      </MCard>
+    </div>
+  );
+}
+window.ScrAlunosVinc=ScrAlunosVinc;
+
+function ScrMetodos({nav}) {
+  const {Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const ico=(name,bg,col)=>(<span style={{width:40,height:40,borderRadius:11,background:bg,display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide={name} width="19" height="19" style={{color:col}}></i></span>);
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:12}}>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px'}}>Cartões salvos</div>
+      <MCard>
+        <div style={{display:'flex',gap:12,alignItems:'center'}}>
+          {ico('credit-card','var(--surface-muted)',INK2)}
+          <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)'}}>Visa terminado em 4242</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>Validade 08/2028 · Principal</div></div>
+          <i data-lucide="trash-2" width="18" height="18" style={{color:'var(--danger)',cursor:'pointer'}}></i>
+        </div>
+      </MCard>
+      <MCard style={{borderStyle:'dashed',borderColor:'var(--border-default)',display:'flex',alignItems:'center',gap:12,cursor:'pointer'}}>
+        {ico('plus','var(--surface-muted)',INK2)}<div style={{fontWeight:'var(--fw-bold)'}}>Adicionar cartão</div>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'6px 2px 0'}}>Pix</div>
+      <MCard>
+        <div style={{display:'flex',gap:12,alignItems:'center'}}>
+          {ico('qr-code','var(--accent-tint)','var(--success)')}
+          <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)'}}>Pix</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>Chave gerada na hora · sem cadastro</div></div>
+          <Badge tone="success" dot>Disponível</Badge>
+        </div>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'6px 2px 0'}}>Boleto</div>
+      <MCard>
+        <div style={{display:'flex',gap:12,alignItems:'center'}}>
+          {ico('file-text','var(--surface-muted)',INK2)}
+          <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)'}}>Boleto bancário</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>Confirmação em até 2 dias úteis</div></div>
+          <Badge tone="success" dot>Disponível</Badge>
+        </div>
+      </MCard>
+      <Note><strong>Pix e cartão</strong> têm confirmação imediata e baixa automática. O boleto pode levar até 2 dias úteis.</Note>
+    </div>
+  );
+}
+window.ScrMetodos=ScrMetodos;
+
+function ScrNotif({nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return (
+    <div>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Lembretes de pagamento</div>
+      <MCard style={{marginBottom:16,padding:'2px 16px'}}>
+        <TRow label="Mensalidade a vencer" sub="3 dias antes do vencimento"/>
+        <TRow label="Mensalidade vencida" sub="No dia seguinte ao vencimento"/>
+        <TRow label="Confirmação de pagamento" sub="Recibo logo após pagar"/>
+        <TRow label="Cobrança da escolinha" sub="Quando uma nova cobrança é criada" last/>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Canais</div>
+      <MCard style={{marginBottom:16,padding:'2px 16px'}}>
+        <TRow label="WhatsApp" sub="Canal principal"/>
+        <TRow label="E-mail" sub="Recibos e 2ª via"/>
+        <TRow label="Notificação push" sub="Alerta direto no celular" last/>
+      </MCard>
+      <Cta icon="check" onClick={()=>nav('perfil')}>Salvar preferências</Cta>
+    </div>
+  );
+}
+window.ScrNotif=ScrNotif;
+
+function ScrAjuda({nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const items=[['wallet','Como pagar a mensalidade?','Veja as formas de pagamento disponíveis'],['alert-circle','Mensalidade em atraso','O que acontece e como regularizar'],['user-plus','Vincular um novo aluno','Usar link de convite da escolinha'],['credit-card','Boleto não compensou','Prazo e como reemitir'],['receipt','Onde encontro o comprovante?','Baixar e reenviar recibos']];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:14}}>
+      {items.map(c=>(
+        <MCard key={c[1]} style={{cursor:'pointer',display:'flex',gap:12,alignItems:'center'}} onClick={()=>nav('faq')}>
+          <span style={{width:40,height:40,borderRadius:11,background:'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide={c[0]} width="19" height="19" style={{color:INK2}}></i></span>
+          <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:15}}>{c[1]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{c[2]}</div></div>
+          <i data-lucide="chevron-right" width="18" height="18" style={{color:'var(--gray-500)'}}></i>
+        </MCard>
+      ))}
+      <div style={{borderTop:'1px solid var(--border-subtle)',paddingTop:16,textAlign:'center'}}>
+        <div style={{fontSize:'var(--fs-xs)',color:INK2,marginBottom:10}}>Não encontrou o que precisava?</div>
+        <Cta icon="message-circle" onClick={()=>nav('whatsapp')}>Falar com suporte</Cta>
+      </div>
+    </div>
+  );
+}
+window.ScrAjuda=ScrAjuda;
+
+function ScrWhats({nav}) {
+  const {Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return (
+    <div>
+      <div style={{textAlign:'center',padding:'18px 0 16px'}}>
+        <span style={{width:72,height:72,borderRadius:'50%',background:'#D9F5E3',display:'inline-grid',placeItems:'center'}}><i data-lucide="message-circle" width="34" height="34" style={{color:'#1A7A44'}}></i></span>
+        <div style={{fontWeight:'var(--fw-bold)',fontSize:19,marginTop:14}}>Suporte Craque</div>
+        <div style={{fontSize:'var(--fs-sm)',color:INK2}}>Atendimento em até 1 dia útil</div>
+        <div style={{marginTop:8,display:'flex',justifyContent:'center'}}><Badge tone="success" dot>Disponível · seg–sex 8h–18h</Badge></div>
+      </div>
+      <MCard style={{marginBottom:14}}>
+        <KV k="Horário" v="Seg–Sex · 8h às 18h"/><KV k="Tempo de resposta" v="Até 1 dia útil"/><KV k="Número" v="(11) 9xxxx-xxxx" last/>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'8px 2px 10px'}}>Assuntos frequentes</div>
+      <MCard style={{padding:'4px 16px',marginBottom:16}}>
+        {['Dúvida sobre pagamento','Boleto ou comprovante','Atualizar dados do responsável','Outro assunto'].map((t,i,a)=>(
+          <div key={t} style={{display:'flex',alignItems:'center',gap:12,padding:'13px 0',borderBottom:i<a.length-1?'1px solid var(--border-subtle)':'none',cursor:'pointer'}}>
+            <div style={{flex:1,fontSize:15}}>{t}</div><i data-lucide="send" width="16" height="16" style={{color:'var(--success)'}}></i>
+          </div>
+        ))}
+      </MCard>
+      <Cta variant="wa" icon="message-circle">Abrir no WhatsApp</Cta>
+    </div>
+  );
+}
+window.ScrWhats=ScrWhats;
+
+function ScrFaq({nav}) {
+  const [open,setOpen]=React.useState(0);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const faqs=[
+    ['Como pago a mensalidade?','Na aba Pagamentos, toque em "Pagar". Você pode pagar via Pix (confirmação imediata), cartão de crédito ou boleto bancário (prazo de até 2 dias úteis).'],
+    ['O Pix foi pago mas ainda aparece como pendente — o que faço?','A confirmação é automática por webhook. Se após 30 minutos ainda aparecer pendente, envie o comprovante do seu banco pelo WhatsApp. Vamos resolver em até 1 hora útil.'],
+    ['Como reemitir ou copiar o código de um boleto?','Em Pagamentos → Histórico, toque na cobrança e selecione "Reemitir boleto". O boleto vence em 3 dias úteis a partir da emissão.'],
+    ['Onde encontro o comprovante de pagamento?','Em Pagamentos → Histórico, toque em qualquer item pago e selecione "Baixar comprovante". Também enviamos o recibo por e-mail e WhatsApp automaticamente.'],
+    ['Posso ter mais de um aluno vinculado?','Sim. Cada aluno tem seu próprio link de convite. Peça à escolinha para enviar o convite do segundo aluno e vincule em Perfil → Alunos vinculados.'],
+    ['O que acontece se eu não pagar a mensalidade em dia?','Após o vencimento incidem multa de 2% e juros de 1% ao mês, conforme política da escolinha. A matrícula pode ser suspensa após 30 dias de atraso.'],
+  ];
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',gap:10,height:46,padding:'0 14px',border:'1px solid var(--border-default)',borderRadius:12,background:'var(--surface-card)',marginBottom:14}}>
+        <i data-lucide="search" width="17" height="17" style={{color:'var(--gray-500)'}}></i><span style={{color:'var(--gray-500)',fontSize:15}}>Buscar dúvida…</span>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {faqs.map((f,i)=>{const on=open===i;return(
+          <MCard key={i} style={{cursor:'pointer'}} onClick={()=>setOpen(on?-1:i)}>
+            <div style={{display:'flex',gap:10,alignItems:'flex-start',fontWeight:'var(--fw-bold)',fontSize:15}}>
+              <i data-lucide="help-circle" width="18" height="18" style={{flexShrink:0,marginTop:1,color:'var(--success)'}}></i>
+              <span style={{flex:1}}>{f[0]}</span>
+              <i data-lucide={on?'chevron-up':'chevron-down'} width="17" height="17" style={{color:'var(--gray-500)',flexShrink:0}}></i>
+            </div>
+            {on&&<div style={{fontSize:14,color:INK2,marginTop:10,lineHeight:1.55}}>{f[1]}</div>}
+          </MCard>
+        );})}
+      </div>
+      <div style={{textAlign:'center',marginTop:14}}>
+        <Cta variant="ghost" icon="message-circle" onClick={()=>nav('whatsapp')} style={{display:'inline-flex',width:'auto',padding:'0 20px'}}>Não encontrei minha dúvida</Cta>
+      </div>
+    </div>
+  );
+}
+window.ScrFaq=ScrFaq;
+</script>
+
+<!-- ── APP SHELL ──────────────────────────────────────────── -->
+<script type="text/babel">
+const TABS=[['home','Alunos','users'],['pagamentos','Pagamentos','wallet'],['perfil','Perfil','user']];
+const META={
+  home:        {title:'Meus alunos',          chrome:'app',  tab:'home'},
+  aluno:       {title:'Lucas Pereira',         chrome:'app',  tab:'home', back:'home'},
+  pagamentos:  {title:'Pagamentos',            chrome:'app',  tab:'pagamentos'},
+  checkout:    {title:'Pagamento',             chrome:'focus',back:'home'},
+  comprovante: {title:'Comprovante',           chrome:'focus',back:'pagamentos'},
+  perfil:      {title:'Perfil',                chrome:'app',  tab:'perfil'},
+  'meus-dados':       {title:'Meus dados',           chrome:'focus',back:'perfil'},
+  'alunos-vinculados':{title:'Alunos vinculados',    chrome:'focus',back:'perfil'},
+  metodos:     {title:'Métodos de pagamento',  chrome:'focus',back:'perfil'},
+  notificacoes:{title:'Notificações',          chrome:'focus',back:'perfil'},
+  ajuda:       {title:'Central de ajuda',      chrome:'focus',back:'perfil'},
+  whatsapp:    {title:'Falar no WhatsApp',      chrome:'focus',back:'perfil'},
+  faq:         {title:'Perguntas frequentes',  chrome:'focus',back:'perfil'},
+};
+const SCR={
+  home:window.ScrHome, aluno:window.ScrAluno, pagamentos:window.ScrPagamentos,
+  checkout:window.ScrCheckout, comprovante:window.ScrComprovante, perfil:window.ScrPerfil,
+  'meus-dados':window.ScrMeusDados, 'alunos-vinculados':window.ScrAlunosVinc, metodos:window.ScrMetodos,
+  notificacoes:window.ScrNotif, ajuda:window.ScrAjuda, whatsapp:window.ScrWhats, faq:window.ScrFaq,
+};
+
+function Header({meta, nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const btn={width:38,height:38,borderRadius:11,border:'1px solid var(--border-subtle)',background:'var(--surface-card)',display:'grid',placeItems:'center',cursor:'pointer',flexShrink:0};
+  return <div style={{display:'flex',alignItems:'center',gap:8,padding:'52px 16px 10px',flexShrink:0,background:'var(--surface-canvas)'}}>
+    {meta.back?<button onClick={()=>nav(meta.back)} style={btn}><i data-lucide="arrow-left" width="19" height="19" style={{color:INK2}}></i></button>:<span style={{width:38}}/>}
+    <div style={{flex:1,textAlign:'center',fontSize:17,fontWeight:'var(--fw-bold)'}}>{meta.title}</div>
+    {meta.chrome==='app'&&!meta.back?<button style={{...btn,borderRadius:'50%'}}><i data-lucide="bell" width="18" height="18" style={{color:INK2}}></i></button>:<span style={{width:38}}/>}
+  </div>;
+}
+
+function TabBar({active, nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return <div style={{display:'flex',borderTop:'1px solid var(--border-subtle)',background:'var(--surface-card)',padding:'8px 8px 26px',flexShrink:0}}>
+    {TABS.map(([k,l,ico])=>{const on=k===active;return(
+      <button key={k} onClick={()=>nav(k)} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4,background:'none',border:'none',cursor:'pointer',color:on?'var(--success)':'var(--gray-500)',fontFamily:'var(--font-ui)',fontSize:11,fontWeight:'var(--fw-bold)'}}>
+        <i data-lucide={ico} width="22" height="22"></i>{l}
+      </button>);})}
+  </div>;
+}
+
+function RespApp() {
+  const [view,setView]=React.useState('login');
+  const nav=React.useCallback(v=>setView(v),[]);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const meta=META[view];
+  const Screen=SCR[view];
+  return (
+    <IOSDevice>
+      {view==='login'
+        ? <window.ScrLogin nav={nav}/>
+        : <div style={{height:'100%',display:'flex',flexDirection:'column',background:'var(--surface-canvas)'}}>
+            <Header meta={meta} nav={nav}/>
+            <div className="mbody" style={{flex:1,overflowY:'auto',padding:'6px 16px 22px'}} key={view}>
+              {Screen?<Screen nav={nav}/>:<div style={{padding:40,textAlign:'center',color:INK2}}>Em construção</div>}
+            </div>
+            {meta.chrome==='app'&&<TabBar active={meta.tab} nav={nav}/>}
+          </div>}
+    </IOSDevice>
+  );
+}
+function Boot(){
+  return <RespApp/>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<RespApp/>);
+</script>
+
+</body>
+</html>

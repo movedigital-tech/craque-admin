@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Craque — Escolinha</title>
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/colors.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/typography.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/base.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/styles.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/_ds_bundle.js"></script>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden}
+  main::-webkit-scrollbar{width:8px}
+  main::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:10px;border:2px solid var(--surface-canvas)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- ── DATA ──────────────────────────────────────────────── -->
+<script>
+window.EC = {
+  acct:{ name:'Carla Mendes', role:'Coordenadora' },
+  brandSub:'FC Estrela · Pro',
+  nav:[
+    {key:'home',         label:'Resumo',        icon:'layout-dashboard'},
+    {key:'turmas',       label:'Turmas',        icon:'goal'},
+    {key:'alunos',       label:'Alunos',        icon:'users'},
+    {key:'responsaveis', label:'Responsáveis',  icon:'contact'},
+    {key:'cobrancas',    label:'Mensalidades',  icon:'wallet'},
+    {key:'financeiro',   label:'Financeiro',    icon:'bar-chart-3'},
+    {key:'relatorios',   label:'Relatórios',    icon:'file-text'},
+    {key:'professores',  label:'Professores',   icon:'graduation-cap'},
+  ],
+  navFoot:[
+    {key:'config', label:'Configurações', icon:'settings'},
+  ],
+  stats:[
+    {icon:'users',        label:'Alunos ativos',          value:'142',        trend:'+8 no mês', dir:'up'},
+    {icon:'wallet',       label:'Recebido em abril',      value:'R$ 18.420',  trend:'+12%',      dir:'up', dark:true},
+    {icon:'alert-circle', label:'Mensalidades em aberto', value:'R$ 2.150',   trend:'8 alunos',  dir:'down'},
+    {icon:'percent',      label:'Presença média',         value:'88%',        trend:'+3pp',      dir:'up'},
+  ],
+  chart:{
+    labels:['Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar','Abr'],
+    recebido:[12.1,12.8,13.4,14.0,14.6,15.1,15.8,16.3,16.9,17.4,17.9,18.4],
+    previsto:[12.6,13.2,13.9,14.6,15.0,15.7,16.2,16.9,17.4,18.0,18.6,20.6],
+  },
+  bars:{
+    labels:['Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar','Abr'],
+    vals:  [12.1,12.8,13.4,14.0,14.6,15.1,15.8,16.3,16.9,17.4,17.9,18.4],
+  },
+  aulas:[
+    {d:'SÁB',h:'09:00',t:'Sub-7', sub:'Prof. Lucas · 18 alunos'},
+    {d:'QUA',h:'18:00',t:'Sub-9', sub:'Prof. Lucas · 24 alunos'},
+    {d:'TER',h:'17:00',t:'Sub-11',sub:'Profª. Bia · 21 alunos'},
+    {d:'QUI',h:'19:00',t:'Sub-13',sub:'Prof. André · 16 alunos'},
+  ],
+  turmas:[
+    {nome:'Sub-7', cat:'5 a 7 anos',  agenda:'Sábado · 09h–10h30', local:'Campo 1 · Centro', prof:'Prof. Lucas', alunos:18,vagas:20},
+    {nome:'Sub-9', cat:'8 a 9 anos',  agenda:'Quarta · 18h–19h30', local:'Campo 2 · Centro', prof:'Prof. Lucas', alunos:24,vagas:24},
+    {nome:'Sub-11',cat:'10 a 11 anos',agenda:'Terça · 17h–18h30',  local:'Campo 1 · Norte',  prof:'Profª. Bia',  alunos:21,vagas:26},
+    {nome:'Sub-13',cat:'12 a 13 anos',agenda:'Quinta · 19h–20h30', local:'Campo 2 · Norte',  prof:'Prof. André', alunos:16,vagas:24},
+  ],
+};
+</script>
+
+<!-- ── CHARTS ─────────────────────────────────────────────── -->
+<script type="text/babel">
+function EscLineChart({data, height=240}) {
+  const W=640, p={l:42,r:16,t:18,b:30};
+  const iw=W-p.l-p.r, ih=height-p.t-p.b;
+  const all=[...data.recebido,...data.previsto], mx=Math.ceil(Math.max(...all)/5)*5, n=data.recebido.length;
+  const gx=i=>p.l+iw*i/(n-1), gy=v=>p.t+ih-ih*v/mx;
+  const spline=vs=>{const pts=vs.map((v,i)=>[gx(i),gy(v)]);let d=`M ${pts[0][0]} ${pts[0][1]}`;for(let i=0;i<n-1;i++){const a=pts[i-1]||pts[i],b=pts[i],c=pts[i+1],e=pts[i+2]||c;d+=` C ${b[0]+(c[0]-a[0])/6} ${b[1]+(c[1]-a[1])/6} ${c[0]-(e[0]-b[0])/6} ${c[1]-(e[1]-b[1])/6} ${c[0]} ${c[1]}`;}return {d,pts};};
+  const rec=spline(data.recebido), prev=spline(data.previsto);
+  const area=rec.d+` L ${rec.pts[n-1][0]} ${p.t+ih} L ${p.l} ${p.t+ih} Z`;
+  return (
+    <svg viewBox={`0 0 ${W} ${height}`} width="100%" style={{display:'block'}}>
+      <defs><linearGradient id="ecRecGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#C8EE44" stopOpacity="0.22"/><stop offset="100%" stopColor="#C8EE44" stopOpacity="0"/>
+      </linearGradient></defs>
+      {[0,.25,.5,.75,1].map((f,i)=>{const t=Math.round(mx*f);return(<g key={i}>
+        <line x1={p.l} x2={W-p.r} y1={gy(t)} y2={gy(t)} stroke="var(--chart-grid)" strokeWidth="1" strokeDasharray="2 5"/>
+        <text x={p.l-8} y={gy(t)+4} textAnchor="end" fontFamily="var(--font-ui)" fontSize="11" fill="var(--chart-axis)">{t}k</text>
+      </g>);})}
+      {data.labels.map((lb,i)=>(<text key={lb} x={gx(i)} y={height-6} textAnchor="middle" fontFamily="var(--font-ui)" fontSize="11" fill="var(--chart-axis)">{lb}</text>))}
+      <path d={area} fill="url(#ecRecGrad)"/>
+      <path d={prev.d} fill="none" stroke="var(--gray-300)" strokeWidth="2" strokeDasharray="5 5" strokeLinecap="round"/>
+      <path d={rec.d} fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round"/>
+      <circle cx={rec.pts[n-1][0]} cy={rec.pts[n-1][1]} r="5" fill="var(--accent)" stroke="white" strokeWidth="2.5"/>
+    </svg>
+  );
+}
+window.EscLineChart=EscLineChart;
+
+function EscBarChart({data, height=240}) {
+  const W=640, p={l:42,r:16,t:18,b:30};
+  const iw=W-p.l-p.r, ih=height-p.t-p.b;
+  const mx=Math.ceil(Math.max(...data.vals)/5)*5, n=data.vals.length;
+  const bw=iw/n*0.55, gap=iw/n;
+  return (
+    <svg viewBox={`0 0 ${W} ${height}`} width="100%" style={{display:'block'}}>
+      {[0,.25,.5,.75,1].map((f,i)=>{const t=Math.round(mx*f),y=p.t+ih-ih*f;return(<g key={i}>
+        <line x1={p.l} x2={W-p.r} y1={y} y2={y} stroke="var(--chart-grid)" strokeWidth="1" strokeDasharray="2 5"/>
+        <text x={p.l-8} y={y+4} textAnchor="end" fontFamily="var(--font-ui)" fontSize="11" fill="var(--chart-axis)">{t}k</text>
+      </g>);})}
+      {data.vals.map((v,i)=>{const h=ih*v/mx,x=p.l+gap*i+(gap-bw)/2,y=p.t+ih-h,last=i===n-1;return(
+        <rect key={i} x={x} y={y} width={bw} height={h} rx="4" fill={last?'var(--accent)':'var(--surface-muted)'}/>
+      );})}
+      {data.labels.map((lb,i)=>(<text key={lb} x={p.l+gap*i+gap/2} y={height-6} textAnchor="middle" fontFamily="var(--font-ui)" fontSize="11" fill="var(--chart-axis)">{lb}</text>))}
+    </svg>
+  );
+}
+window.EscBarChart=EscBarChart;
+</script>
+
+<!-- ── TOP BAR ────────────────────────────────────────────── -->
+<script type="text/babel">
+function EscTopBar({title, subtitle, navigate}) {
+  const {IconButton,Avatar} = window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const D=window.EC;
+  const [showN,setShowN]=React.useState(false);
+  const [showU,setShowU]=React.useState(false);
+  const nRef=React.useRef(null), uRef=React.useRef(null);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  React.useEffect(()=>{
+    const h=e=>{
+      if(nRef.current&&!nRef.current.contains(e.target))setShowN(false);
+      if(uRef.current&&!uRef.current.contains(e.target))setShowU(false);
+    };
+    document.addEventListener('mousedown',h);
+    return()=>document.removeEventListener('mousedown',h);
+  },[]);
+  const notifs=[
+    {icon:'alert-circle',c:'var(--warning)',title:'8 mensalidades em aberto',     sub:'R$ 2.150 · vencidas em abril', time:'há 15 min',u:true},
+    {icon:'user-plus',   c:'var(--success)',title:'Nova matrícula concluída',     sub:'Théo Moraes · Sub-9',          time:'há 1 h',   u:true},
+    {icon:'check-circle',c:'var(--success)',title:'Repasse de R$ 17.650 a caminho',sub:'Cai na conta em 30 abr',       time:'há 3 h',   u:false},
+    {icon:'calendar',    c:'var(--gray-500)',title:'Treino Sub-7 amanhã 09h',     sub:'Campo 1 · 18 alunos',          time:'há 5 h',   u:false},
+  ];
+  const drop=(r)=>({position:'absolute',top:'calc(100% + 10px)',right:r,background:'var(--surface-card)',border:'1px solid var(--border-subtle)',borderRadius:'var(--radius-lg)',boxShadow:'var(--shadow-lg)',zIndex:1000,overflow:'hidden'});
+  return (
+    <header style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:20,paddingBottom:28}}>
+      <div>
+        <h1 style={{margin:0,fontSize:'var(--fs-h2)',fontWeight:'var(--fw-bold)',lineHeight:1.2}}>{title}</h1>
+        {subtitle&&<p style={{margin:'6px 0 0',color:'var(--text-secondary)',fontSize:'var(--fs-body)'}}>{subtitle}</p>}
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:12}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,height:44,padding:'0 16px',background:'var(--surface-card)',border:'1px solid var(--border-subtle)',borderRadius:'var(--radius-md)',width:230}}>
+          <i data-lucide="search" width="17" height="17" style={{color:'var(--gray-500)',flexShrink:0}}></i>
+          <input placeholder="Buscar aluno, turma…" style={{border:'none',outline:'none',background:'transparent',flex:1,fontFamily:'var(--font-ui)',fontSize:'var(--fs-sm)',color:'var(--text-primary)',minWidth:0}}/>
+        </div>
+        <div ref={nRef} style={{position:'relative'}}>
+          <div onClick={()=>{setShowN(!showN);setShowU(false);}} style={{position:'relative',cursor:'pointer'}}>
+            <IconButton icon="bell" variant="outline" ariaLabel="Notificações"/>
+            <span style={{position:'absolute',top:7,right:7,width:8,height:8,borderRadius:'50%',background:'var(--danger)',border:'2px solid var(--surface-canvas)'}}/>
+          </div>
+          {showN&&<div style={{...drop(0),width:360}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 20px 12px',borderBottom:'1px solid var(--border-subtle)'}}>
+              <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                <span style={{fontWeight:'var(--fw-bold)',fontSize:'var(--fs-body)'}}>Notificações</span>
+                <span style={{background:'var(--danger)',color:'#fff',borderRadius:99,fontSize:11,fontWeight:700,padding:'1px 7px'}}>2</span>
+              </div>
+              <button style={{border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-xs)',color:'var(--text-secondary)',fontFamily:'var(--font-ui)'}}>Marcar como lidas</button>
+            </div>
+            {notifs.map((n,i)=>(
+              <div key={i} style={{display:'flex',gap:12,padding:'13px 20px',borderBottom:'1px solid var(--border-subtle)',background:n.u?'var(--surface-subtle)':'transparent',cursor:'pointer'}}>
+                <span style={{width:34,height:34,borderRadius:'50%',background:'var(--surface-muted)',display:'inline-flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                  <i data-lucide={n.icon} width="15" height="15" style={{color:n.c}}></i>
+                </span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:'var(--fs-sm)',fontWeight:n.u?'var(--fw-semibold)':'var(--fw-medium)',lineHeight:1.3}}>{n.title}</div>
+                  <div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{n.sub}</div>
+                  <div style={{fontSize:11,color:'var(--text-secondary)',marginTop:3}}>{n.time}</div>
+                </div>
+                {n.u&&<span style={{width:7,height:7,borderRadius:'50%',background:'var(--accent)',flexShrink:0,marginTop:5}}/>}
+              </div>
+            ))}
+            <div style={{padding:'10px 20px',textAlign:'center'}}>
+              <button style={{border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-sm)',color:'var(--text-link)',fontWeight:'var(--fw-semibold)',fontFamily:'var(--font-ui)'}}>Ver todas as notificações</button>
+            </div>
+          </div>}
+        </div>
+        <div ref={uRef} style={{position:'relative'}}>
+          <div onClick={()=>{setShowU(!showU);setShowN(false);}} style={{display:'flex',alignItems:'center',gap:10,height:44,padding:'0 12px 0 6px',background:'var(--surface-card)',border:'1px solid var(--border-subtle)',borderRadius:'var(--radius-pill)',cursor:'pointer'}}>
+            <Avatar name={D.acct.name} size={32}/>
+            <div>
+              <div style={{fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)',lineHeight:1.2}}>{D.acct.name}</div>
+              <div style={{fontSize:11,color:'var(--text-secondary)',lineHeight:1.1}}>{D.acct.role}</div>
+            </div>
+            <i data-lucide="chevron-down" width="14" height="14" style={{color:'var(--gray-500)',marginLeft:2}}></i>
+          </div>
+          {showU&&<div style={{...drop(0),width:230}}>
+            <div style={{padding:'14px 18px 12px',borderBottom:'1px solid var(--border-subtle)'}}>
+              <div style={{fontWeight:'var(--fw-bold)',fontSize:'var(--fs-body)'}}>{D.acct.name}</div>
+              <div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>{D.acct.role} · FC Estrela</div>
+            </div>
+            {[['user','Meu perfil',null],['settings','Configurações','config'],['life-buoy','Suporte',null]].map(([ico,lbl,go])=>(
+              <button key={lbl} onClick={()=>{setShowU(false);go&&navigate(go);}} style={{display:'flex',alignItems:'center',gap:11,width:'100%',padding:'11px 18px',border:'none',background:'transparent',cursor:'pointer',fontFamily:'var(--font-ui)',fontSize:'var(--fs-body)',color:'var(--text-primary)',textAlign:'left'}}>
+                <i data-lucide={ico} width="16" height="16" style={{color:'var(--gray-500)'}}></i>{lbl}
+              </button>
+            ))}
+            <div style={{height:1,background:'var(--border-subtle)',margin:'3px 0'}}/>
+            <button onClick={()=>{setShowU(false);navigate('login');}} style={{display:'flex',alignItems:'center',gap:11,width:'100%',padding:'11px 18px',border:'none',background:'transparent',cursor:'pointer',fontFamily:'var(--font-ui)',fontSize:'var(--fs-body)',color:'var(--danger)',textAlign:'left'}}>
+              <i data-lucide="log-out" width="16" height="16" style={{color:'var(--danger)'}}></i>Sair
+            </button>
+          </div>}
+        </div>
+      </div>
+    </header>
+  );
+}
+window.EscTopBar=EscTopBar;
+</script>
+
+<!-- ── LOGIN ──────────────────────────────────────────────── -->
+<script type="text/babel">
+function EscLogin({navigate}) {
+  const {Button, Input} = window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [rem,setRem]=React.useState(false);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  return (
+    <div style={{display:'flex',height:'100vh',overflow:'hidden'}}>
+      <div style={{width:'46%',background:'var(--navy-900)',display:'flex',flexDirection:'column',justifyContent:'space-between',padding:'44px 52px',position:'relative',overflow:'hidden'}}>
+        <svg style={{position:'absolute',inset:0,width:'100%',height:'100%',opacity:.055,pointerEvents:'none'}} viewBox="0 0 520 720" preserveAspectRatio="xMidYMid slice">
+          <rect x="30" y="60" width="460" height="600" fill="none" stroke="white" strokeWidth="3"/>
+          <line x1="30" y1="360" x2="490" y2="360" stroke="white" strokeWidth="3"/>
+          <circle cx="260" cy="360" r="80" fill="none" stroke="white" strokeWidth="3"/>
+          <circle cx="260" cy="360" r="4" fill="white"/>
+          <rect x="160" y="60" width="200" height="110" fill="none" stroke="white" strokeWidth="3"/>
+          <rect x="160" y="550" width="200" height="110" fill="none" stroke="white" strokeWidth="3"/>
+          <rect x="205" y="60" width="110" height="46" fill="none" stroke="white" strokeWidth="3"/>
+          <rect x="205" y="614" width="110" height="46" fill="none" stroke="white" strokeWidth="3"/>
+        </svg>
+        <div style={{position:'relative',zIndex:1}}>
+          <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:60}}>
+            <span style={{width:38,height:38,borderRadius:10,background:'var(--accent)',display:'inline-flex',alignItems:'center',justifyContent:'center'}}>
+              <i data-lucide="trophy" width="18" height="18" style={{color:'var(--navy-900)'}}></i>
+            </span>
+            <span style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:22,color:'var(--white)',letterSpacing:'-0.01em'}}>Craque</span>
+            <span style={{fontSize:11,fontWeight:700,letterSpacing:'0.06em',background:'rgba(255,255,255,.1)',color:'rgba(255,255,255,.5)',padding:'3px 9px',borderRadius:99}}>ESCOLINHA</span>
+          </div>
+          <h2 style={{margin:0,fontSize:'var(--fs-h1)',fontWeight:'var(--fw-bold)',color:'var(--white)',lineHeight:1.15,maxWidth:400}}>
+            Sua escolinha organizada, <span style={{color:'var(--accent)'}}>do treino à cobrança.</span>
+          </h2>
+          <p style={{margin:'20px 0 0',fontSize:'var(--fs-body-lg)',lineHeight:1.65,color:'rgba(255,255,255,.5)',maxWidth:360}}>
+            Turmas, alunos, presença e mensalidades em um painel feito para o dia a dia da quadra.
+          </p>
+        </div>
+        <div style={{position:'relative',zIndex:1,display:'flex',gap:36}}>
+          {[['142','Alunos ativos'],['R$ 18,4k','Recebido / mês'],['88%','Presença média']].map(([v,l])=>(
+            <div key={l}><div style={{fontSize:22,fontWeight:'var(--fw-bold)',color:'var(--accent)',lineHeight:1}}>{v}</div>
+            <div style={{fontSize:12,color:'rgba(255,255,255,.4)',marginTop:5}}>{l}</div></div>
+          ))}
+        </div>
+      </div>
+      <div style={{flex:1,background:'var(--surface-canvas)',display:'flex',alignItems:'center',justifyContent:'center',padding:48}}>
+        <div style={{width:'100%',maxWidth:400}}>
+          <h2 style={{margin:'0 0 8px',fontSize:'var(--fs-h2)',fontWeight:'var(--fw-bold)'}}>Bem-vindo de volta 👋</h2>
+          <p style={{margin:'0 0 32px',color:'var(--text-secondary)',fontSize:'var(--fs-body)'}}>Acesse a sua escolinha.</p>
+          <div style={{display:'flex',flexDirection:'column',gap:16}}>
+            <Input label="E-mail" type="email" placeholder="voce@escolinha.com" leadingIcon="mail"/>
+            <Input label="Senha" type="password" placeholder="••••••••" leadingIcon="lock"/>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <label style={{display:'flex',alignItems:'center',gap:9,cursor:'pointer',fontSize:'var(--fs-body)',color:'var(--text-secondary)',userSelect:'none'}}>
+                <span onClick={()=>setRem(!rem)} style={{width:18,height:18,borderRadius:5,flexShrink:0,border:`2px solid ${rem?'var(--accent)':'var(--border-default)'}`,background:rem?'var(--accent)':'var(--surface-card)',display:'inline-flex',alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'all .14s'}}>
+                  {rem&&<i data-lucide="check" width="11" height="11" style={{color:'var(--navy-900)'}}></i>}
+                </span>
+                Lembrar por 30 dias
+              </label>
+              <a href="#" style={{fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)',color:'var(--success)',textDecoration:'none'}}>Esqueci a senha</a>
+            </div>
+            <Button variant="primary" size="lg" fullWidth leadingIcon="log-in" onClick={()=>navigate('home')} style={{marginTop:6}}>Entrar</Button>
+          </div>
+          <div style={{marginTop:24,padding:'13px 15px',background:'var(--info-tint)',borderRadius:'var(--radius-md)',display:'flex',gap:10,alignItems:'flex-start'}}>
+            <i data-lucide="info" width="15" height="15" style={{color:'var(--info)',flexShrink:0,marginTop:1}}></i>
+            <p style={{margin:0,fontSize:'var(--fs-sm)',color:'var(--text-secondary)',lineHeight:1.6}}>Recebeu um convite da plataforma? Use o link do e-mail para <strong>ativar a escolinha</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.EscLogin=EscLogin;
+</script>
+
+<!-- ── SHARED HELPERS ─────────────────────────────────────── -->
+<script type="text/babel">
+const TH={padding:'24px',textAlign:'left',fontSize:'var(--fs-xs)',fontWeight:'var(--fw-semibold)',letterSpacing:'0.05em',textTransform:'uppercase',color:'var(--text-secondary)',borderBottom:'1px solid var(--border-subtle)',whiteSpace:'nowrap'};
+const TD={padding:'14px 24px',fontSize:'var(--fs-body)',borderBottom:'1px solid var(--gray-100)'};
+const SM={ok:{label:'Em dia',tone:'success'},paid:{label:'Em dia',tone:'success'},late:{label:'Atrasado',tone:'danger'},bad:{label:'Atrasado',tone:'danger'},warn:{label:'Pendente',tone:'warning'},pending:{label:'Pendente',tone:'warning'}};
+
+function DSSelect({label, defaultValue, children}) {
+  const [focus,setFocus]=React.useState(false);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      {label&&<label style={{fontSize:'var(--fs-body)',fontWeight:'var(--fw-medium)',color:'var(--text-primary)',fontFamily:'var(--font-ui)'}}>{label}</label>}
+      <div style={{position:'relative',boxShadow:focus?'0 0 0 3px var(--accent-tint)':'none',borderRadius:'var(--radius-md)',transition:'box-shadow .14s'}}>
+        <select defaultValue={defaultValue} onFocus={()=>setFocus(true)} onBlur={()=>setFocus(false)}
+          style={{width:'100%',height:50,padding:'0 38px 0 16px',border:`1px solid ${focus?'var(--accent)':'var(--border-default)'}`,borderRadius:'var(--radius-md)',background:'var(--surface-card)',fontFamily:'var(--font-ui)',fontSize:'var(--fs-body)',color:'var(--text-primary)',appearance:'none',cursor:'pointer',outline:'none',transition:'border-color .14s'}}>{children}</select>
+        <i data-lucide="chevron-down" width="15" height="15" style={{position:'absolute',right:13,top:'50%',transform:'translateY(-50%)',color:'var(--gray-500)',pointerEvents:'none'}}></i>
+      </div>
+    </div>
+  );
+}
+window.DSSelect=DSSelect;
+
+function EToggle({on, onClick}) {
+  return (<div onClick={onClick} style={{width:42,height:23,borderRadius:99,background:on?'var(--accent)':'var(--gray-300)',cursor:'pointer',position:'relative',transition:'background .2s',flexShrink:0}}>
+    <span style={{position:'absolute',top:3,left:on?21:3,width:17,height:17,borderRadius:'50%',background:'white',transition:'left .2s',boxShadow:'0 1px 3px rgba(0,0,0,.2)'}}/>
+  </div>);
+}
+window.EToggle=EToggle;
+
+function ToggleRow({label, sub, defaultOn=true}) {
+  const [on,setOn]=React.useState(defaultOn);
+  return (<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'13px 0',borderBottom:'1px solid var(--border-subtle)',gap:16}}>
+    <div><div style={{fontWeight:'var(--fw-medium)',fontSize:'var(--fs-body)'}}>{label}</div>{sub&&<div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>{sub}</div>}</div>
+    <EToggle on={on} onClick={()=>setOn(!on)}/>
+  </div>);
+}
+window.ToggleRow=ToggleRow;
+
+function InfoNote({children}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  return (<div style={{padding:'13px 15px',background:'var(--info-tint)',borderRadius:'var(--radius-md)',borderLeft:'3px solid var(--info)'}}>
+    <div style={{display:'flex',gap:9,alignItems:'flex-start'}}>
+      <i data-lucide="info" width="15" height="15" style={{color:'var(--info)',flexShrink:0,marginTop:1}}></i>
+      <p style={{margin:0,fontSize:'var(--fs-sm)',color:'var(--text-secondary)',lineHeight:1.65}}>{children}</p>
+    </div>
+  </div>);
+}
+window.InfoNote=InfoNote;
+
+function Presenca({pct, ok}) {
+  return (<div style={{width:130}}>
+    <div style={{display:'flex',justifyContent:'space-between',marginBottom:5}}><span style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)'}}>Presença</span><span style={{fontSize:'var(--fs-xs)',fontWeight:'var(--fw-bold)'}}>{pct}</span></div>
+    <div style={{height:7,borderRadius:99,background:'var(--surface-muted)',overflow:'hidden'}}><div style={{height:'100%',width:pct,background:ok?'var(--accent)':'var(--warning)',borderRadius:99}}/></div>
+  </div>);
+}
+window.Presenca=Presenca;
+</script>
+
+<!-- ── HOME / RESUMO ──────────────────────────────────────── -->
+<script type="text/babel">
+function EscHome({navigate}) {
+  const {StatCard,Card,Badge,Button,Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const D=window.EC;
+  const [tab,setTab]=React.useState('all');
+  const [hov,setHov]=React.useState(null);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const rows=[
+    {ini:'LP',name:'Lucas Pereira',  turma:'Sub-9 · Quarta 18h', val:'R$ 250,00',venc:'05 abr',st:'paid'},
+    {ini:'AC',name:'Ana Beatriz Costa',turma:'Sub-11 · Terça 17h',val:'R$ 250,00',venc:'05 abr',st:'paid'},
+    {ini:'DS',name:'Davi Souza',     turma:'Sub-7 · Sábado 9h',  val:'R$ 220,00',venc:'10 abr',st:'late'},
+    {ini:'MA',name:'Mariana Alves',  turma:'Sub-13 · Quinta 19h',val:'R$ 280,00',venc:'12 abr',st:'pending'},
+  ];
+  const list=rows.filter(r=>tab==='all'||(tab==='ok'&&r.st==='paid')||(tab==='late'&&r.st!=='paid'));
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:22}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14}}>
+        {D.stats.map(s=><StatCard key={s.label} icon={s.icon} label={s.label} value={s.value} trend={s.trend} trendDirection={s.dir} variant={s.dark?'dark':'default'}/>)}
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:22}}>
+        <div style={{display:'flex',flexDirection:'column',gap:20}}>
+          <Card title="Recebimentos" subtitle="Previsto vs. recebido" action={
+            <div style={{display:'flex',gap:16,fontSize:'var(--fs-xs)',color:'var(--text-secondary)'}}>
+              <span style={{display:'flex',gap:6,alignItems:'center'}}><i style={{width:9,height:9,borderRadius:'50%',background:'var(--accent)'}}/>Recebido</span>
+              <span style={{display:'flex',gap:6,alignItems:'center'}}><i style={{width:9,height:9,borderRadius:'50%',background:'var(--gray-300)'}}/>Previsto</span>
+            </div>}>
+            <EscLineChart data={D.chart} height={220}/>
+          </Card>
+          <Card padding={0} style={{overflow:'hidden'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',padding:'24px 24px 0'}}>
+              <h3 style={{margin:0,fontSize:'var(--fs-h4)',fontWeight:'var(--fw-bold)',fontFamily:'var(--font-ui)'}}>Mensalidades recentes</h3>
+              <Button variant="ghost" size="sm" trailingIcon="arrow-right" onClick={()=>navigate('cobrancas')}>Ver todas</Button>
+            </div>
+            <div style={{padding:'14px 24px 0'}}>
+              <div style={{display:'inline-flex',gap:4,background:'var(--surface-muted)',borderRadius:'var(--radius-md)',padding:4}}>
+                {[['all','Todas'],['ok','Em dia'],['late','Atrasadas']].map(([v,l])=>(
+                  <button key={v} onClick={()=>setTab(v)} style={{border:'none',cursor:'pointer',padding:'6px 14px',borderRadius:'var(--radius-sm)',fontFamily:'var(--font-ui)',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)',background:tab===v?'var(--surface-card)':'transparent',color:tab===v?'var(--text-primary)':'var(--text-secondary)',boxShadow:tab===v?'var(--shadow-sm)':'none'}}>{l}</button>
+                ))}
+              </div>
+            </div>
+            <table style={{width:'100%',borderCollapse:'collapse',marginTop:8}}>
+              <thead><tr>{['Aluno','Turma','Valor','Vencimento','Status'].map(h=><th key={h} style={TH}>{h}</th>)}</tr></thead>
+              <tbody>{list.map((r,i)=>{const s=SM[r.st];return(
+                <tr key={i} style={{background:hov===i?'var(--surface-subtle)':'transparent',transition:'background .1s'}} onMouseEnter={()=>setHov(i)} onMouseLeave={()=>setHov(null)}>
+                  <td style={TD}><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={r.name} size={32}/><span style={{fontWeight:'var(--fw-semibold)'}}>{r.name}</span></div></td>
+                  <td style={{...TD,color:'var(--text-secondary)',fontSize:'var(--fs-sm)'}}>{r.turma}</td>
+                  <td style={{...TD,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums'}}>{r.val}</td>
+                  <td style={{...TD,color:'var(--text-secondary)'}}>{r.venc}</td>
+                  <td style={TD}><Badge tone={s.tone} dot>{s.label}</Badge></td>
+                </tr>);})}</tbody>
+            </table>
+            <div style={{height:8}}/>
+          </Card>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <div style={{background:'linear-gradient(135deg,var(--navy-900) 0%,var(--plum-800) 100%)',borderRadius:'var(--radius-lg)',padding:20,color:'var(--white)',position:'relative',overflow:'hidden'}}>
+            <div style={{position:'absolute',top:-30,right:-30,width:120,height:120,borderRadius:'50%',background:'rgba(200,238,68,.09)'}}/>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+              <div><div style={{fontSize:11,color:'rgba(255,255,255,.5)',letterSpacing:'0.04em'}}>Saldo a receber · abril</div>
+              <div style={{fontSize:28,fontWeight:'var(--fw-bold)',marginTop:6,letterSpacing:'-0.02em',fontVariantNumeric:'tabular-nums'}}>R$ 6.890,00</div></div>
+              <span style={{fontFamily:'var(--font-display)',fontWeight:800,color:'var(--accent)'}}>Craque</span>
+            </div>
+            <div style={{display:'flex',marginTop:22,paddingTop:14,borderTop:'1px solid rgba(255,255,255,.1)'}}>
+              <div style={{flex:1}}><div style={{fontSize:11,color:'rgba(255,255,255,.4)'}}>Recebido</div><div style={{fontWeight:'var(--fw-bold)',fontSize:13,marginTop:3,color:'var(--accent)'}}>R$ 18.420</div></div>
+              <div style={{flex:1,paddingLeft:12,borderLeft:'1px solid rgba(255,255,255,.1)'}}><div style={{fontSize:11,color:'rgba(255,255,255,.4)'}}>Em aberto</div><div style={{fontWeight:'var(--fw-bold)',fontSize:13,marginTop:3}}>R$ 2.150</div></div>
+            </div>
+          </div>
+          <Card title="Próximas aulas" action={<Button variant="ghost" size="sm">Agenda</Button>} padding={24}>
+            {D.aulas.map((c,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 0',borderBottom:i<D.aulas.length-1?'1px solid var(--border-subtle)':'none'}}>
+                <span style={{width:46,height:46,borderRadius:10,background:'var(--accent-tint)',display:'grid',placeContent:'center',textAlign:'center',flexShrink:0}}>
+                  <span style={{fontSize:10,fontWeight:'var(--fw-bold)',color:'var(--success)',lineHeight:1}}>{c.d}</span>
+                  <span style={{fontSize:13,fontWeight:'var(--fw-bold)',lineHeight:1.3}}>{c.h}</span></span>
+                <div><div style={{fontWeight:'var(--fw-semibold)',fontSize:'var(--fs-body)'}}>{c.t}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:1}}>{c.sub}</div></div>
+              </div>
+            ))}
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.EscHome=EscHome;
+</script>
+
+<!-- ── TURMAS ─────────────────────────────────────────────── -->
+<script type="text/babel">
+function EscTurmas({navigate}) {
+  const {Card,Badge,Button}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const D=window.EC;
+  const [chip,setChip]=React.useState('all');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const chips=[['all','Todas · 4'],['Sub-7','Sub-7'],['Sub-9','Sub-9'],['Sub-11','Sub-11'],['Sub-13','Sub-13']];
+  const list=D.turmas.filter(t=>chip==='all'||t.nome===chip);
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:20}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:16}}>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+          {chips.map(([v,l])=>(<button key={v} onClick={()=>setChip(v)} style={{border:`1px solid ${chip===v?'var(--navy-900)':'var(--border-default)'}`,background:chip===v?'var(--navy-900)':'var(--surface-card)',color:chip===v?'var(--white)':'var(--text-secondary)',borderRadius:'var(--radius-pill)',padding:'7px 15px',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-medium)',cursor:'pointer',fontFamily:'var(--font-ui)'}}>{l}</button>))}
+        </div>
+        <Button variant="primary" size="sm" leadingIcon="plus" onClick={()=>navigate('turma-cadastro')}>Nova turma</Button>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:20}}>
+        {list.map(t=>{const cheia=t.alunos>=t.vagas;return(
+          <Card key={t.nome} style={{cursor:'pointer'}} onClick={()=>navigate('turma-detalhe')}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <h3 style={{margin:0,fontSize:'var(--fs-h4)',fontWeight:'var(--fw-bold)'}}>{t.nome}</h3>
+              <Badge tone="neutral">{t.cat}</Badge>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:9,marginTop:14,fontSize:'var(--fs-sm)',color:'var(--text-secondary)'}}>
+              <div style={{display:'flex',gap:9,alignItems:'center'}}><i data-lucide="calendar" width="15" height="15" style={{color:'var(--gray-500)'}}></i>{t.agenda}</div>
+              <div style={{display:'flex',gap:9,alignItems:'center'}}><i data-lucide="map-pin" width="15" height="15" style={{color:'var(--gray-500)'}}></i>{t.local}</div>
+              <div style={{display:'flex',gap:9,alignItems:'center'}}><i data-lucide="graduation-cap" width="15" height="15" style={{color:'var(--gray-500)'}}></i>{t.prof}</div>
+            </div>
+            <div style={{height:1,background:'var(--border-subtle)',margin:'16px 0'}}/>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <span style={{fontSize:'var(--fs-sm)',color:'var(--text-secondary)'}}><strong style={{color:'var(--text-primary)'}}>{t.alunos}</strong> / {t.vagas} vagas</span>
+              {cheia?<Badge tone="warning" dot>Lotada</Badge>:<Badge tone="success" dot>Aberta</Badge>}
+            </div>
+          </Card>
+        );})}
+      </div>
+    </div>
+  );
+}
+window.EscTurmas=EscTurmas;
+</script>
+
+<!-- ── NOVA TURMA ─────────────────────────────────────────── -->
+<script type="text/babel">
+function EscTurmaCadastro({navigate}) {
+  const {Card,Button,Input}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const DSSelect=window.DSSelect, InfoNote=window.InfoNote;
+  const [dias,setDias]=React.useState({Qua:true});
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const g2={display:'grid',gridTemplateColumns:'1fr 1fr',gap:14};
+  const chip=(active,on)=>({border:`1px solid ${active?'var(--navy-900)':'var(--border-default)'}`,background:active?'var(--navy-900)':'var(--surface-card)',color:active?'var(--white)':'var(--text-secondary)',borderRadius:'var(--radius-pill)',padding:'7px 14px',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-medium)',cursor:'pointer',fontFamily:'var(--font-ui)'});
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:20}}>
+      <button onClick={()=>navigate('turmas')} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-sm)',color:'var(--text-secondary)',fontFamily:'var(--font-ui)',padding:0}}>
+        <i data-lucide="arrow-left" width="15" height="15"></i>Turmas <span style={{color:'var(--border-default)',margin:'0 2px'}}>/</span> <strong style={{color:'var(--text-primary)'}}>Nova turma</strong>
+      </button>
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:20}}>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Dados da turma">
+            <div style={g2}>
+              <Input label="Nome da turma" placeholder="Ex.: Sub-9"/>
+              <DSSelect label="Categoria / faixa etária" defaultValue="89"><option value="57">5 a 7 anos</option><option value="89">8 a 9 anos</option><option value="1011">10 a 11 anos</option><option value="1213">12 a 13 anos</option></DSSelect>
+              <DSSelect label="Unidade" defaultValue="centro"><option value="centro">Centro</option><option value="norte">Norte</option></DSSelect>
+              <Input label="Local / campo" placeholder="Campo 2"/>
+            </div>
+          </Card>
+          <Card title="Agenda">
+            <label style={{display:'block',marginBottom:8,fontSize:'var(--fs-body)',fontWeight:'var(--fw-medium)'}}>Dias da semana</label>
+            <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:16}}>
+              {['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(d=>(<button key={d} onClick={()=>setDias(s=>({...s,[d]:!s[d]}))} style={chip(!!dias[d])}>{d}</button>))}
+            </div>
+            <div style={g2}><Input label="Início" placeholder="18:00"/><Input label="Término" placeholder="19:30"/></div>
+          </Card>
+          <Card title="Professores & capacidade">
+            <label style={{display:'block',marginBottom:8,fontSize:'var(--fs-body)',fontWeight:'var(--fw-medium)'}}>Professores responsáveis</label>
+            <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:16}}>
+              <span style={{display:'inline-flex',alignItems:'center',gap:6,background:'var(--accent-tint)',color:'var(--success)',borderRadius:'var(--radius-pill)',padding:'7px 13px',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)'}}>Prof. Lucas <i data-lucide="x" width="13" height="13"></i></span>
+              <button style={{border:'1px dashed var(--border-default)',background:'transparent',color:'var(--text-secondary)',borderRadius:'var(--radius-pill)',padding:'7px 13px',fontSize:'var(--fs-sm)',cursor:'pointer',fontFamily:'var(--font-ui)'}}>+ Adicionar</button>
+            </div>
+            <div style={g2}><Input label="Vagas" placeholder="24"/><DSSelect label="Status" defaultValue="ativa"><option value="ativa">Ativa</option><option value="pausada">Pausada</option></DSSelect></div>
+          </Card>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <InfoNote>Depois de criada, a turma fica disponível para <strong>vincular alunos</strong> na matrícula.</InfoNote>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            <Button variant="primary" size="md" fullWidth leadingIcon="check" onClick={()=>navigate('turmas')}>Salvar turma</Button>
+            <Button variant="secondary" size="md" fullWidth onClick={()=>navigate('turmas')}>Cancelar</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.EscTurmaCadastro=EscTurmaCadastro;
+</script>
+
+<!-- ── DETALHE DA TURMA ───────────────────────────────────── -->
+<script type="text/babel">
+function EscTurmaDetalhe({navigate}) {
+  const {Card,Badge,Button,Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const Presenca=window.Presenca, InfoNote=window.InfoNote;
+  const [hov,setHov]=React.useState(null);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const rows=[
+    {ini:'LP',name:'Lucas Pereira', idade:'9 anos',resp:'Marcos Pereira',pre:'92%',ok:true, st:'paid'},
+    {ini:'PH',name:'Pedro Henrique',idade:'9 anos',resp:'Sandra Lima',   pre:'95%',ok:true, st:'paid'},
+    {ini:'BD',name:'Bruno Dias',    idade:'8 anos',resp:'Carla Dias',     pre:'70%',ok:false,st:'late'},
+    {ini:'TM',name:'Théo Moraes',   idade:'9 anos',resp:'Rita Moraes',    pre:'88%',ok:true, st:'paid'},
+    {ini:'GN',name:'Gael Nunes',    idade:'8 anos',resp:'Ivo Nunes',      pre:'83%',ok:false,st:'pending'},
+    {ini:'VR',name:'Vitor Reis',    idade:'9 anos',resp:'Lia Reis',       pre:'97%',ok:true, st:'paid'},
+  ];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:20}}>
+      <button onClick={()=>navigate('turmas')} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-sm)',color:'var(--text-secondary)',fontFamily:'var(--font-ui)',padding:0}}>
+        <i data-lucide="arrow-left" width="15" height="15"></i>Turmas <span style={{color:'var(--border-default)',margin:'0 2px'}}>/</span> <strong style={{color:'var(--text-primary)'}}>Sub-9</strong>
+      </button>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:16}}>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}><Badge tone="success" dot>Aberta</Badge><Badge tone="neutral">8 a 9 anos</Badge></div>
+        <div style={{display:'flex',gap:10}}>
+          <Button variant="secondary" size="sm" leadingIcon="pencil" onClick={()=>navigate('turma-cadastro')}>Editar turma</Button>
+          <Button variant="primary" size="sm" leadingIcon="user-plus" onClick={()=>navigate('aluno-cadastro')}>Adicionar aluno</Button>
+        </div>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:20}}>
+        <Card padding={0} style={{overflow:'hidden'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'24px 24px 14px'}}>
+            <h3 style={{margin:0,fontSize:'var(--fs-h4)',fontWeight:'var(--fw-bold)',fontFamily:'var(--font-ui)'}}>Alunos inscritos · 24</h3>
+          </div>
+          <table style={{width:'100%',borderCollapse:'collapse'}}>
+            <thead><tr>{['Aluno','Responsável','Presença','Mensalidade',''].map((h,i)=><th key={i} style={TH}>{h}</th>)}</tr></thead>
+            <tbody>{rows.map((r,i)=>{const s=SM[r.st];return(
+              <tr key={i} style={{background:hov===i?'var(--surface-subtle)':'transparent',transition:'background .1s'}} onMouseEnter={()=>setHov(i)} onMouseLeave={()=>setHov(null)}>
+                <td style={TD}><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={r.name} size={32}/><div><div style={{fontWeight:'var(--fw-semibold)'}}>{r.name}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:1}}>{r.idade}</div></div></div></td>
+                <td style={{...TD,color:'var(--text-secondary)'}}>{r.resp}</td>
+                <td style={TD}><Presenca pct={r.pre} ok={r.ok}/></td>
+                <td style={TD}><Badge tone={s.tone} dot>{s.label}</Badge></td>
+                <td style={{...TD,width:40,textAlign:'right'}}><button style={{border:'none',background:'transparent',cursor:'pointer',color:'var(--text-secondary)'}}><i data-lucide="x" width="16" height="16"></i></button></td>
+              </tr>);})}</tbody>
+          </table>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 24px 20px',color:'var(--text-secondary)',fontSize:'var(--fs-sm)'}}>
+            <span>Mostrando 6 de 24</span>
+            <div style={{display:'flex',gap:8}}><Button variant="ghost" size="sm">Anterior</Button><Button variant="ghost" size="sm">Próxima</Button></div>
+          </div>
+        </Card>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Informações" padding={24}>
+            {[['Categoria','8 a 9 anos'],['Agenda','Qua · 18h'],['Local','Campo 2 · Centro']].map(([k,v],i)=>(
+              <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid var(--border-subtle)',fontSize:'var(--fs-body)'}}><span style={{color:'var(--text-secondary)'}}>{k}</span><strong>{v}</strong></div>
+            ))}
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 0'}}><span style={{color:'var(--text-secondary)',fontSize:'var(--fs-body)'}}>Professor</span><span style={{display:'flex',gap:8,alignItems:'center'}}><Avatar name="Lucas Martins" size={24}/><strong>Lucas M.</strong></span></div>
+            <div style={{height:1,background:'var(--border-subtle)',margin:'10px 0 14px'}}/>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:6,fontSize:'var(--fs-sm)'}}><span style={{color:'var(--text-secondary)'}}>Capacidade</span><span style={{fontWeight:'var(--fw-bold)'}}>24 / 24</span></div>
+            <div style={{height:8,borderRadius:99,background:'var(--surface-muted)',overflow:'hidden'}}><div style={{height:'100%',width:'100%',background:'var(--warning)',borderRadius:99}}/></div>
+            <div style={{marginTop:10}}><Badge tone="warning" dot>Turma lotada</Badge></div>
+          </Card>
+          <Card padding={24}>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:6,fontSize:'var(--fs-sm)'}}><span style={{color:'var(--text-secondary)'}}>Presença média</span><span style={{fontWeight:'var(--fw-bold)'}}>88%</span></div>
+            <div style={{height:8,borderRadius:99,background:'var(--surface-muted)',overflow:'hidden'}}><div style={{height:'100%',width:'88%',background:'var(--accent)',borderRadius:99}}/></div>
+          </Card>
+          <InfoNote>Alunos podem estar em <strong>mais de uma turma</strong>. Remover daqui não exclui o cadastro do aluno.</InfoNote>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.EscTurmaDetalhe=EscTurmaDetalhe;
+</script>
+
+<!-- ── ALUNOS ─────────────────────────────────────────────── -->
+<script type="text/babel">
+function EscAlunos({navigate}) {
+  const {Card,Badge,Button,Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const Presenca=window.Presenca;
+  const [chip,setChip]=React.useState('all');
+  const [hov,setHov]=React.useState(null);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const chips=[['all','Todos · 142'],['Sub-7','Sub-7'],['Sub-9','Sub-9'],['Sub-11','Sub-11'],['Sub-13','Sub-13']];
+  const rows=[
+    {ini:'LP',name:'Lucas Pereira',  idade:'9 anos', turma:'Sub-9', resp:'Marcos Pereira',tel:'(11) 98xxx-xx01',pre:'92%',ok:true, st:'paid'},
+    {ini:'AC',name:'Ana Beatriz Costa',idade:'11 anos',turma:'Sub-11',resp:'Júlia Costa',  tel:'(11) 98xxx-xx02',pre:'88%',ok:true, st:'paid'},
+    {ini:'DS',name:'Davi Souza',     idade:'7 anos', turma:'Sub-7', resp:'Renata Souza',  tel:'(11) 98xxx-xx03',pre:'74%',ok:false,st:'late'},
+    {ini:'MA',name:'Mariana Alves',  idade:'13 anos',turma:'Sub-13',resp:'Paulo Alves',   tel:'(11) 98xxx-xx04',pre:'81%',ok:false,st:'pending'},
+    {ini:'PH',name:'Pedro Henrique', idade:'9 anos', turma:'Sub-9', resp:'Sandra Lima',   tel:'(11) 98xxx-xx05',pre:'95%',ok:true, st:'paid'},
+  ];
+  const list=rows.filter(r=>chip==='all'||r.turma===chip);
+  return (
+    <Card padding={0} style={{overflow:'hidden'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'24px 24px 0',gap:16}}>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+          {chips.map(([v,l])=>(<button key={v} onClick={()=>setChip(v)} style={{border:`1px solid ${chip===v?'var(--navy-900)':'var(--border-default)'}`,background:chip===v?'var(--navy-900)':'var(--surface-card)',color:chip===v?'var(--white)':'var(--text-secondary)',borderRadius:'var(--radius-pill)',padding:'7px 15px',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-medium)',cursor:'pointer',fontFamily:'var(--font-ui)'}}>{l}</button>))}
+        </div>
+        <div style={{display:'flex',gap:8,flexShrink:0}}>
+          <Button variant="secondary" size="sm" leadingIcon="sliders-horizontal">Filtros</Button>
+          <Button variant="primary" size="sm" leadingIcon="user-plus" onClick={()=>navigate('aluno-cadastro')}>Nova matrícula</Button>
+        </div>
+      </div>
+      <table style={{width:'100%',borderCollapse:'collapse',marginTop:14}}>
+        <thead><tr>{['Aluno','Turma','Responsável','Presença','Mensalidade',''].map((h,i)=><th key={i} style={TH}>{h}</th>)}</tr></thead>
+        <tbody>{list.map((r,i)=>{const s=SM[r.st];return(
+          <tr key={i} style={{background:hov===i?'var(--surface-subtle)':'transparent',transition:'background .1s',cursor:'pointer'}} onMouseEnter={()=>setHov(i)} onMouseLeave={()=>setHov(null)}>
+            <td style={TD}><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={r.name} size={34}/><div><div style={{fontWeight:'var(--fw-semibold)'}}>{r.name}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:1}}>{r.idade}</div></div></div></td>
+            <td style={TD}><Badge tone="neutral">{r.turma}</Badge></td>
+            <td style={TD}><div style={{fontSize:'var(--fs-sm)'}}>{r.resp}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:1}}>{r.tel}</div></td>
+            <td style={TD}><Presenca pct={r.pre} ok={r.ok}/></td>
+            <td style={TD}><Badge tone={s.tone} dot>{s.label}</Badge></td>
+            <td style={{...TD,width:40,textAlign:'right'}}><button style={{border:'none',background:'transparent',cursor:'pointer',color:'var(--text-secondary)'}}><i data-lucide="more-horizontal" width="17" height="17"></i></button></td>
+          </tr>);})}</tbody>
+      </table>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 24px 20px',color:'var(--text-secondary)',fontSize:'var(--fs-sm)'}}>
+        <span>Mostrando {list.length} de 142</span>
+        <div style={{display:'flex',gap:4}}>{[1,2,3,'…',29].map((p,i)=><button key={i} style={{width:32,height:32,borderRadius:'var(--radius-md)',border:`1px solid ${p===1?'var(--navy-900)':'var(--border-subtle)'}`,background:p===1?'var(--navy-900)':'var(--surface-card)',color:p===1?'var(--white)':'var(--text-secondary)',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-medium)',cursor:'pointer',fontFamily:'var(--font-ui)'}}>{p}</button>)}</div>
+      </div>
+    </Card>
+  );
+}
+window.EscAlunos=EscAlunos;
+</script>
+
+<!-- ── NOVA MATRÍCULA ─────────────────────────────────────── -->
+<script type="text/babel">
+function EscAlunoCadastro({navigate}) {
+  const {Card,Button,Input}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const DSSelect=window.DSSelect, InfoNote=window.InfoNote;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const g2={display:'grid',gridTemplateColumns:'1fr 1fr',gap:14};
+  const steps=[['1','Dados do aluno',true],['2','Responsável',true],['3','Convite',false]];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:20}}>
+      <button onClick={()=>navigate('alunos')} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-sm)',color:'var(--text-secondary)',fontFamily:'var(--font-ui)',padding:0}}>
+        <i data-lucide="arrow-left" width="15" height="15"></i>Alunos <span style={{color:'var(--border-default)',margin:'0 2px'}}>/</span> <strong style={{color:'var(--text-primary)'}}>Nova matrícula</strong>
+      </button>
+      <div style={{display:'flex',alignItems:'center',gap:14}}>
+        {steps.map(([n,lbl,on],i)=>(<React.Fragment key={n}>
+          <div style={{display:'flex',alignItems:'center',gap:9}}>
+            <span style={{width:28,height:28,borderRadius:'50%',display:'grid',placeContent:'center',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-bold)',background:on?'var(--accent)':'var(--surface-muted)',color:on?'var(--navy-900)':'var(--text-secondary)'}}>{n}</span>
+            <span style={{fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)',color:on?'var(--text-primary)':'var(--text-secondary)'}}>{lbl}</span>
+          </div>
+          {i<steps.length-1&&<span style={{width:36,borderTop:'2px dashed var(--border-default)'}}/>}
+        </React.Fragment>))}
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:20}}>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Dados do aluno">
+            <div style={g2}>
+              <Input label="Nome completo" placeholder="Nome do aluno"/>
+              <Input label="Data de nascimento" placeholder="dd/mm/aaaa" leadingIcon="calendar"/>
+              <DSSelect label="Turma(s)" defaultValue="sub9"><option value="sub9">Sub-9 · Quarta 18h</option><option value="sub7">Sub-7 · Sábado 9h</option><option value="sub11">Sub-11 · Terça 17h</option></DSSelect>
+              <DSSelect label="Status inicial" defaultValue="pre"><option value="pre">Pré-cadastro</option><option value="ativo">Ativo</option></DSSelect>
+            </div>
+          </Card>
+          <Card title="Contato do responsável">
+            <div style={g2}>
+              <Input label="Nome do responsável" placeholder="Nome do responsável" leadingIcon="user"/>
+              <Input label="WhatsApp" placeholder="(11) 9xxxx-xxxx" leadingIcon="phone"/>
+              <div style={{gridColumn:'1/-1'}}><Input label="E-mail" type="email" placeholder="responsavel@email.com" leadingIcon="mail"/></div>
+            </div>
+          </Card>
+          <Card style={{borderStyle:'dashed',borderColor:'var(--border-default)'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:16}}>
+              <div><div style={{fontWeight:'var(--fw-bold)',fontSize:'var(--fs-body)'}}>Link de convite gerado</div>
+                <div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:4,fontFamily:'monospace'}}>craque.com/convite/aL9x-72kP · expira em 7 dias</div></div>
+              <div style={{display:'flex',gap:8,flexShrink:0}}>
+                <Button variant="secondary" size="sm" leadingIcon="copy">Copiar</Button>
+                <Button variant="primary" size="sm" leadingIcon="message-circle">WhatsApp</Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <InfoNote>O responsável abre o link e <strong>completa o cadastro</strong>. Você valida e ativa a matrícula.</InfoNote>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            <Button variant="primary" size="md" fullWidth leadingIcon="check" onClick={()=>navigate('alunos')}>Salvar pré-cadastro</Button>
+            <Button variant="secondary" size="md" fullWidth onClick={()=>navigate('alunos')}>Cancelar</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.EscAlunoCadastro=EscAlunoCadastro;
+</script>
+
+<!-- ── RESPONSÁVEIS ───────────────────────────────────────── -->
+<script type="text/babel">
+function EscResponsaveis({navigate}) {
+  const {Card,Badge,Button,Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [chip,setChip]=React.useState('all');
+  const [hov,setHov]=React.useState(null);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const chips=[['all','Todos · 124'],['completo','Cadastro completo'],['pendente','Convite pendente']];
+  const rows=[
+    {ini:'MP',name:'Marcos Pereira',email:'marcos@email.com',alunos:'Lucas Pereira (Sub-9)',tel:'(11) 98xxx-xx01',st:'completo',act:'Ver'},
+    {ini:'JC',name:'Júlia Costa',   email:'julia@email.com', alunos:'Ana Beatriz (Sub-11)', tel:'(11) 98xxx-xx02',st:'completo',act:'Ver'},
+    {ini:'RS',name:'Renata Souza',  email:'renata@email.com',alunos:'Davi Souza (Sub-7)',   tel:'(11) 98xxx-xx03',st:'completo',act:'Ver'},
+    {ini:'SL',name:'Sandra Lima',   email:'sandra@email.com',alunos:'Pedro H. (Sub-9) · +1',tel:'(11) 98xxx-xx05',st:'pendente',act:'Reenviar'},
+  ];
+  const list=rows.filter(r=>chip==='all'||r.st===chip);
+  return (
+    <Card padding={0} style={{overflow:'hidden'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'24px 24px 0',gap:16}}>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+          {chips.map(([v,l])=>(<button key={v} onClick={()=>setChip(v)} style={{border:`1px solid ${chip===v?'var(--navy-900)':'var(--border-default)'}`,background:chip===v?'var(--navy-900)':'var(--surface-card)',color:chip===v?'var(--white)':'var(--text-secondary)',borderRadius:'var(--radius-pill)',padding:'7px 15px',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-medium)',cursor:'pointer',fontFamily:'var(--font-ui)'}}>{l}</button>))}
+        </div>
+        <Button variant="primary" size="sm" leadingIcon="user-plus" onClick={()=>navigate('aluno-cadastro')}>Convidar responsável</Button>
+      </div>
+      <table style={{width:'100%',borderCollapse:'collapse',marginTop:14}}>
+        <thead><tr>{['Responsável','Alunos vinculados','Contato','Cadastro',''].map((h,i)=><th key={i} style={TH}>{h}</th>)}</tr></thead>
+        <tbody>{list.map((r,i)=>(
+          <tr key={i} style={{background:hov===i?'var(--surface-subtle)':'transparent',transition:'background .1s'}} onMouseEnter={()=>setHov(i)} onMouseLeave={()=>setHov(null)}>
+            <td style={TD}><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={r.name} size={34}/><div><div style={{fontWeight:'var(--fw-semibold)'}}>{r.name}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:1}}>{r.email}</div></div></div></td>
+            <td style={{...TD,color:'var(--text-secondary)'}}>{r.alunos}</td>
+            <td style={{...TD,color:'var(--text-secondary)',fontSize:'var(--fs-sm)'}}>{r.tel}</td>
+            <td style={TD}>{r.st==='completo'?<Badge tone="success" dot>Completo</Badge>:<Badge tone="warning" dot>Convite pendente</Badge>}</td>
+            <td style={{...TD,textAlign:'right'}}><Button variant="ghost" size="sm">{r.act}</Button></td>
+          </tr>))}</tbody>
+      </table>
+      <div style={{height:8}}/>
+    </Card>
+  );
+}
+window.EscResponsaveis=EscResponsaveis;
+</script>
+
+<!-- ── MENSALIDADES ───────────────────────────────────────── -->
+<script type="text/babel">
+function EscCobrancas({navigate}) {
+  const {Card,Badge,Button,StatCard,Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const EToggle=window.EToggle;
+  const [auto,setAuto]=React.useState(true);
+  const [tab,setTab]=React.useState('all');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const rows=[
+    {ini:'LP',name:'Lucas Pereira',  turma:'Sub-9 · Quarta 18h', val:'R$ 250,00',venc:'05 abr',st:'paid'},
+    {ini:'AC',name:'Ana Beatriz Costa',turma:'Sub-11 · Terça 17h',val:'R$ 250,00',venc:'05 abr',st:'paid'},
+    {ini:'DS',name:'Davi Souza',     turma:'Sub-7 · Sábado 9h',  val:'R$ 220,00',venc:'10 abr',st:'late'},
+    {ini:'MA',name:'Mariana Alves',  turma:'Sub-13 · Quinta 19h',val:'R$ 280,00',venc:'12 abr',st:'pending'},
+    {ini:'PH',name:'Pedro Henrique', turma:'Sub-9 · Quarta 18h', val:'R$ 250,00',venc:'15 abr',st:'pending'},
+  ];
+  const list=rows.filter(r=>tab==='all'||(tab==='ok'&&r.st==='paid')||(tab==='late'&&r.st!=='paid'));
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:18}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14}}>
+        <StatCard icon="check-circle-2" label="Recebido em abril" value="R$ 18.420" variant="dark"/>
+        <StatCard icon="clock" label="A vencer" value="R$ 2.150"/>
+        <StatCard icon="alert-circle" label="Em atraso" value="8 alunos" trend="-2" trendDirection="down"/>
+      </div>
+      <Card padding={20} style={{display:'flex',alignItems:'center',gap:16}}>
+        <span style={{width:44,height:44,borderRadius:10,background:'var(--accent-tint)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="zap" width="20" height="20" style={{color:'var(--success)'}}></i></span>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:'var(--fw-bold)',fontSize:'var(--fs-body)'}}>Baixa automática via gateway</div>
+          <div style={{fontSize:'var(--fs-sm)',color:'var(--text-secondary)',marginTop:2}}>Pix e cartão pagos pelo responsável são conciliados sozinhos por webhook (Asaas / Pagar.me). “Registrar” serve só p/ baixa manual (dinheiro).</div>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:10,flexShrink:0}}><span style={{fontSize:'var(--fs-sm)',color:'var(--text-secondary)'}}>Ativa</span><EToggle on={auto} onClick={()=>setAuto(!auto)}/></div>
+      </Card>
+      <Card title="Cobranças de abril" subtitle="8 mensalidades em aberto" action={
+        <div style={{display:'flex',gap:10}}>
+          <Button variant="secondary" size="sm" leadingIcon="repeat">Recorrência</Button>
+          <Button variant="primary" size="sm" leadingIcon="plus" onClick={()=>navigate('cobranca-nova')}>Nova cobrança</Button>
+        </div>}>
+        <div style={{display:'inline-flex',gap:4,background:'var(--surface-muted)',borderRadius:'var(--radius-md)',padding:4,marginBottom:6}}>
+          {[['all','Todas'],['ok','Em dia'],['late','Atrasadas']].map(([v,l])=>(
+            <button key={v} onClick={()=>setTab(v)} style={{border:'none',cursor:'pointer',padding:'6px 14px',borderRadius:'var(--radius-sm)',fontFamily:'var(--font-ui)',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)',background:tab===v?'var(--surface-card)':'transparent',color:tab===v?'var(--text-primary)':'var(--text-secondary)',boxShadow:tab===v?'var(--shadow-sm)':'none'}}>{l}</button>
+          ))}
+        </div>
+        {list.map((p,i)=>{const s=SM[p.st];return(
+          <div key={i} style={{display:'flex',alignItems:'center',gap:16,padding:'15px 0',borderBottom:i<list.length-1?'1px solid var(--border-subtle)':'none'}}>
+            <Avatar name={p.name} size={40}/>
+            <div style={{flex:1,minWidth:0}}><div style={{fontWeight:'var(--fw-semibold)',fontSize:'var(--fs-body)'}}>{p.name}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:1}}>{p.turma}</div></div>
+            <div style={{textAlign:'right',minWidth:96}}><div style={{fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums'}}>{p.val}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)'}}>Vence {p.venc}</div></div>
+            <div style={{width:108,display:'flex',justifyContent:'flex-end'}}><Badge tone={s.tone} dot>{s.label}</Badge></div>
+            <div style={{width:130,display:'flex',justifyContent:'flex-end'}}>{p.st==='paid'
+              ? <span style={{display:'inline-flex',gap:6,alignItems:'center',color:'var(--success)',fontWeight:'var(--fw-semibold)',fontSize:'var(--fs-sm)'}}><i data-lucide="check" width="16" height="16"></i>Recebido</span>
+              : <Button variant="primary" size="sm">Registrar</Button>}</div>
+          </div>);})}
+      </Card>
+    </div>
+  );
+}
+window.EscCobrancas=EscCobrancas;
+</script>
+
+<!-- ── NOVA COBRANÇA ──────────────────────────────────────── -->
+<script type="text/babel">
+function EscCobrancaNova({navigate}) {
+  const {Card,Button,Input}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const DSSelect=window.DSSelect, InfoNote=window.InfoNote, EToggle=window.EToggle, ToggleRow=window.ToggleRow;
+  const [tipo,setTipo]=React.useState('Mensalidade');
+  const [rec,setRec]=React.useState('mensal');
+  const [met,setMet]=React.useState({Pix:true,Cartão:true,Boleto:false});
+  const [lembrete,setLembrete]=React.useState(true);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const g2={display:'grid',gridTemplateColumns:'1fr 1fr',gap:14};
+  const pill=(active)=>({border:`1px solid ${active?'var(--navy-900)':'var(--border-default)'}`,background:active?'var(--navy-900)':'var(--surface-card)',color:active?'var(--white)':'var(--text-secondary)',borderRadius:'var(--radius-pill)',padding:'8px 16px',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-medium)',cursor:'pointer',fontFamily:'var(--font-ui)'});
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:20}}>
+      <button onClick={()=>navigate('cobrancas')} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-sm)',color:'var(--text-secondary)',fontFamily:'var(--font-ui)',padding:0}}>
+        <i data-lucide="arrow-left" width="15" height="15"></i>Mensalidades <span style={{color:'var(--border-default)',margin:'0 2px'}}>/</span> <strong style={{color:'var(--text-primary)'}}>Nova cobrança</strong>
+      </button>
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:20}}>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Para quem">
+            <div style={g2}>
+              <DSSelect label="Aluno" defaultValue=""><option value="">Buscar aluno…</option><option value="lp">Lucas Pereira</option><option value="ac">Ana Beatriz Costa</option></DSSelect>
+              <DSSelect label="Turma" defaultValue="sub9"><option value="sub9">Sub-9 · Quarta 18h</option><option value="sub7">Sub-7 · Sábado 9h</option></DSSelect>
+            </div>
+          </Card>
+          <Card title="Cobrança">
+            <label style={{display:'block',marginBottom:8,fontSize:'var(--fs-body)',fontWeight:'var(--fw-medium)'}}>Tipo</label>
+            <div style={{display:'flex',gap:8,marginBottom:16}}>{['Mensalidade','Matrícula','Avulsa'].map(t=>(<button key={t} onClick={()=>setTipo(t)} style={pill(tipo===t)}>{t}</button>))}</div>
+            <div style={g2}><Input label="Valor" placeholder="R$ 250,00" leadingIcon="dollar-sign"/><Input label="Vencimento" placeholder="05/05/2026" leadingIcon="calendar"/></div>
+            <div style={{height:1,background:'var(--border-subtle)',margin:'16px 0'}}/>
+            <label style={{display:'block',marginBottom:8,fontSize:'var(--fs-body)',fontWeight:'var(--fw-medium)'}}>Recorrência</label>
+            <div style={{display:'flex',gap:8}}>
+              <button onClick={()=>setRec('unica')} style={pill(rec==='unica')}>Única</button>
+              <button onClick={()=>setRec('mensal')} style={pill(rec==='mensal')}>Mensal (recorrente)</button>
+            </div>
+          </Card>
+          <Card title="Pagamento & envio">
+            <label style={{display:'block',marginBottom:8,fontSize:'var(--fs-body)',fontWeight:'var(--fw-medium)'}}>Métodos disponíveis ao responsável</label>
+            <div style={{display:'flex',gap:8,marginBottom:6}}>{['Pix','Cartão','Boleto'].map(m=>(<button key={m} onClick={()=>setMet(s=>({...s,[m]:!s[m]}))} style={pill(met[m])}>{m}</button>))}</div>
+            <ToggleRow label="Enviar link por WhatsApp" sub="Assim que a cobrança for criada"/>
+            <ToggleRow label="Enviar por e-mail" sub="Com a 2ª via e instruções"/>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'13px 0 0',gap:16}}>
+              <div><div style={{fontWeight:'var(--fw-medium)',fontSize:'var(--fs-body)'}}>Lembrete automático</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>3 dias antes do vencimento</div></div>
+              <EToggle on={lembrete} onClick={()=>setLembrete(!lembrete)}/>
+            </div>
+          </Card>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <Card title="Resumo" padding={24}>
+            {[['Valor','R$ 250,00'],['Vencimento','05/05/2026'],['Recorrência','Mensal']].map(([k,v])=>(
+              <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'9px 0',fontSize:'var(--fs-body)'}}><span style={{color:'var(--text-secondary)'}}>{k}</span><strong>{v}</strong></div>
+            ))}
+            <div style={{height:1,background:'var(--border-subtle)',margin:'8px 0'}}/>
+            {[['Plataforma (2%)','R$ 5,00'],['Split prof. (8%)','R$ 19,60']].map(([k,v])=>(
+              <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'9px 0',fontSize:'var(--fs-body)'}}><span style={{color:'var(--text-secondary)'}}>{k}</span><strong>{v}</strong></div>
+            ))}
+            <div style={{display:'flex',justifyContent:'space-between',padding:'9px 0',fontSize:'var(--fs-body)'}}><span style={{color:'var(--text-secondary)'}}>Líquido escolinha</span><strong style={{color:'var(--success)'}}>R$ 216,67</strong></div>
+          </Card>
+          <InfoNote>A baixa é <strong>automática</strong> quando o responsável paga (webhook do gateway). O split é registrado na criação.</InfoNote>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            <Button variant="primary" size="md" fullWidth leadingIcon="check" onClick={()=>navigate('cobrancas')}>Criar cobrança</Button>
+            <Button variant="secondary" size="md" fullWidth onClick={()=>navigate('cobrancas')}>Cancelar</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.EscCobrancaNova=EscCobrancaNova;
+</script>
+
+<!-- ── FINANCEIRO ─────────────────────────────────────────── -->
+<script type="text/babel">
+function EscFinanceiro({navigate}) {
+  const {Card,Badge,Button,StatCard}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const D=window.EC, InfoNote=window.InfoNote;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const fin=[
+    {name:'Lucas Pereira',ref:'Mensalidade abr',bruto:'R$ 250,00',taxa:'R$ 8,73',liq:'R$ 241,27',st:'ok',lbl:'Repassado'},
+    {name:'Ana Beatriz',  ref:'Mensalidade abr',bruto:'R$ 250,00',taxa:'R$ 8,73',liq:'R$ 241,27',st:'ok',lbl:'Repassado'},
+    {name:'Davi Souza',   ref:'Mensalidade abr',bruto:'R$ 220,00',taxa:'R$ 7,68',liq:'R$ 212,32',st:'bad',lbl:'Em atraso'},
+    {name:'Mariana Alves',ref:'Matrícula',      bruto:'R$ 100,00',taxa:'R$ 3,49',liq:'R$ 96,51', st:'info',lbl:'Processando'},
+  ];
+  const tn={ok:'success',bad:'danger',info:'info'};
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:20}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14}}>
+        <StatCard icon="arrow-down-left" label="Recebido (mês)" value="R$ 18.420"/>
+        <StatCard icon="clock" label="A receber" value="R$ 2.150"/>
+        <StatCard icon="banknote" label="Repassado para você" value="R$ 17.650" variant="dark"/>
+        <StatCard icon="scissors" label="Taxas + plataforma" value="R$ 770"/>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:22}}>
+        <div style={{display:'flex',flexDirection:'column',gap:20}}>
+          <Card title="Recebimentos por mês" subtitle="Últimos 12 meses">
+            <EscBarChart data={D.bars} height={220}/>
+          </Card>
+          <Card padding={0} style={{overflow:'hidden'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',padding:'24px 24px 0'}}>
+              <h3 style={{margin:0,fontSize:'var(--fs-h4)',fontWeight:'var(--fw-bold)',fontFamily:'var(--font-ui)'}}>Recebíveis recentes</h3>
+              <Button variant="ghost" size="sm" leadingIcon="download">Extrato</Button>
+            </div>
+            <table style={{width:'100%',borderCollapse:'collapse',marginTop:14}}>
+              <thead><tr>{['Aluno','Referência','Bruto','Taxa','Líquido','Status'].map(h=><th key={h} style={TH}>{h}</th>)}</tr></thead>
+              <tbody>{fin.map((r,i)=>(
+                <tr key={i}>
+                  <td style={{...TD,fontWeight:'var(--fw-semibold)'}}>{r.name}</td>
+                  <td style={{...TD,color:'var(--text-secondary)'}}>{r.ref}</td>
+                  <td style={{...TD,fontVariantNumeric:'tabular-nums'}}>{r.bruto}</td>
+                  <td style={{...TD,color:'var(--text-secondary)',fontVariantNumeric:'tabular-nums'}}>{r.taxa}</td>
+                  <td style={{...TD,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums'}}>{r.liq}</td>
+                  <td style={TD}><Badge tone={tn[r.st]} dot>{r.lbl}</Badge></td>
+                </tr>))}</tbody>
+            </table>
+            <div style={{height:8}}/>
+          </Card>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Próximo repasse" padding={24}>
+            <div style={{fontSize:24,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums'}}>R$ 17.650,00</div>
+            <p style={{margin:'4px 0 0',fontSize:'var(--fs-sm)',color:'var(--text-secondary)'}}>Cai na conta em 30 abr</p>
+            <div style={{height:1,background:'var(--border-subtle)',margin:'14px 0'}}/>
+            {[['Bruto recebido','R$ 18.420'],['Taxa gateway','− R$ 402'],['Plataforma (2%)','− R$ 368']].map(([k,v])=>(
+              <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'7px 0',fontSize:'var(--fs-sm)'}}><span style={{color:'var(--text-secondary)'}}>{k}</span><strong>{v}</strong></div>
+            ))}
+          </Card>
+          <InfoNote>Se o <strong>split para professor</strong> estiver ativo, o líquido é dividido conforme a regra do plano.</InfoNote>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.EscFinanceiro=EscFinanceiro;
+</script>
+
+<!-- ── PROFESSORES ────────────────────────────────────────── -->
+<script type="text/babel">
+function EscProfessores({navigate}) {
+  const {Card,Badge,Button,Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const EToggle=window.EToggle, InfoNote=window.InfoNote;
+  const [tab,setTab]=React.useState('active');
+  const [split,setSplit]=React.useState(true);
+  const [hov,setHov]=React.useState(null);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const rows=[
+    {ini:'LM',name:'Lucas Martins',email:'lucas@escolinha.com',fn:'Professor',  turmas:'Sub-7, Sub-9',sp:'8%',st:'active'},
+    {ini:'BR',name:'Bia Rocha',    email:'bia@escolinha.com',  fn:'Professora', turmas:'Sub-11',      sp:'8%',st:'active'},
+    {ini:'AS',name:'André Silva',  email:'andre@escolinha.com',fn:'Professor',  turmas:'Sub-13',      sp:'—', st:'active'},
+    {ini:'CM',name:'Carla Mendes', email:'carla@escolinha.com',fn:'Coordenadora',turmas:'Todas',      sp:'—', st:'active'},
+  ];
+  return (
+    <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:22}}>
+      <Card padding={0} style={{overflow:'hidden'}}>
+        <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',padding:'24px 24px 0',gap:16}}>
+          <div style={{display:'inline-flex',gap:4,background:'var(--surface-muted)',borderRadius:'var(--radius-md)',padding:4,marginBottom:14}}>
+            {[['active','Ativos · 5'],['invite','Convites · 1']].map(([v,l])=>(
+              <button key={v} onClick={()=>setTab(v)} style={{border:'none',cursor:'pointer',padding:'6px 14px',borderRadius:'var(--radius-sm)',fontFamily:'var(--font-ui)',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)',background:tab===v?'var(--surface-card)':'transparent',color:tab===v?'var(--text-primary)':'var(--text-secondary)',boxShadow:tab===v?'var(--shadow-sm)':'none'}}>{l}</button>
+            ))}
+          </div>
+          <div style={{paddingBottom:14}}><Button variant="primary" size="sm" leadingIcon="user-plus" onClick={()=>navigate('membro-novo')}>Adicionar membro</Button></div>
+        </div>
+        <table style={{width:'100%',borderCollapse:'collapse'}}>
+          <thead><tr>{['Membro','Função','Turmas','Split','Status',''].map((h,i)=><th key={i} style={TH}>{h}</th>)}</tr></thead>
+          <tbody>{rows.map((r,i)=>(
+            <tr key={i} style={{background:hov===i?'var(--surface-subtle)':'transparent',transition:'background .1s'}} onMouseEnter={()=>setHov(i)} onMouseLeave={()=>setHov(null)}>
+              <td style={TD}><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={r.name} size={34}/><div><div style={{fontWeight:'var(--fw-semibold)'}}>{r.name}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:1}}>{r.email}</div></div></div></td>
+              <td style={TD}><Badge tone="neutral">{r.fn}</Badge></td>
+              <td style={{...TD,color:'var(--text-secondary)'}}>{r.turmas}</td>
+              <td style={{...TD,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums'}}>{r.sp}</td>
+              <td style={TD}><Badge tone="success" dot>Ativo</Badge></td>
+              <td style={{...TD,width:40,textAlign:'right'}}><button style={{border:'none',background:'transparent',cursor:'pointer',color:'var(--text-secondary)'}}><i data-lucide="more-horizontal" width="17" height="17"></i></button></td>
+            </tr>))}</tbody>
+        </table>
+        <div style={{height:8}}/>
+      </Card>
+      <div style={{display:'flex',flexDirection:'column',gap:18}}>
+        <Card title="Split para professores" padding={24}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'4px 0 12px',gap:16}}>
+            <div><div style={{fontWeight:'var(--fw-semibold)',fontSize:'var(--fs-body)'}}>Habilitar split</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>Disponível no plano Pro</div></div>
+            <EToggle on={split} onClick={()=>setSplit(!split)}/>
+          </div>
+          <div style={{height:1,background:'var(--border-subtle)',margin:'0 0 12px'}}/>
+          <p style={{margin:0,fontSize:'var(--fs-sm)',color:'var(--text-secondary)',lineHeight:1.6}}>A cada mensalidade recebida, o percentual definido é repassado automaticamente ao professor da turma.</p>
+        </Card>
+        <InfoNote>O split é registrado de forma <strong>auditável</strong> em cada transação.</InfoNote>
+      </div>
+    </div>
+  );
+}
+window.EscProfessores=EscProfessores;
+</script>
+
+<!-- ── ADICIONAR MEMBRO ───────────────────────────────────── -->
+<script type="text/babel">
+function EscMembroNovo({navigate}) {
+  const {Card,Button,Input}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const DSSelect=window.DSSelect, InfoNote=window.InfoNote, ToggleRow=window.ToggleRow, EToggle=window.EToggle;
+  const [cfg,setCfg]=React.useState(false);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const g2={display:'grid',gridTemplateColumns:'1fr 1fr',gap:14};
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:20}}>
+      <button onClick={()=>navigate('professores')} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-sm)',color:'var(--text-secondary)',fontFamily:'var(--font-ui)',padding:0}}>
+        <i data-lucide="arrow-left" width="15" height="15"></i>Professores <span style={{color:'var(--border-default)',margin:'0 2px'}}>/</span> <strong style={{color:'var(--text-primary)'}}>Adicionar membro</strong>
+      </button>
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:20}}>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Dados do membro">
+            <div style={g2}>
+              <Input label="Nome completo" placeholder="Nome do professor" leadingIcon="user"/>
+              <DSSelect label="Função" defaultValue="prof"><option value="prof">Professor</option><option value="coord">Coordenador</option><option value="aux">Auxiliar</option></DSSelect>
+              <Input label="E-mail" type="email" placeholder="professor@escolinha.com" leadingIcon="mail"/>
+              <Input label="WhatsApp" placeholder="(11) 9xxxx-xxxx" leadingIcon="phone"/>
+            </div>
+          </Card>
+          <Card title="Turmas & acesso">
+            <label style={{display:'block',marginBottom:8,fontSize:'var(--fs-body)',fontWeight:'var(--fw-medium)'}}>Turmas atribuídas</label>
+            <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:6}}>
+              {['Sub-7','Sub-9'].map(t=>(<span key={t} style={{display:'inline-flex',alignItems:'center',gap:6,background:'var(--accent-tint)',color:'var(--success)',borderRadius:'var(--radius-pill)',padding:'7px 13px',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)'}}>{t} <i data-lucide="x" width="13" height="13"></i></span>))}
+              <button style={{border:'1px dashed var(--border-default)',background:'transparent',color:'var(--text-secondary)',borderRadius:'var(--radius-pill)',padding:'7px 13px',fontSize:'var(--fs-sm)',cursor:'pointer',fontFamily:'var(--font-ui)'}}>+ Adicionar</button>
+            </div>
+            <ToggleRow label="Ver financeiro das suas turmas" sub="Recebíveis e inadimplência"/>
+            <ToggleRow label="Gerenciar alunos e presença" sub="Cadastrar e marcar presença"/>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'13px 0 0',gap:16}}>
+              <div><div style={{fontWeight:'var(--fw-medium)',fontSize:'var(--fs-body)'}}>Acesso às configurações</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>Apenas coordenação</div></div>
+              <EToggle on={cfg} onClick={()=>setCfg(!cfg)}/>
+            </div>
+          </Card>
+          <Card title="Split (opcional)">
+            <ToggleRow label="Habilitar split para este membro" sub="Repasse automático por mensalidade"/>
+            <div style={{...g2,marginTop:14}}>
+              <Input label="Percentual" placeholder="8%" leadingIcon="percent"/>
+              <DSSelect label="Aplicar a" defaultValue="atrib"><option value="atrib">Turmas atribuídas</option><option value="todas">Todas as turmas</option></DSSelect>
+            </div>
+          </Card>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <InfoNote>O membro recebe um <strong>convite por e-mail</strong> para criar a senha e acessar a escolinha.</InfoNote>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            <Button variant="primary" size="md" fullWidth leadingIcon="send" onClick={()=>navigate('professores')}>Enviar convite</Button>
+            <Button variant="secondary" size="md" fullWidth onClick={()=>navigate('professores')}>Cancelar</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.EscMembroNovo=EscMembroNovo;
+</script>
+
+<!-- ── RELATÓRIOS ─────────────────────────────────────────── -->
+<script type="text/babel">
+function EscRelatorios({navigate}) {
+  const {Card,Badge,Button}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const DSSelect=window.DSSelect;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const cards=[['bar-chart-3','Financeiro','Recebido, a receber e taxas'],['user-x','Inadimplência','Alunos em atraso'],['calendar-check','Presença','Frequência por turma']];
+  const rows=[
+    {name:'Davi Souza', turma:'Sub-7', resp:'Renata Souza',val:'R$ 220,00',ha:'14 dias'},
+    {name:'Bruno Dias', turma:'Sub-9', resp:'Carla Dias',  val:'R$ 250,00',ha:'8 dias'},
+    {name:'Igor Melo',  turma:'Sub-13',resp:'Ana Melo',    val:'R$ 280,00',ha:'3 dias'},
+  ];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:18}}>
+      <Card>
+        <div style={{display:'grid',gridTemplateColumns:'1.4fr 1fr 1fr 1fr auto',alignItems:'end',gap:14}}>
+          <DSSelect label="Tipo" defaultValue="fin"><option value="fin">Financeiro</option><option value="inad">Inadimplência</option><option value="pres">Presença</option></DSSelect>
+          <DSSelect label="Turma" defaultValue="all"><option value="all">Todas</option><option value="sub7">Sub-7</option><option value="sub9">Sub-9</option></DSSelect>
+          <DSSelect label="Período" defaultValue="abr"><option value="abr">Abril 2026</option><option value="mar">Março 2026</option></DSSelect>
+          <DSSelect label="Formato" defaultValue="csv"><option value="csv">CSV</option><option value="pdf">PDF</option><option value="xlsx">Excel</option></DSSelect>
+          <Button variant="primary" size="md" leadingIcon="download">Exportar</Button>
+        </div>
+      </Card>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14}}>
+        {cards.map(([ico,name,sub])=>(
+          <Card key={name} padding={20} style={{cursor:'pointer'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <span style={{width:42,height:42,borderRadius:10,background:'var(--surface-muted)',display:'grid',placeItems:'center'}}><i data-lucide={ico} width="20" height="20" style={{color:'var(--navy-900)'}}></i></span>
+              <i data-lucide="arrow-up-right" width="17" height="17" style={{color:'var(--gray-500)'}}></i>
+            </div>
+            <div style={{fontWeight:'var(--fw-bold)',marginTop:12,fontSize:'var(--fs-body)'}}>{name}</div>
+            <div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>{sub}</div>
+          </Card>
+        ))}
+      </div>
+      <Card padding={0} style={{overflow:'hidden'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'24px 24px 14px'}}>
+          <h3 style={{margin:0,fontSize:'var(--fs-h4)',fontWeight:'var(--fw-bold)',fontFamily:'var(--font-ui)'}}>Prévia · Inadimplência</h3>
+          <span style={{fontSize:'var(--fs-sm)',color:'var(--text-secondary)'}}>Abril 2026</span>
+        </div>
+        <table style={{width:'100%',borderCollapse:'collapse'}}>
+          <thead><tr>{['Aluno','Turma','Responsável','Valor','Vencido há','Status'].map(h=><th key={h} style={TH}>{h}</th>)}</tr></thead>
+          <tbody>{rows.map((r,i)=>(
+            <tr key={i}>
+              <td style={{...TD,fontWeight:'var(--fw-semibold)'}}>{r.name}</td>
+              <td style={TD}><Badge tone="neutral">{r.turma}</Badge></td>
+              <td style={{...TD,color:'var(--text-secondary)'}}>{r.resp}</td>
+              <td style={{...TD,fontVariantNumeric:'tabular-nums'}}>{r.val}</td>
+              <td style={{...TD,color:'var(--text-secondary)'}}>{r.ha}</td>
+              <td style={TD}><Badge tone="danger" dot>Atrasado</Badge></td>
+            </tr>))}</tbody>
+        </table>
+        <div style={{height:8}}/>
+      </Card>
+    </div>
+  );
+}
+window.EscRelatorios=EscRelatorios;
+</script>
+
+<!-- ── CONFIGURAÇÕES ──────────────────────────────────────── -->
+<script type="text/babel">
+function EscConfig({navigate}) {
+  const {Card,Badge,Button,Input}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const DSSelect=window.DSSelect, InfoNote=window.InfoNote, ToggleRow=window.ToggleRow, EToggle=window.EToggle;
+  const [tab,setTab]=React.useState('dados');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const g2={display:'grid',gridTemplateColumns:'1fr 1fr',gap:14};
+  const planoRail=(saveLabel)=>(
+    <div style={{display:'flex',flexDirection:'column',gap:16}}>
+      <div style={{background:'linear-gradient(135deg,var(--navy-900) 0%,var(--plum-800) 100%)',borderRadius:'var(--radius-lg)',padding:20,color:'var(--white)'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}><span style={{fontSize:11,color:'rgba(255,255,255,.5)'}}>Plano atual</span><span style={{fontFamily:'var(--font-display)',fontWeight:800,color:'var(--accent)'}}>Pro</span></div>
+        <div style={{fontSize:22,fontWeight:'var(--fw-bold)',marginTop:8}}>R$ 149/mês <span style={{fontSize:13,color:'rgba(255,255,255,.5)',fontWeight:400}}>+ 2%</span></div>
+        <button style={{width:'100%',marginTop:14,background:'rgba(255,255,255,.08)',border:'1px solid rgba(255,255,255,.2)',color:'#fff',borderRadius:'var(--radius-md)',padding:'10px',fontFamily:'var(--font-ui)',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)',cursor:'pointer'}}>Gerenciar plano</button>
+      </div>
+      <InfoNote>Toda ação crítica gera <strong>audit log</strong>. Dados seguem a <strong>LGPD</strong>.</InfoNote>
+      <Button variant="primary" size="md" fullWidth leadingIcon="check">{saveLabel||'Salvar alterações'}</Button>
+    </div>
+  );
+  const tabs=[['dados','Dados'],['cobranca','Cobrança'],['notif','Notificações'],['split','Equipe & Split']];
+  return (
+    <div>
+      <div style={{display:'inline-flex',gap:4,background:'var(--surface-muted)',borderRadius:'var(--radius-md)',padding:4,marginBottom:22}}>
+        {tabs.map(([v,l])=>(<button key={v} onClick={()=>setTab(v)} style={{border:'none',cursor:'pointer',padding:'8px 16px',borderRadius:'var(--radius-sm)',fontFamily:'var(--font-ui)',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)',background:tab===v?'var(--surface-card)':'transparent',color:tab===v?'var(--text-primary)':'var(--text-secondary)',boxShadow:tab===v?'var(--shadow-sm)':'none'}}>{l}</button>))}
+      </div>
+      {tab==='dados'&&<div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:22}}>
+        <Card title="Dados da escolinha">
+          <div style={g2}>
+            <Input label="Nome" defaultValue="FC Estrela"/>
+            <Input label="CNPJ" defaultValue="00.000.000/0000-00"/>
+            <Input label="Cidade" defaultValue="São Paulo · SP" leadingIcon="map-pin"/>
+            <Input label="Unidades" defaultValue="Centro, Norte"/>
+            <Input label="Telefone" defaultValue="(11) 3xxx-xxxx" leadingIcon="phone"/>
+            <Input label="E-mail de contato" defaultValue="contato@fcestrela.com" leadingIcon="mail"/>
+          </div>
+          <div style={{marginTop:14}}>
+            <label style={{display:'block',marginBottom:8,fontSize:'var(--fs-body)',fontWeight:'var(--fw-medium)'}}>Logo da escolinha</label>
+            <div style={{height:80,border:'2px dashed var(--border-default)',borderRadius:'var(--radius-md)',background:'var(--surface-subtle)',display:'flex',alignItems:'center',justifyContent:'center',gap:8,cursor:'pointer',color:'var(--text-secondary)',fontSize:'var(--fs-sm)'}}><i data-lucide="image-plus" width="18" height="18"></i>Clique ou arraste para enviar</div>
+          </div>
+        </Card>
+        {planoRail()}
+      </div>}
+      {tab==='cobranca'&&<div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:22}}>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Valores padrão">
+            <div style={g2}>
+              <Input label="Mensalidade padrão" defaultValue="R$ 250,00" leadingIcon="dollar-sign"/>
+              <Input label="Taxa de matrícula" defaultValue="R$ 100,00" leadingIcon="dollar-sign"/>
+              <Input label="Multa por atraso" defaultValue="2%" leadingIcon="percent"/>
+              <Input label="Juros ao mês" defaultValue="1%" leadingIcon="percent"/>
+            </div>
+          </Card>
+          <Card title="Regras de cobrança">
+            <div style={{...g2,marginBottom:6}}>
+              <DSSelect label="Dia de vencimento" defaultValue="5"><option value="5">Dia 05</option><option value="10">Dia 10</option></DSSelect>
+              <DSSelect label="Gerar fatura" defaultValue="5"><option value="5">5 dias antes</option><option value="10">10 dias antes</option></DSSelect>
+            </div>
+            <div style={{height:1,background:'var(--border-subtle)',margin:'10px 0'}}/>
+            <ToggleRow label="Cobrança recorrente automática" sub="Gera a mensalidade todo mês"/>
+            <ToggleRow label="Baixa automática (webhook do gateway)" sub="Concilia Pix e cartão sem ação manual"/>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'13px 0 0',gap:16}}>
+              <div><div style={{fontWeight:'var(--fw-medium)',fontSize:'var(--fs-body)'}}>Métodos no checkout</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>Disponíveis conforme o plano</div></div>
+              <div style={{display:'flex',gap:6}}><Badge tone="success">Pix</Badge><Badge tone="success">Cartão</Badge><Badge tone="neutral">Boleto</Badge></div>
+            </div>
+          </Card>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <Card title="Gateway" action={<Badge tone="success" dot>Conectado</Badge>} padding={24}>
+            {[['Provedor','Asaas'],['Subconta','rec_8841'],['Prazo de repasse','D+1']].map(([k,v])=>(
+              <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'8px 0',fontSize:'var(--fs-body)'}}><span style={{color:'var(--text-secondary)'}}>{k}</span><strong>{v}</strong></div>
+            ))}
+          </Card>
+          <InfoNote>Configurado pela plataforma. A escolinha não acessa as chaves do gateway.</InfoNote>
+          <Button variant="primary" size="md" fullWidth leadingIcon="check">Salvar alterações</Button>
+        </div>
+      </div>}
+      {tab==='notif'&&<div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:22}}>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Lembretes ao responsável">
+            <ToggleRow label="Mensalidade a vencer" sub="3 dias antes do vencimento"/>
+            <ToggleRow label="Mensalidade vencida" sub="No dia seguinte ao vencimento"/>
+            <ToggleRow label="Confirmação de pagamento" sub="Recibo automático ao pagar"/>
+            <ToggleRow label="Aviso de nova matrícula" sub="Quando o cadastro é concluído" defaultOn={false}/>
+          </Card>
+          <Card title="Canais">
+            <ToggleRow label="WhatsApp" sub="Canal principal de cobrança"/>
+            <ToggleRow label="E-mail" sub="Recibos e 2ª via"/>
+            <ToggleRow label="Push (app)" sub="Disponível na área do responsável"/>
+          </Card>
+        </div>
+        {planoRail('Salvar notificações')}
+      </div>}
+      {tab==='split'&&<div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 300px',gap:22}}>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Split para professores" action={<Badge tone="neutral">Plano Pro</Badge>}>
+            <ToggleRow label="Habilitar split" sub="Repasse automático por mensalidade"/>
+            <div style={{...g2,marginTop:14}}>
+              <Input label="Percentual padrão" defaultValue="8%" leadingIcon="percent"/>
+              <DSSelect label="Base de cálculo" defaultValue="liq"><option value="liq">Líquido da escolinha</option><option value="bruto">Valor bruto</option></DSSelect>
+            </div>
+            <div style={{height:1,background:'var(--border-subtle)',margin:'16px 0 12px'}}/>
+            <p style={{margin:0,fontSize:'var(--fs-sm)',color:'var(--text-secondary)',lineHeight:1.6}}>A cada mensalidade recebida, o percentual definido é repassado automaticamente ao professor da turma e registrado de forma auditável.</p>
+          </Card>
+          <Card padding={0} style={{overflow:'hidden'}}>
+            <div style={{padding:'24px 24px 14px'}}><h3 style={{margin:0,fontSize:'var(--fs-h4)',fontWeight:'var(--fw-bold)',fontFamily:'var(--font-ui)'}}>Split por membro</h3></div>
+            <table style={{width:'100%',borderCollapse:'collapse'}}>
+              <thead><tr>{['Membro','Função','Split',''].map((h,i)=><th key={i} style={TH}>{h}</th>)}</tr></thead>
+              <tbody>{[['Lucas Martins','Professor','8%','Editar'],['Bia Rocha','Professora','8%','Editar'],['André Silva','Professor','—','Definir']].map((r,i)=>(
+                <tr key={i}>
+                  <td style={{...TD,fontWeight:'var(--fw-semibold)'}}>{r[0]}</td>
+                  <td style={TD}><Badge tone="neutral">{r[1]}</Badge></td>
+                  <td style={{...TD,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums'}}>{r[2]}</td>
+                  <td style={{...TD,textAlign:'right'}}><Button variant="ghost" size="sm">{r[3]}</Button></td>
+                </tr>))}</tbody>
+            </table>
+            <div style={{height:8}}/>
+          </Card>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <InfoNote>Split é calculado na <strong>criação da cobrança</strong> e registrado por transação. Mudanças não afetam cobranças já geradas.</InfoNote>
+          <Button variant="primary" size="md" fullWidth leadingIcon="check">Salvar split</Button>
+        </div>
+      </div>}
+    </div>
+  );
+}
+window.EscConfig=EscConfig;
+</script>
+
+<!-- ── APP SHELL ──────────────────────────────────────────── -->
+<script type="text/babel">
+function EscApp() {
+  const {SidebarNav,Card}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const D=window.EC;
+  const [view,setView]=React.useState('login');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const nav=s=>{setView(s);const m=document.querySelector('main');if(m)m.scrollTop=0;};
+  if(view==='login') return <EscLogin navigate={nav}/>;
+  const SCREENS={
+    home:         {title:'Resumo da escolinha',     subtitle:'Olá, Carla 👋 — visão geral de abril.',           Screen:window.EscHome},
+    turmas:       {title:'Turmas',                  subtitle:'4 turmas ativas · 142 alunos.',                   Screen:window.EscTurmas},
+    'turma-cadastro':{title:'Nova turma',           subtitle:'Defina categoria, agenda, local e professores.',  Screen:window.EscTurmaCadastro},
+    'turma-detalhe':{title:'Turma Sub-9',           subtitle:'Quarta · 18h–19h30 · Campo 2 · Unidade Centro.',  Screen:window.EscTurmaDetalhe},
+    alunos:       {title:'Alunos',                  subtitle:'142 alunos matriculados em 4 turmas.',            Screen:window.EscAlunos},
+    'aluno-cadastro':{title:'Iniciar matrícula',    subtitle:'Cadastre o aluno e convide o responsável.',       Screen:window.EscAlunoCadastro},
+    responsaveis: {title:'Responsáveis',            subtitle:'Responsáveis vinculados aos alunos.',             Screen:window.EscResponsaveis},
+    cobrancas:    {title:'Mensalidades',            subtitle:'Acompanhe e registre os recebimentos do mês.',    Screen:window.EscCobrancas},
+    'cobranca-nova':{title:'Nova cobrança',         subtitle:'Gere uma fatura única ou recorrente.',            Screen:window.EscCobrancaNova},
+    financeiro:   {title:'Financeiro da escolinha', subtitle:'Recebimentos, repasses e taxas.',                 Screen:window.EscFinanceiro},
+    relatorios:   {title:'Relatórios da escolinha', subtitle:'Financeiro, inadimplência e presença.',           Screen:window.EscRelatorios},
+    professores:  {title:'Professores & equipe',    subtitle:'Membros, turmas e divisão de valores.',           Screen:window.EscProfessores},
+    'membro-novo':{title:'Adicionar membro',        subtitle:'Convide um professor ou membro da equipe.',       Screen:window.EscMembroNovo},
+    config:       {title:'Configurações da escolinha',subtitle:'Dados, cobrança, notificações e equipe.',       Screen:window.EscConfig},
+  };
+  const meta=SCREENS[view];
+  const Screen=meta?.Screen;
+  const back={'turma-cadastro':'turmas','turma-detalhe':'turmas','aluno-cadastro':'alunos','cobranca-nova':'cobrancas','membro-novo':'professores'};
+  const activeNav=back[view]||view;
+  return (
+    <div style={{display:'flex',height:'100vh',background:'var(--surface-canvas)',overflow:'hidden'}}>
+      <SidebarNav brand="Craque" items={D.nav} footerItems={D.navFoot} activeKey={activeNav} onSelect={nav}/>
+      <main style={{flex:1,overflowY:'auto',padding:'34px 36px',display:'flex',flexDirection:'column'}}>
+        <EscTopBar title={meta?.title||''} subtitle={meta?.subtitle||''} navigate={nav}/>
+        {Screen
+          ? <Screen navigate={nav}/>
+          : <Card style={{textAlign:'center',padding:64}}><i data-lucide="hammer" width="28" height="28" style={{color:'var(--gray-300)'}}></i><p style={{margin:'14px 0 0',color:'var(--text-secondary)'}}>Em construção — roadmap.</p></Card>
+        }
+      </main>
+    </div>
+  );
+}
+window.EscApp=EscApp;
+ReactDOM.createRoot(document.getElementById('root')).render(<EscApp/>);
+</script>
+
+</body>
+</html>

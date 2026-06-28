@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Craque — Instrutor · Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="wireframes/wireframe.css">
+<link rel="stylesheet" href="wireframes/mobile.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  /* Tab bar override para o centro destacado */
+  .mob-tab.center {
+    flex: 1.4;
+    background: var(--ink);
+    border-radius: 20px;
+    color: #fff;
+    margin: -6px 2px;
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+  .mob-tab.center i { color: var(--accent); }
+  .mob-tab.center.on { color: #fff; }
+  .mob-tabbar { padding: 8px 10px 16px; gap: 2px; align-items: center; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="wf-stamp">✎ Wireframe lo-fi · Frente 4 — Instrutor (mobile)</div>
+
+<script src="wireframes/wf-helpers.js"></script>
+<script src="wireframes/instrutor-screens.js"></script>
+<script>
+  window.WF_CONFIG = {
+    defaultScreen: 'home',
+    screens: window.INST_SCREENS,
+    tabs: [
+      { k: 'home',    label: 'Início',   icon: 'layout-dashboard' },
+      { k: 'chamada', label: 'Chamada',  icon: 'clipboard-check',  center: true },
+      { k: 'perfil',  label: 'Perfil',   icon: 'user' },
+    ],
+  };
+</script>
+<script src="wireframes/mobile-shell.js"></script>
+<script>
+  /* Patch tabbar to support center pill style */
+  (function patchTabbar() {
+    const orig = window.__tabbarPatch;
+    if (orig) return;
+    window.__tabbarPatch = true;
+    const shell = document.getElementById('app');
+    const obs = new MutationObserver(() => {
+      shell.querySelectorAll('.mob-tab').forEach(btn => {
+        const nav = btn.getAttribute('data-nav');
+        if (nav === 'chamada') btn.classList.add('center');
+      });
+    });
+    obs.observe(shell, { childList: true, subtree: true });
+  })();
+</script>
+</body>
+</html>

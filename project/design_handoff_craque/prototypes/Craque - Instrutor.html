@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Craque — Instrutor</title>
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/colors.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/typography.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/base.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/styles.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/_ds_bundle.js"></script>
+<style>
+  html,body{margin:0;height:100%}
+  body{background:radial-gradient(circle at 50% 0%, #EEF1F4 0%, #E4E7EC 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;box-sizing:border-box;font-family:var(--font-ui)}
+  *::-webkit-scrollbar{width:0;height:0}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="resp/ios-frame.jsx"></script>
+
+<!-- ── MOBILE PRIMITIVES ──────────────────────────────────── -->
+<script type="text/babel">
+const NAVY='var(--navy-900)', ACC='var(--accent)', INK='var(--text-primary)', INK2='var(--text-secondary)';
+
+function Cta({children, icon, variant='primary', onClick, style}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':2}}); });
+  const base={width:'100%',height:52,borderRadius:14,fontFamily:'var(--font-ui)',fontSize:16,fontWeight:'var(--fw-bold)',display:'flex',alignItems:'center',justifyContent:'center',gap:8,cursor:'pointer',border:'none',whiteSpace:'nowrap',transition:'filter .15s'};
+  const styles={
+    primary:{background:ACC,color:NAVY},
+    ghost:{background:'var(--surface-card)',color:INK,border:'1px solid var(--border-default)'},
+    wa:{background:'#25D366',color:'#fff'},
+    danger:{background:'var(--surface-card)',color:'var(--danger)',border:'1px solid var(--border-default)'},
+  };
+  return <button onClick={onClick} style={{...base,...styles[variant],...style}}>{icon&&<i data-lucide={icon} width="18" height="18"></i>}{children}</button>;
+}
+window.Cta=Cta;
+
+function MCard({children, dark, style, onClick}) {
+  return <div onClick={onClick} style={{background:dark?NAVY:'var(--surface-card)',color:dark?'#fff':INK,border:dark?'none':'1px solid var(--border-subtle)',borderRadius:18,padding:18,boxShadow:dark?'none':'var(--shadow-card)',position:dark?'relative':'static',overflow:dark?'hidden':'visible',...style}}>{children}</div>;
+}
+window.MCard=MCard;
+
+function KV({k, v, strong, last}) {
+  return <div style={{display:'flex',justifyContent:'space-between',gap:12,padding:'11px 0',borderBottom:last?'none':'1px solid var(--border-subtle)',fontSize:14}}>
+    <span style={{color:INK2}}>{k}</span><strong style={{textAlign:'right',color:strong||INK}}>{v}</strong>
+  </div>;
+}
+window.KV=KV;
+
+function Seg({tabs, value, onChange}) {
+  return <div style={{display:'flex',background:'var(--surface-muted)',borderRadius:13,padding:4,gap:4,marginBottom:16}}>
+    {tabs.map(([v,l])=>(<button key={v} onClick={()=>onChange(v)} style={{flex:1,textAlign:'center',padding:'9px 6px',borderRadius:9,fontSize:13.5,fontWeight:'var(--fw-bold)',fontFamily:'var(--font-ui)',border:'none',cursor:'pointer',background:value===v?'var(--surface-card)':'transparent',color:value===v?INK:INK2,boxShadow:value===v?'var(--shadow-sm)':'none'}}>{l}</button>))}
+  </div>;
+}
+window.Seg=Seg;
+
+function Toggle({on, onClick}) {
+  return <div onClick={onClick} style={{width:42,height:24,borderRadius:99,background:on?ACC:'var(--gray-300)',cursor:'pointer',position:'relative',transition:'background .2s',flexShrink:0}}>
+    <span style={{position:'absolute',top:3,left:on?21:3,width:18,height:18,borderRadius:'50%',background:'#fff',transition:'left .2s',boxShadow:'0 1px 3px rgba(0,0,0,.25)'}}/>
+  </div>;
+}
+window.Toggle=Toggle;
+
+function TRow({label, sub, defaultOn=true, last}) {
+  const [on,setOn]=React.useState(defaultOn);
+  return <div style={{display:'flex',alignItems:'center',gap:14,padding:'13px 0',borderBottom:last?'none':'1px solid var(--border-subtle)'}}>
+    <div style={{flex:1}}><div style={{fontWeight:'var(--fw-semibold)',fontSize:14}}>{label}</div>{sub&&<div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:2}}>{sub}</div>}</div>
+    <Toggle on={on} onClick={()=>setOn(!on)}/>
+  </div>;
+}
+window.TRow=TRow;
+
+function Field({label, value}) {
+  const [focus,setFocus]=React.useState(false);
+  return <div style={{display:'flex',flexDirection:'column',gap:7}}>
+    <label style={{fontSize:13,fontWeight:'var(--fw-semibold)',color:INK}}>{label}</label>
+    <input defaultValue={value} onFocus={()=>setFocus(true)} onBlur={()=>setFocus(false)} style={{height:48,padding:'0 15px',border:`1px solid ${focus?ACC:'var(--border-default)'}`,borderRadius:12,background:'var(--surface-card)',fontFamily:'var(--font-ui)',fontSize:15,color:INK,outline:'none',boxShadow:focus?'0 0 0 3px var(--accent-tint)':'none',transition:'all .14s'}}/>
+  </div>;
+}
+window.Field=Field;
+
+function Note({children}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return <div style={{padding:'13px 14px',background:'var(--info-tint)',borderRadius:12,borderLeft:'3px solid var(--info)',display:'flex',gap:9,alignItems:'flex-start'}}>
+    <i data-lucide="info" width="15" height="15" style={{color:'var(--info)',flexShrink:0,marginTop:1}}></i>
+    <p style={{margin:0,fontSize:13,color:INK2,lineHeight:1.6}}>{children}</p>
+  </div>;
+}
+window.Note=Note;
+
+function ListRow({icon, label, sub, onClick, last}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.8}}); });
+  return <div onClick={onClick} style={{display:'flex',alignItems:'center',gap:13,padding:'13px 0',borderBottom:last?'none':'1px solid var(--border-subtle)',cursor:'pointer'}}>
+    <span style={{width:40,height:40,borderRadius:11,background:'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide={icon} width="19" height="19" style={{color:INK2}}></i></span>
+    <div style={{flex:1,minWidth:0}}><div style={{fontWeight:'var(--fw-semibold)',fontSize:15}}>{label}</div>{sub&&<div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{sub}</div>}</div>
+    <i data-lucide="chevron-right" width="18" height="18" style={{color:'var(--gray-500)',flexShrink:0}}></i>
+  </div>;
+}
+window.ListRow=ListRow;
+
+function MiniStat({icon, val, label, tint, ink}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return <div style={{flex:1,background:tint,border:'1px solid var(--border-subtle)',borderRadius:16,padding:'14px 10px',textAlign:'center'}}>
+    <i data-lucide={icon} width="22" height="22" style={{color:ink,display:'block',margin:'0 auto 6px'}}></i>
+    <div style={{fontSize:24,fontWeight:'var(--fw-bold)',color:ink,lineHeight:1,fontVariantNumeric:'tabular-nums'}}>{val}</div>
+    <div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:4}}>{label}</div>
+  </div>;
+}
+window.MiniStat=MiniStat;
+</script>
+
+<!-- ── SCREENS: HOME & ATTENDANCE ─────────────────────────── -->
+<script type="text/babel">
+function ScrLogin({nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return (
+    <div style={{height:'100%',display:'flex',flexDirection:'column',padding:'70px 22px 30px',boxSizing:'border-box',background:'var(--surface-canvas)'}}>
+      <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',textAlign:'center',gap:12}}>
+        <span style={{width:66,height:66,borderRadius:19,background:NAVY,display:'grid',placeItems:'center'}}><i data-lucide="clipboard-list" width="32" height="32" style={{color:ACC}}></i></span>
+        <div><div style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:26,lineHeight:1}}>Craque</div>
+        <div style={{fontSize:14,color:INK2,marginTop:4}}>Área do instrutor</div></div>
+        <div style={{fontSize:21,fontWeight:'var(--fw-bold)',lineHeight:1.3,maxWidth:280,marginTop:16}}>Chamada, turmas e comunicados em um só lugar.</div>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:14}}>
+        <Field label="E-mail" value="voce@email.com"/>
+        <Field label="Senha" value="••••••••"/>
+        <Cta icon="log-in" onClick={()=>nav('home')} style={{marginTop:4}}>Entrar</Cta>
+        <Note>Seu acesso é criado pela <strong>escolinha</strong>. Verifique o convite no seu e-mail ou WhatsApp.</Note>
+      </div>
+    </div>
+  );
+}
+window.ScrLogin=ScrLogin;
+
+function ScrHome({nav}) {
+  const {Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const turmas=[['Sub-7','Seg e Qua · 17h','12 alunos'],['Sub-9','Ter e Qui · 18h','14 alunos'],['Sub-15','Sex · 19h','12 alunos']];
+  const qa=[['clipboard-check','Chamada','chamada'],['users','Alunos','alunos'],['calendar','Calendário','calendario'],['megaphone','Comunicados','comunicados']];
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'4px 0 16px'}}>
+        <div><div style={{fontSize:20,fontWeight:'var(--fw-bold)'}}>Olá, João! 👋</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>Quarta-feira, 25 abr</div></div>
+        <button style={{width:38,height:38,borderRadius:'50%',border:'1px solid var(--border-subtle)',background:'var(--surface-card)',display:'grid',placeItems:'center',cursor:'pointer',position:'relative'}}>
+          <i data-lucide="bell" width="18" height="18" style={{color:INK2}}></i>
+          <span style={{position:'absolute',top:6,right:7,width:8,height:8,borderRadius:'50%',background:'var(--danger)',border:'2px solid var(--surface-card)'}}/>
+        </button>
+      </div>
+      <MCard dark style={{marginBottom:18,display:'flex',gap:12,alignItems:'center'}}>
+        <span style={{width:52,height:52,borderRadius:14,background:'rgba(255,255,255,.12)',border:'1px solid rgba(255,255,255,.2)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="shield" width="26" height="26" style={{color:'rgba(255,255,255,.85)'}}></i></span>
+        <div><div style={{fontSize:17,fontWeight:'var(--fw-bold)'}}>FC Estrela</div><div style={{fontSize:13,color:'rgba(255,255,255,.6)'}}>Treinador Auxiliar</div></div>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Suas turmas</div>
+      <div style={{display:'flex',gap:10,marginBottom:16}}>
+        <MiniStat icon="goal" val="3" label="Turmas ativas" tint="var(--surface-muted)" ink={INK}/>
+        <MiniStat icon="users" val="38" label="Total de alunos" tint="var(--accent-tint)" ink="var(--success)"/>
+        <MiniStat icon="calendar-check" val="1" label="Treino hoje" tint="var(--warning-tint)" ink="var(--warning)"/>
+      </div>
+      <MCard style={{padding:'4px 16px',marginBottom:18}}>
+        {turmas.map((t,i)=>(
+          <div key={t[0]} onClick={()=>nav('turmas')} style={{display:'flex',alignItems:'center',gap:12,padding:'13px 0',borderBottom:i<turmas.length-1?'1px solid var(--border-subtle)':'none',cursor:'pointer'}}>
+            <span style={{width:40,height:40,borderRadius:11,background:'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="goal" width="19" height="19" style={{color:INK2}}></i></span>
+            <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:15}}>{t[0]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{t[1]}</div></div>
+            <Badge tone="neutral">{t[2]}</Badge>
+            <i data-lucide="chevron-right" width="16" height="16" style={{color:'var(--gray-500)'}}></i>
+          </div>
+        ))}
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Ações rápidas</div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+        {qa.map(([ico,l,go])=>(
+          <MCard key={l} style={{textAlign:'center',cursor:'pointer',padding:'18px 8px'}} onClick={()=>nav(go)}>
+            <span style={{width:46,height:46,borderRadius:13,background:'var(--surface-muted)',display:'inline-grid',placeItems:'center',marginBottom:8}}><i data-lucide={ico} width="22" height="22" style={{color:INK2}}></i></span>
+            <div style={{fontSize:13,fontWeight:'var(--fw-bold)'}}>{l}</div>
+          </MCard>
+        ))}
+      </div>
+    </div>
+  );
+}
+window.ScrHome=ScrHome;
+
+function ScrChamada({nav}) {
+  const {Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const roster=[['Gabriel Silva','A-031','ok'],['Larissa Oliveira','A-032','ok'],['Miguel Lima','A-033','bad'],['Beatriz Santos','A-034','ok'],['Rafael Alves','A-035','bad'],['Caio Ferreira','A-036',''],['Julia Pinto','A-037','']];
+  const [marks,setMarks]=React.useState(roster.map(r=>r[2]));
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':2}}); });
+  const set=(i,v)=>setMarks(m=>m.map((x,j)=>j===i?v:x));
+  const pres=marks.filter(m=>m==='ok').length, falt=marks.filter(m=>m==='bad').length, pend=marks.filter(m=>!m).length;
+  const counter=(val,label,bg,col)=>(<div style={{flex:1,textAlign:'center',padding:'10px',background:bg,borderRadius:12}}><div style={{fontSize:20,fontWeight:'var(--fw-bold)',color:col}}>{val}</div><div style={{fontSize:11,color:INK2,marginTop:2}}>{label}</div></div>);
+  const btn=(active,tone)=>{
+    const map={ok:{bg:'var(--accent-tint)',bd:'var(--success)',c:'var(--success)'},bad:{bg:'var(--danger-tint)',bd:'var(--danger)',c:'var(--danger)'}};
+    const a=map[tone];
+    return {height:34,padding:'0 11px',borderRadius:9,border:`1px solid ${active?a.bd:'var(--border-default)'}`,background:active?a.bg:'var(--surface-card)',color:active?a.c:'var(--gray-500)',fontSize:12,fontWeight:'var(--fw-bold)',cursor:'pointer',fontFamily:'var(--font-ui)',display:'flex',alignItems:'center',gap:4};
+  };
+  return (
+    <div>
+      <MCard style={{marginBottom:16}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingBottom:12,marginBottom:12,borderBottom:'1px solid var(--border-subtle)'}}>
+          <span style={{fontWeight:'var(--fw-bold)'}}>Turma</span>
+          <div style={{display:'flex',gap:8,alignItems:'center'}}><span style={{fontWeight:'var(--fw-bold)'}}>Sub-9</span><i data-lucide="chevron-down" width="16" height="16" style={{color:'var(--gray-500)'}}></i></div>
+        </div>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <span style={{fontWeight:'var(--fw-bold)'}}>Data</span>
+          <div style={{display:'flex',gap:8,alignItems:'center'}}><span style={{fontWeight:'var(--fw-bold)'}}>25 abr 2026 · 18h00</span><i data-lucide="calendar" width="16" height="16" style={{color:'var(--gray-500)'}}></i></div>
+        </div>
+      </MCard>
+      <div style={{display:'flex',gap:10,marginBottom:14}}>
+        {counter(pres,'Presentes','var(--accent-tint)','var(--success)')}
+        {counter(falt,'Faltas','var(--danger-tint)','var(--danger)')}
+        {counter(pend,'Pendentes','var(--surface-muted)',INK2)}
+      </div>
+      <MCard style={{padding:'0 16px',marginBottom:16}}>
+        {roster.map((r,i)=>(
+          <div key={r[1]} style={{display:'flex',alignItems:'center',gap:10,padding:'11px 0',borderBottom:i<roster.length-1?'1px solid var(--border-subtle)':'none'}}>
+            <Avatar name={r[0]} size={40}/>
+            <div style={{flex:1,minWidth:0}}><div style={{fontWeight:'var(--fw-bold)',fontSize:14,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{r[0]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2}}>#{r[1]}</div></div>
+            <div style={{display:'flex',gap:6}}>
+              <button onClick={()=>set(i,'ok')} style={btn(marks[i]==='ok','ok')}><i data-lucide="check" width="13" height="13"></i>Presente</button>
+              <button onClick={()=>set(i,'bad')} style={btn(marks[i]==='bad','bad')}><i data-lucide="x" width="13" height="13"></i>Falta</button>
+            </div>
+          </div>
+        ))}
+      </MCard>
+      <Cta icon="check-circle" onClick={()=>nav('chamada-ok')}>Confirmar chamada</Cta>
+      <div style={{marginTop:14}}><Note>A chamada fica registrada no histórico da turma e os responsáveis podem ser notificados sobre faltas.</Note></div>
+    </div>
+  );
+}
+window.ScrChamada=ScrChamada;
+
+function ScrChamadaOk({nav}) {
+  const {Avatar,Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':2}}); });
+  const faltas=[['Miguel Lima'],['Rafael Alves'],['Caio Ferreira']];
+  return (
+    <div>
+      <div style={{textAlign:'center',padding:'18px 0 14px'}}>
+        <span style={{width:74,height:74,borderRadius:'50%',background:'var(--accent-tint)',display:'inline-grid',placeItems:'center'}}><i data-lucide="clipboard-check" width="36" height="36" style={{color:'var(--success)'}}></i></span>
+        <div style={{fontWeight:'var(--fw-bold)',fontSize:21,marginTop:14}}>Chamada registrada!</div>
+        <div style={{fontSize:'var(--fs-sm)',color:INK2}}>Sub-9 · 25 abr 2026 · 18h02</div>
+      </div>
+      <MCard style={{marginBottom:14}}>
+        <KV k="Turma" v="Sub-9"/><KV k="Total de alunos" v="14"/>
+        <KV k="Presentes" v="11" strong="var(--success)"/><KV k="Faltas" v="3" strong="var(--danger)"/>
+        <KV k="Taxa de presença" v="78,6%" last/>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'8px 2px 10px'}}>Alunos com falta</div>
+      <MCard style={{padding:'4px 16px',marginBottom:16}}>
+        {faltas.map((f,i)=>(
+          <div key={f[0]} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 0',borderBottom:i<faltas.length-1?'1px solid var(--border-subtle)':'none'}}>
+            <Avatar name={f[0]} size={36}/>
+            <div style={{flex:1,fontWeight:'var(--fw-bold)',fontSize:14}}>{f[0]}</div>
+            <Badge tone="danger" dot>Falta</Badge>
+          </div>
+        ))}
+      </MCard>
+      <Cta variant="ghost" icon="bell" style={{marginBottom:10}}>Notificar responsáveis</Cta>
+      <Cta icon="layout-dashboard" onClick={()=>nav('home')}>Voltar ao início</Cta>
+    </div>
+  );
+}
+window.ScrChamadaOk=ScrChamadaOk;
+</script>
+
+<!-- ── SCREENS: TURMAS, ALUNOS, CALENDÁRIO ────────────────── -->
+<script type="text/babel">
+const PB={ok:{tone:'success'},warn:{tone:'warning'},bad:{tone:'danger'}};
+
+function ScrTurmas({nav}) {
+  const {Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const turmas=[['var(--navy-900)','Sub-7','6 a 7 anos','Seg e Qua · 17h–18h30',12],['#2A6FDB','Sub-9','8 a 9 anos','Ter e Qui · 18h–19h30',14],['var(--success)','Sub-15','14 a 15 anos','Sex · 19h–20h30',12]];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:12}}>
+      {turmas.map(t=>(
+        <MCard key={t[1]} style={{cursor:'pointer'}} onClick={()=>nav('turma')}>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <span style={{width:44,height:44,borderRadius:12,background:t[0],display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="goal" width="22" height="22" style={{color:'#fff'}}></i></span>
+            <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:16}}>{t[1]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{t[2]}</div></div>
+            <Badge tone="neutral">{t[4]} alunos</Badge>
+            <i data-lucide="chevron-right" width="18" height="18" style={{color:'var(--gray-500)'}}></i>
+          </div>
+          <div style={{marginTop:12,paddingTop:12,borderTop:'1px solid var(--border-subtle)',display:'flex',gap:6,alignItems:'center',color:INK2,fontSize:13}}><i data-lucide="calendar" width="14" height="14"></i>{t[3]}</div>
+        </MCard>
+      ))}
+      <Note>Turmas atribuídas pela escolinha. Fale com a administração para ajustes.</Note>
+    </div>
+  );
+}
+window.ScrTurmas=ScrTurmas;
+
+function ScrTurma({nav}) {
+  const {Avatar,Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [seg,setSeg]=React.useState('alunos');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const alunos=[['Gabriel Silva','9 anos'],['Larissa Oliveira','8 anos'],['Miguel Lima','9 anos'],['Beatriz Santos','8 anos'],['Rafael Alves','9 anos']];
+  const chamadas=[['23 abr 2026','13/14','ok'],['21 abr 2026','11/14','warn'],['16 abr 2026','14/14','ok'],['14 abr 2026','10/14','bad']];
+  return (
+    <div>
+      <div style={{display:'flex',gap:10,marginBottom:16}}>
+        <MiniStat icon="users" val="14" label="Alunos" tint="var(--surface-muted)" ink={INK}/>
+        <MiniStat icon="calendar-check" val="87%" label="Presença média" tint="var(--accent-tint)" ink="var(--success)"/>
+        <MiniStat icon="clock" val="18h" label="Próximo" tint="var(--warning-tint)" ink="var(--warning)"/>
+      </div>
+      <Seg tabs={[['alunos','Alunos'],['chamadas','Chamadas'],['horario','Horário']]} value={seg} onChange={setSeg}/>
+      {seg==='alunos'&&<div>
+        <MCard style={{padding:'4px 16px',marginBottom:14}}>
+          {alunos.map((a,i)=>(
+            <div key={a[0]} onClick={()=>nav('aluno')} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 0',borderBottom:i<alunos.length-1?'1px solid var(--border-subtle)':'none',cursor:'pointer'}}>
+              <Avatar name={a[0]} size={36}/>
+              <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:14}}>{a[0]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{a[1]}</div></div>
+              <i data-lucide="chevron-right" width="16" height="16" style={{color:'var(--gray-500)'}}></i>
+            </div>
+          ))}
+        </MCard>
+        <Cta icon="clipboard-check" onClick={()=>nav('chamada')}>Fazer chamada agora</Cta>
+      </div>}
+      {seg==='chamadas'&&<MCard style={{padding:'4px 16px'}}>
+        {chamadas.map((c,i)=>(
+          <div key={c[0]} style={{display:'flex',alignItems:'center',gap:12,padding:'13px 0',borderBottom:i<chamadas.length-1?'1px solid var(--border-subtle)':'none'}}>
+            <span style={{width:40,height:40,borderRadius:11,background:'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="calendar" width="18" height="18" style={{color:INK2}}></i></span>
+            <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:14}}>{c[0]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>Sub-9 · Treino</div></div>
+            <Badge tone={PB[c[2]].tone} dot>{c[1]} presentes</Badge>
+          </div>
+        ))}
+      </MCard>}
+      {seg==='horario'&&<div>
+        <MCard>
+          <KV k="Dias" v="Terça e Quinta"/><KV k="Horário" v="18h00 – 19h30"/><KV k="Local" v="Campo 2 · Centro"/>
+          <KV k="Faixa etária" v="8 a 9 anos"/><KV k="Vagas" v="16 total · 14 ocupadas"/><KV k="Instrutor principal" v="João Ferreira" last/>
+        </MCard>
+        <div style={{marginTop:14}}><Note>Para alterar horário ou local, contate a administração da escolinha.</Note></div>
+      </div>}
+    </div>
+  );
+}
+window.ScrTurma=ScrTurma;
+
+function ScrAlunos({nav}) {
+  const {Avatar,Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [seg,setSeg]=React.useState('t2');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const alunos=[['Gabriel Silva','9 anos','87%','ok'],['Larissa Oliveira','8 anos','92%','ok'],['Miguel Lima','9 anos','65%','warn'],['Beatriz Santos','8 anos','100%','ok'],['Rafael Alves','9 anos','71%','warn'],['Caio Ferreira','9 anos','58%','bad'],['Julia Pinto','8 anos','88%','ok']];
+  return (
+    <div>
+      <Seg tabs={[['t1','Sub-7'],['t2','Sub-9'],['t3','Sub-15']]} value={seg} onChange={setSeg}/>
+      <div style={{display:'flex',alignItems:'center',gap:10,height:46,padding:'0 14px',border:'1px solid var(--border-default)',borderRadius:12,background:'var(--surface-card)',marginBottom:14}}>
+        <i data-lucide="search" width="17" height="17" style={{color:'var(--gray-500)'}}></i><span style={{color:'var(--gray-500)',fontSize:15}}>Buscar aluno…</span>
+      </div>
+      <MCard style={{padding:'4px 16px'}}>
+        {alunos.map((a,i)=>(
+          <div key={a[0]} onClick={()=>nav('aluno')} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 0',borderBottom:i<alunos.length-1?'1px solid var(--border-subtle)':'none',cursor:'pointer'}}>
+            <Avatar name={a[0]} size={38}/>
+            <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:14}}>{a[0]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{a[1]} · Sub-9</div></div>
+            <Badge tone={PB[a[3]].tone} dot>{a[2]}</Badge>
+            <i data-lucide="chevron-right" width="16" height="16" style={{color:'var(--gray-500)'}}></i>
+          </div>
+        ))}
+      </MCard>
+    </div>
+  );
+}
+window.ScrAlunos=ScrAlunos;
+
+function ScrAluno({nav}) {
+  const {Avatar,Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [seg,setSeg]=React.useState('dados');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const hist=[['23 abr','Presente','ok'],['21 abr','Falta','bad'],['16 abr','Presente','ok'],['14 abr','Presente','ok'],['09 abr','Presente','ok'],['07 abr','Falta','bad'],['02 abr','Presente','ok']];
+  return (
+    <div>
+      <div style={{textAlign:'center',padding:'4px 0 18px'}}>
+        <Avatar name="Gabriel Silva" size={76}/>
+        <div style={{fontWeight:'var(--fw-bold)',fontSize:20,marginTop:10}}>Gabriel Silva</div>
+        <div style={{fontSize:'var(--fs-sm)',color:INK2}}>9 anos · Sub-9 · FC Estrela</div>
+        <div style={{marginTop:8,display:'flex',justifyContent:'center',gap:8}}><Badge tone="success" dot>Matrícula ativa</Badge><Badge tone="warning" dot>87% presença</Badge></div>
+      </div>
+      <Seg tabs={[['dados','Dados'],['presenca','Presença'],['contato','Contato']]} value={seg} onChange={setSeg}/>
+      {seg==='dados'&&<MCard>
+        <KV k="Nome completo" v="Gabriel Silva"/><KV k="Nascimento" v="14/03/2017"/><KV k="Matrícula" v="#A-031"/>
+        <KV k="Turma" v="Sub-9"/><KV k="Posição preferida" v="Atacante"/><KV k="Observações médicas" v="Nenhuma" last/>
+      </MCard>}
+      {seg==='presenca'&&<div>
+        <div style={{display:'flex',gap:10,marginBottom:14}}>
+          <MiniStat icon="calendar-check" val="87%" label="Presença" tint="var(--accent-tint)" ink="var(--success)"/>
+          <MiniStat icon="calendar-x" val="3" label="Faltas" tint="var(--danger-tint)" ink="var(--danger)"/>
+          <MiniStat icon="calendar" val="23" label="Treinos" tint="var(--surface-muted)" ink={INK}/>
+        </div>
+        <MCard style={{padding:'4px 16px'}}>
+          {hist.map((h,i)=>(
+            <div key={i} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 0',borderBottom:i<hist.length-1?'1px solid var(--border-subtle)':'none'}}>
+              <span style={{width:40,height:40,borderRadius:11,background:'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="calendar" width="18" height="18" style={{color:INK2}}></i></span>
+              <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:14}}>{h[0]} 2026</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>Sub-9 · Treino</div></div>
+              <Badge tone={PB[h[2]].tone} dot>{h[1]}</Badge>
+            </div>
+          ))}
+        </MCard>
+      </div>}
+      {seg==='contato'&&<div>
+        <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Responsável</div>
+        <MCard style={{marginBottom:14}}>
+          <div style={{display:'flex',gap:12,alignItems:'center',marginBottom:12}}>
+            <Avatar name="Pedro Silva" size={44}/>
+            <div><div style={{fontWeight:'var(--fw-bold)',fontSize:15}}>Pedro Silva</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>Pai</div></div>
+          </div>
+          <KV k="Celular" v="(11) 98xxx-xx10"/><KV k="E-mail" v="pedro@email.com"/><KV k="WhatsApp" v="Mesmo número" last/>
+        </MCard>
+        <div style={{display:'flex',gap:10}}>
+          <Cta variant="ghost" icon="phone" style={{flex:1,height:46,fontSize:14}}>Ligar</Cta>
+          <Cta variant="wa" icon="message-circle" style={{flex:1,height:46,fontSize:14}}>WhatsApp</Cta>
+        </div>
+      </div>}
+    </div>
+  );
+}
+window.ScrAluno=ScrAluno;
+
+function ScrCalendario({nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const eventos=[['18h00','19h30','Treino Sub-9','Campo 2','#2A6FDB'],['20h00','21h00','Treino Sub-15','Campo 1','var(--success)']];
+  const semana=[['Qui, 26 abr','Treino Sub-7 · 17h','goal'],['Sex, 27 abr','Treino Sub-15 · 19h','goal'],['Sáb, 28 abr','Jogo amistoso Sub-9 · 10h','trophy']];
+  return (
+    <div>
+      <MCard style={{marginBottom:18}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+          <button style={{width:32,height:32,borderRadius:9,border:'1px solid var(--border-subtle)',background:'var(--surface-card)',display:'grid',placeItems:'center',cursor:'pointer'}}><i data-lucide="chevron-left" width="17" height="17" style={{color:INK2}}></i></button>
+          <div style={{fontWeight:'var(--fw-bold)',fontSize:15}}>Abril 2026</div>
+          <button style={{width:32,height:32,borderRadius:9,border:'1px solid var(--border-subtle)',background:'var(--surface-card)',display:'grid',placeItems:'center',cursor:'pointer'}}><i data-lucide="chevron-right" width="17" height="17" style={{color:INK2}}></i></button>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:4,textAlign:'center'}}>
+          {['D','S','T','Q','Q','S','S'].map((d,i)=><div key={i} style={{fontSize:11,fontWeight:'var(--fw-bold)',color:'var(--gray-500)',paddingBottom:4}}>{d}</div>)}
+          {[...Array(7)].map((_,i)=>{const day=20+i;const today=day===25;const treino=[22,24,25].includes(day);return(
+            <div key={i} style={{padding:'7px 0',borderRadius:9,fontSize:13,fontWeight:today?'var(--fw-bold)':400,background:today?NAVY:'transparent',color:today?'#fff':INK,position:'relative',cursor:'pointer'}}>{day}
+              {treino&&!today&&<span style={{position:'absolute',bottom:3,left:'50%',transform:'translateX(-50%)',width:5,height:5,borderRadius:'50%',background:'var(--success)'}}/>}
+            </div>
+          );})}
+        </div>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Hoje — 25 abr (Quarta)</div>
+      <div style={{display:'flex',flexDirection:'column',gap:10,marginBottom:18}}>
+        {eventos.map((e,i)=>(
+          <MCard key={i} style={{display:'flex',gap:12,alignItems:'center'}}>
+            <div style={{width:4,alignSelf:'stretch',borderRadius:4,background:e[4],flexShrink:0}}/>
+            <span style={{width:42,height:42,borderRadius:11,background:'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="goal" width="20" height="20" style={{color:e[4]}}></i></span>
+            <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:15}}>{e[2]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{e[0]}–{e[1]} · {e[3]}</div></div>
+            <Cta icon="clipboard-check" onClick={()=>nav('chamada')} style={{width:'auto',height:36,padding:'0 12px',fontSize:13}}>Chamada</Cta>
+          </MCard>
+        ))}
+      </div>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Esta semana</div>
+      <MCard style={{padding:'4px 16px'}}>
+        {semana.map((s,i)=>(
+          <div key={i} style={{display:'flex',alignItems:'center',gap:12,padding:'13px 0',borderBottom:i<semana.length-1?'1px solid var(--border-subtle)':'none'}}>
+            <span style={{width:40,height:40,borderRadius:11,background:'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide={s[2]} width="18" height="18" style={{color:INK2}}></i></span>
+            <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:14}}>{s[0]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{s[1]}</div></div>
+            <i data-lucide="chevron-right" width="16" height="16" style={{color:'var(--gray-500)'}}></i>
+          </div>
+        ))}
+      </MCard>
+    </div>
+  );
+}
+window.ScrCalendario=ScrCalendario;
+</script>
+
+<!-- ── SCREENS: COMUNICADOS & PERFIL ──────────────────────── -->
+<script type="text/babel">
+function ScrComunicados({nav}) {
+  const {Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [seg,setSeg]=React.useState('recv');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const recv=[
+    {ico:'megaphone',title:'Mudança de horário — Sub-9',sub:'Administração · 24 abr',novo:true},
+    {ico:'calendar',title:'Amistoso sábado, 28/04',sub:'Coordenação · 22 abr',novo:true},
+    {ico:'info',title:'Novos uniformes disponíveis',sub:'Administração · 18 abr',novo:false},
+    {ico:'alert-circle',title:'Feriado — sem treino 21/04',sub:'Coordenação · 15 abr',novo:false},
+    {ico:'file-text',title:'Relatório de turmas — março',sub:'Administração · 01 abr',novo:false},
+  ];
+  const send=[['Relatório de presença — Sub-9','Para: Administração · 23 abr'],['Aluno com lesão — Rafael Alves','Para: Administração · 10 abr']];
+  return (
+    <div>
+      <Seg tabs={[['recv','Recebidos'],['send','Enviados']]} value={seg} onChange={setSeg}/>
+      {seg==='recv'?<div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {recv.map((c,i)=>(
+          <MCard key={i} style={{cursor:'pointer',border:c.novo?'1px solid var(--accent)':'1px solid var(--border-subtle)'}} onClick={()=>nav('comunicado')}>
+            <div style={{display:'flex',gap:12,alignItems:'flex-start'}}>
+              <span style={{width:40,height:40,borderRadius:11,background:c.novo?'var(--accent-tint)':'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide={c.ico} width="19" height="19" style={{color:c.novo?'var(--success)':INK2}}></i></span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:'var(--fw-bold)',fontSize:14,display:'flex',gap:6,alignItems:'center'}}>{c.title}{c.novo&&<span style={{width:8,height:8,borderRadius:'50%',background:'var(--success)',flexShrink:0}}/>}</div>
+                <div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:2}}>{c.sub}</div>
+              </div>
+              <i data-lucide="chevron-right" width="16" height="16" style={{color:'var(--gray-500)',flexShrink:0}}></i>
+            </div>
+          </MCard>
+        ))}
+      </div>:<div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {send.map((c,i)=>(
+          <MCard key={i} style={{cursor:'pointer'}} onClick={()=>nav('comunicado')}>
+            <div style={{display:'flex',gap:12,alignItems:'flex-start'}}>
+              <span style={{width:40,height:40,borderRadius:11,background:'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="send" width="19" height="19" style={{color:INK2}}></i></span>
+              <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:14}}>{c[0]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:2}}>{c[1]}</div></div>
+              <i data-lucide="chevron-right" width="16" height="16" style={{color:'var(--gray-500)',flexShrink:0}}></i>
+            </div>
+          </MCard>
+        ))}
+        <Cta variant="ghost" icon="plus" style={{marginTop:4}}>Novo comunicado</Cta>
+      </div>}
+    </div>
+  );
+}
+window.ScrComunicados=ScrComunicados;
+
+function ScrComunicado({nav}) {
+  const {Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return (
+    <div>
+      <MCard style={{marginBottom:16}}>
+        <div style={{display:'flex',gap:10,alignItems:'center',marginBottom:14}}>
+          <span style={{width:40,height:40,borderRadius:11,background:'var(--accent-tint)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="megaphone" width="19" height="19" style={{color:'var(--success)'}}></i></span>
+          <div><div style={{fontSize:'var(--fs-xs)',color:INK2}}>Administração · 24 abr 2026</div><div style={{marginTop:3}}><Badge tone="success" dot>Novo</Badge></div></div>
+        </div>
+        <div style={{fontSize:17,fontWeight:'var(--fw-bold)',marginBottom:10}}>Mudança de horário — Sub-9</div>
+        <div style={{fontSize:14,color:INK2,lineHeight:1.65}}>Olá, João! Informamos que o treino da turma Sub-9 da <strong style={{color:INK}}>próxima quinta-feira, 29/04</strong>, será realizado no Campo 1 (Unidade Norte), devido a uma obra no Campo 2.<br/><br/>O horário permanece o mesmo: <strong style={{color:INK}}>18h00 – 19h30</strong>.<br/><br/>Qualquer dúvida, estamos à disposição.</div>
+      </MCard>
+      <MCard style={{marginBottom:16}}>
+        <KV k="De" v="Administração FC Estrela"/><KV k="Para" v="João Ferreira (Instrutor)"/><KV k="Turma" v="Sub-9"/><KV k="Data" v="24 abr 2026 · 09h15" last/>
+      </MCard>
+      <Cta variant="ghost" icon="reply">Responder</Cta>
+    </div>
+  );
+}
+window.ScrComunicado=ScrComunicado;
+
+function ScrPerfil({nav}) {
+  const {Avatar,Badge}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const turmas=[['Sub-7','Seg e Qua · 17h','12 alunos'],['Sub-9','Ter e Qui · 18h','14 alunos'],['Sub-15','Sex · 19h','12 alunos']];
+  return (
+    <div>
+      <MCard style={{display:'flex',gap:14,alignItems:'center',marginBottom:18}}>
+        <Avatar name="João Ferreira" size={56}/>
+        <div><div style={{fontWeight:'var(--fw-bold)',fontSize:18}}>João Ferreira</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>joao@fcestrela.com</div><div style={{marginTop:6}}><Badge tone="neutral">Treinador Auxiliar</Badge></div></div>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Minhas turmas</div>
+      <MCard style={{padding:'4px 16px',marginBottom:18}}>
+        {turmas.map((t,i)=>(
+          <div key={t[0]} onClick={()=>nav('turma')} style={{display:'flex',alignItems:'center',gap:12,padding:'13px 0',borderBottom:i<turmas.length-1?'1px solid var(--border-subtle)':'none',cursor:'pointer'}}>
+            <span style={{width:40,height:40,borderRadius:11,background:'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide="goal" width="19" height="19" style={{color:INK2}}></i></span>
+            <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:14}}>{t[0]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{t[1]}</div></div>
+            <Badge tone="neutral">{t[2]}</Badge>
+          </div>
+        ))}
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Conta</div>
+      <MCard style={{padding:'4px 16px',marginBottom:18}}>
+        <ListRow icon="user" label="Meus dados" sub="Nome e contato" onClick={()=>nav('meus-dados-inst')}/>
+        <ListRow icon="lock" label="Alterar senha" onClick={()=>nav('meus-dados-inst')}/>
+        <ListRow icon="bell" label="Notificações" sub="Chamadas e comunicados" onClick={()=>nav('notif-inst')} last/>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Suporte</div>
+      <MCard style={{padding:'4px 16px',marginBottom:18}}>
+        <ListRow icon="life-buoy" label="Central de ajuda" onClick={()=>nav('ajuda-inst')}/>
+        <ListRow icon="message-circle" label="Falar com a escolinha" onClick={()=>nav('ajuda-inst')} last/>
+      </MCard>
+      <Cta variant="danger" icon="log-out" onClick={()=>nav('login')}>Sair</Cta>
+    </div>
+  );
+}
+window.ScrPerfil=ScrPerfil;
+
+function ScrMeusDados({nav}) {
+  const {Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:13}}>
+      <div style={{textAlign:'center',padding:'6px 0 8px'}}>
+        <div style={{position:'relative',display:'inline-block'}}>
+          <Avatar name="João Ferreira" size={72}/>
+          <span style={{position:'absolute',bottom:0,right:0,width:26,height:26,borderRadius:'50%',background:ACC,border:'2px solid var(--surface-card)',display:'grid',placeItems:'center'}}><i data-lucide="camera" width="13" height="13" style={{color:NAVY}}></i></span>
+        </div>
+      </div>
+      <Field label="Nome completo" value="João Ferreira"/>
+      <Field label="E-mail" value="joao@fcestrela.com"/>
+      <Field label="Celular / WhatsApp" value="(11) 97xxx-xx22"/>
+      <Field label="CREF" value="000000-G/SP"/>
+      <div style={{borderTop:'1px solid var(--border-subtle)',paddingTop:14,marginTop:4,display:'flex',flexDirection:'column',gap:13}}>
+        <div style={{fontWeight:'var(--fw-bold)',fontSize:15}}>Alterar senha</div>
+        <Field label="Senha atual" value="••••••••"/>
+        <Field label="Nova senha" value="••••••••"/>
+        <Field label="Confirmar nova senha" value="••••••••"/>
+      </div>
+      <Cta icon="check" onClick={()=>nav('perfil')} style={{marginTop:6}}>Salvar alterações</Cta>
+    </div>
+  );
+}
+window.ScrMeusDados=ScrMeusDados;
+
+function ScrNotif({nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return (
+    <div>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Chamada</div>
+      <MCard style={{marginBottom:14,padding:'2px 16px'}}>
+        <TRow label="Lembrete antes do treino" sub="30 min antes do horário"/>
+        <TRow label="Chamada não realizada" sub="Alerta se não houver chamada" last/>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Comunicados</div>
+      <MCard style={{marginBottom:14,padding:'2px 16px'}}>
+        <TRow label="Novos comunicados" sub="Da administração e coordenação"/>
+        <TRow label="Respostas aos meus envios" last/>
+      </MCard>
+      <div style={{fontWeight:'var(--fw-bold)',fontSize:15,margin:'0 2px 10px'}}>Canais</div>
+      <MCard style={{marginBottom:16,padding:'2px 16px'}}>
+        <TRow label="Push (notificação no celular)"/>
+        <TRow label="E-mail" defaultOn={false} last/>
+      </MCard>
+      <Cta icon="check" onClick={()=>nav('perfil')}>Salvar preferências</Cta>
+    </div>
+  );
+}
+window.ScrNotif=ScrNotif;
+
+function ScrAjuda({nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const items=[['clipboard-check','Como fazer a chamada?','Passo a passo para registrar presença'],['calendar-x','Editar uma chamada já feita','Corrija registros de datas anteriores'],['send','Enviar comunicado','Mande recados para a administração'],['users','Aluno não aparece na turma','Matrícula e sincronização'],['phone','Falar com a coordenação','Contatos da escolinha']];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:12}}>
+      {items.map(c=>(
+        <MCard key={c[1]} style={{cursor:'pointer',display:'flex',gap:12,alignItems:'center'}}>
+          <span style={{width:40,height:40,borderRadius:11,background:'var(--surface-muted)',display:'grid',placeItems:'center',flexShrink:0}}><i data-lucide={c[0]} width="19" height="19" style={{color:INK2}}></i></span>
+          <div style={{flex:1}}><div style={{fontWeight:'var(--fw-bold)',fontSize:15}}>{c[1]}</div><div style={{fontSize:'var(--fs-xs)',color:INK2,marginTop:1}}>{c[2]}</div></div>
+          <i data-lucide="chevron-right" width="16" height="16" style={{color:'var(--gray-500)'}}></i>
+        </MCard>
+      ))}
+      <div style={{borderTop:'1px solid var(--border-subtle)',paddingTop:14,textAlign:'center'}}>
+        <div style={{fontSize:'var(--fs-xs)',color:INK2,marginBottom:10}}>Precisa de mais ajuda?</div>
+        <Cta variant="wa" icon="message-circle">Falar com a escolinha</Cta>
+      </div>
+    </div>
+  );
+}
+window.ScrAjuda=ScrAjuda;
+</script>
+
+<!-- ── APP SHELL ──────────────────────────────────────────── -->
+<script type="text/babel">
+const TABS=[['home','Início','layout-dashboard'],['chamada','Chamada','clipboard-check'],['perfil','Perfil','user']];
+const META={
+  home:        {title:null,                    chrome:'app',  tab:'home'},
+  turmas:      {title:'Minhas turmas',         chrome:'app',  tab:'home'},
+  turma:       {title:'Sub-9',                 chrome:'app',  tab:'home', back:'turmas'},
+  alunos:      {title:'Alunos',                chrome:'app',  tab:'home'},
+  aluno:       {title:'Gabriel Silva',         chrome:'focus',back:'alunos'},
+  chamada:     {title:'Chamada',               chrome:'focus',back:'home'},
+  'chamada-ok':{title:'Chamada confirmada',    chrome:'focus',back:'home'},
+  calendario:  {title:'Calendário',            chrome:'app',  tab:'home'},
+  comunicados: {title:'Comunicados',           chrome:'app',  tab:'home'},
+  comunicado:  {title:'Comunicado',            chrome:'focus',back:'comunicados'},
+  perfil:      {title:'Perfil',                chrome:'app',  tab:'perfil'},
+  'meus-dados-inst':{title:'Meus dados',       chrome:'focus',back:'perfil'},
+  'notif-inst':{title:'Notificações',          chrome:'focus',back:'perfil'},
+  'ajuda-inst':{title:'Central de ajuda',      chrome:'focus',back:'perfil'},
+};
+const SCR={
+  home:window.ScrHome, turmas:window.ScrTurmas, turma:window.ScrTurma, alunos:window.ScrAlunos,
+  aluno:window.ScrAluno, chamada:window.ScrChamada, 'chamada-ok':window.ScrChamadaOk,
+  calendario:window.ScrCalendario, comunicados:window.ScrComunicados, comunicado:window.ScrComunicado,
+  perfil:window.ScrPerfil, 'meus-dados-inst':window.ScrMeusDados, 'notif-inst':window.ScrNotif, 'ajuda-inst':window.ScrAjuda,
+};
+
+function Header({meta, nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const btn={width:38,height:38,borderRadius:11,border:'1px solid var(--border-subtle)',background:'var(--surface-card)',display:'grid',placeItems:'center',cursor:'pointer',flexShrink:0};
+  return <div style={{display:'flex',alignItems:'center',gap:8,padding:'52px 16px 10px',flexShrink:0,background:'var(--surface-canvas)'}}>
+    {meta.back?<button onClick={()=>nav(meta.back)} style={btn}><i data-lucide="arrow-left" width="19" height="19" style={{color:INK2}}></i></button>:<span style={{width:38}}/>}
+    <div style={{flex:1,textAlign:'center',fontSize:17,fontWeight:'var(--fw-bold)'}}>{meta.title}</div>
+    <span style={{width:38}}/>
+  </div>;
+}
+
+function TabBar({active, nav}) {
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  return <div style={{display:'flex',alignItems:'center',borderTop:'1px solid var(--border-subtle)',background:'var(--surface-card)',padding:'8px 10px 26px',gap:4}}>
+    {TABS.map(([k,l,ico])=>{const on=k===active;
+      return (
+        <button key={k} onClick={()=>nav(k)} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4,background:'none',border:'none',cursor:'pointer',color:on?'var(--success)':'var(--gray-500)',fontFamily:'var(--font-ui)',fontSize:11,fontWeight:'var(--fw-bold)'}}>
+          <i data-lucide={ico} width="22" height="22"></i>{l}
+        </button>);
+    })}
+  </div>;
+}
+
+function InstApp() {
+  const [view,setView]=React.useState('login');
+  const nav=React.useCallback(v=>setView(v),[]);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.9}}); });
+  const meta=META[view];
+  const Screen=SCR[view];
+  return (
+    <IOSDevice>
+      {view==='login'
+        ? <window.ScrLogin nav={nav}/>
+        : <div style={{height:'100%',display:'flex',flexDirection:'column',background:'var(--surface-canvas)'}}>
+            <Header meta={meta} nav={nav}/>
+            <div style={{flex:1,overflowY:'auto',padding:'6px 16px 22px'}} key={view}>
+              {Screen?<Screen nav={nav}/>:<div style={{padding:40,textAlign:'center',color:INK2}}>Em construção</div>}
+            </div>
+            {meta.chrome==='app'&&<TabBar active={meta.tab} nav={nav}/>}
+          </div>}
+    </IOSDevice>
+  );
+}
+window.InstApp=InstApp;
+ReactDOM.createRoot(document.getElementById('root')).render(<InstApp/>);
+</script>
+
+</body>
+</html>

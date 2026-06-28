@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Craque — Escolinha · Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="wireframes/wireframe.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<div class="wf-stamp">✎ Wireframe lo-fi · Frente 2 — Escolinha</div>
+
+<script src="wireframes/wf-helpers.js"></script>
+<script src="wireframes/escolinha-screens.js"></script>
+<script>
+  window.WF_CONFIG = {
+    brand: 'Craque',
+    brandSub: 'FC Estrela · Pro',
+    logoIcon: 'trophy',
+    accountInitials: 'CM',
+    accountName: 'Carla Mendes',
+    searchPlaceholder: 'Buscar aluno, turma…',
+    defaultScreen: 'home',
+    screens: window.ESCOLINHA_SCREENS,
+    nav: [
+      { group: 'Visão geral', items: [ { k: 'home', label: 'Resumo', icon: 'layout-dashboard' } ] },
+      { group: 'Operação', items: [
+        { k: 'turmas', label: 'Turmas', icon: 'goal' },
+        { k: 'turma-cadastro', label: 'Nova turma', icon: 'plus-circle' },
+        { k: 'alunos', label: 'Alunos', icon: 'users' },
+        { k: 'aluno-cadastro', label: 'Nova matrícula', icon: 'user-plus' },
+        { k: 'responsaveis', label: 'Responsáveis', icon: 'contact' },
+      ]},
+      { group: 'Financeiro', items: [
+        { k: 'cobrancas', label: 'Mensalidades', icon: 'wallet' },
+        { k: 'financeiro', label: 'Financeiro', icon: 'bar-chart-3' },
+        { k: 'relatorios', label: 'Relatórios', icon: 'file-text' },
+      ]},
+      { group: 'Equipe', items: [
+        { k: 'professores', label: 'Professores', icon: 'graduation-cap' },
+      ]},
+      { group: 'Sistema', items: [
+        { k: 'config', label: 'Configurações', icon: 'settings' },
+      ]},
+    ],
+  };
+</script>
+<script src="wireframes/shell.js"></script>
+</body>
+</html>

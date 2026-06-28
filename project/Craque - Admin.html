@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Craque — Admin</title>
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/colors.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/typography.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/tokens/base.css">
+<link rel="stylesheet" href="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/styles.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds/campo-football-school-management-design-a7c81ee1-bb3b-404b-80d7-19277fbeccaa/_ds_bundle.js"></script>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden}
+  main::-webkit-scrollbar{width:8px}
+  main::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:10px;border:2px solid var(--surface-canvas)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- ── DATA ──────────────────────────────────────────────── -->
+<script>
+window.AD = {
+  acct:{ name:'Ricardo Antunes', role:'Super Admin' },
+  nav:[
+    {key:'dashboard',   label:'Dashboard',      icon:'layout-dashboard'},
+    {key:'escolinhas',  label:'Escolinhas',      icon:'building-2'},
+    {key:'planos',      label:'Planos SaaS',     icon:'layers'},
+    {key:'assinaturas', label:'Assinaturas',     icon:'repeat'},
+    {key:'cobrancas',   label:'Cobranças SaaS',  icon:'receipt'},
+    {key:'financeiro',  label:'Financeiro',      icon:'bar-chart-3'},
+    {key:'gateway',     label:'Gateway & Split', icon:'git-merge'},
+    {key:'kyc',         label:'Subcontas / KYC', icon:'shield-check'},
+    {key:'relatorios',  label:'Relatórios',      icon:'file-bar-chart-2'},
+  ],
+  navFoot:[
+    {key:'usuarios', label:'Usuários',      icon:'users'},
+    {key:'config',   label:'Configurações', icon:'settings'},
+  ],
+  stats:[
+    {icon:'building-2',       label:'Escolinhas ativas',  value:'38',         trend:'+4 no mês',dir:'up'},
+    {icon:'wallet',           label:'MRR da plataforma',  value:'R$ 24.900',  trend:'+11%',     dir:'up',  dark:true},
+    {icon:'arrow-left-right', label:'Transações no mês',  value:'R$ 412 mil', trend:'+8%',      dir:'up'},
+    {icon:'alert-triangle',   label:'Inadimplência',      value:'6,2%',       trend:'-1,1pp',   dir:'down'},
+  ],
+  chart:{
+    labels:['Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar','Abr'],
+    mrr:   [18.2, 19.1, 19.8, 20.5, 21.0, 21.8, 22.4, 22.9, 23.1, 23.8, 24.2, 24.9],
+  },
+  esc:[
+    {id:1,name:'FC Estrela',      city:'São Paulo · SP',      owner:'Carlos Nunes', plan:'Pro',     status:'active',    n:142,mrr:'R$ 890'},
+    {id:2,name:'Academia Bola',   city:'Campinas · SP',       owner:'Marina Reis',  plan:'Híbrido', status:'active',    n:98, mrr:'R$ 640'},
+    {id:3,name:'Gol de Placa',    city:'Santos · SP',         owner:'Diego Alves',  plan:'Básico',  status:'late',      n:54, mrr:'R$ 290'},
+    {id:4,name:'CT Raízes',       city:'Sorocaba · SP',       owner:'Bruna Lima',   plan:'Pro',     status:'kyc',       n:0,  mrr:'—'},
+    {id:5,name:'Meninos de Ouro', city:'Guarulhos · SP',      owner:'Paulo Souza',  plan:'Básico',  status:'suspended', n:0,  mrr:'—'},
+    {id:6,name:'Vila Futebol',    city:'Osasco · SP',         owner:'Tânia M.',     plan:'Híbrido', status:'active',    n:120,mrr:'R$ 720'},
+    {id:7,name:'Arena Plus',      city:'Santo André · SP',    owner:'Roberto C.',   plan:'Pro',     status:'active',    n:165,mrr:'R$ 890'},
+    {id:8,name:'Escola Talento',  city:'Ribeirão Preto · SP', owner:'Cláudia R.',   plan:'Básico',  status:'active',    n:48, mrr:'R$ 79'},
+  ],
+  sm:{active:{label:'Ativa',tone:'success'},late:{label:'Inadimplente',tone:'danger'},kyc:{label:'Pendente KYC',tone:'info'},suspended:{label:'Suspensa',tone:'neutral'}},
+  alerts:[
+    {icon:'shield-alert',color:'var(--info)',   text:'3 KYC pendentes',            go:'kyc'},
+    {icon:'alert-circle',color:'var(--warning)',text:'2 escolinhas inadimplentes', go:'cobrancas'},
+    {icon:'webhook',     color:'var(--danger)', text:'1 webhook com falha',         go:'financeiro'},
+  ],
+  plans:[{name:'Pro',count:18,pct:47},{name:'Básico',count:14,pct:37},{name:'Híbrido',count:6,pct:16}],
+};
+</script>
+
+<!-- ── LINE CHART ─────────────────────────────────────────── -->
+<script type="text/babel">
+function AdminLineChart({data, height=248}) {
+  const W=640, p={l:46,r:16,t:20,b:32};
+  const iw=W-p.l-p.r, ih=height-p.t-p.b;
+  const vs=data.mrr, mx=Math.ceil(Math.max(...vs)/5)*5, n=vs.length;
+  const gx=i=>p.l+iw*i/(n-1), gy=v=>p.t+ih-ih*v/mx;
+  const pts=vs.map((v,i)=>[gx(i),gy(v)]);
+  let ln=`M ${pts[0][0]} ${pts[0][1]}`;
+  for(let i=0;i<n-1;i++){
+    const a=pts[i-1]||pts[i],b=pts[i],c=pts[i+1],d=pts[i+2]||c;
+    ln+=` C ${b[0]+(c[0]-a[0])/6} ${b[1]+(c[1]-a[1])/6} ${c[0]-(d[0]-b[0])/6} ${c[1]-(d[1]-b[1])/6} ${c[0]} ${c[1]}`;
+  }
+  const ar=ln+` L ${pts[n-1][0]} ${p.t+ih} L ${p.l} ${p.t+ih} Z`;
+  return (
+    <svg viewBox={`0 0 ${W} ${height}`} width="100%" style={{display:'block'}}>
+      <defs><linearGradient id="mrrGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#C8EE44" stopOpacity="0.2"/><stop offset="100%" stopColor="#C8EE44" stopOpacity="0"/>
+      </linearGradient></defs>
+      {[0,.25,.5,.75,1].map((f,i)=>{const t=Math.round(mx*f);return(<g key={i}>
+        <line x1={p.l} x2={W-p.r} y1={gy(t)} y2={gy(t)} stroke="var(--chart-grid)" strokeWidth="1" strokeDasharray="2 5"/>
+        <text x={p.l-8} y={gy(t)+4} textAnchor="end" fontFamily="var(--font-ui)" fontSize="11" fill="var(--chart-axis)">{t}k</text>
+      </g>);})}
+      {data.labels.map((lb,i)=>(
+        <text key={lb} x={gx(i)} y={height-6} textAnchor="middle" fontFamily="var(--font-ui)" fontSize="11" fill="var(--chart-axis)">{lb}</text>
+      ))}
+      <path d={ar} fill="url(#mrrGrad)"/>
+      <path d={ln} fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round"/>
+      <circle cx={pts[n-1][0]} cy={pts[n-1][1]} r="5" fill="var(--accent)" stroke="white" strokeWidth="2.5"/>
+    </svg>
+  );
+}
+window.AdminLineChart = AdminLineChart;
+</script>
+
+<!-- ── TOP BAR ────────────────────────────────────────────── -->
+<script type="text/babel">
+function AdminTopBar({title, subtitle, navigate}) {
+  const {IconButton,Avatar,Button} = window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const D=window.AD;
+  const [showN,setShowN]=React.useState(false);
+  const [showU,setShowU]=React.useState(false);
+  const nRef=React.useRef(null), uRef=React.useRef(null);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  React.useEffect(()=>{
+    const h=e=>{
+      if(nRef.current&&!nRef.current.contains(e.target))setShowN(false);
+      if(uRef.current&&!uRef.current.contains(e.target))setShowU(false);
+    };
+    document.addEventListener('mousedown',h);
+    return()=>document.removeEventListener('mousedown',h);
+  },[]);
+  const notifs=[
+    {icon:'shield-alert',c:'var(--info)',   title:'3 subcontas aguardam KYC',      sub:'CT Raízes, Meninos de Ouro…',    time:'há 10 min',u:true},
+    {icon:'webhook',     c:'var(--danger)', title:'Webhook com falha repetida',    sub:'pagar.me · payment.paid',         time:'há 32 min',u:true},
+    {icon:'building-2',  c:'var(--success)',title:'Nova escolinha cadastrada',     sub:'Escola Talento · Ribeirão Preto', time:'há 2 h',   u:false},
+    {icon:'wallet',      c:'var(--gray-500)',title:'Repasse de R$ 11.500 liberado',sub:'28 escolinhas · abril 2026',      time:'há 4 h',   u:false},
+  ];
+  const drop=(r)=>({position:'absolute',top:'calc(100% + 10px)',right:r,background:'var(--surface-card)',border:'1px solid var(--border-subtle)',borderRadius:'var(--radius-lg)',boxShadow:'var(--shadow-lg)',zIndex:1000,overflow:'hidden'});
+  return (
+    <header style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:20,paddingBottom:28}}>
+      <div>
+        <h1 style={{margin:0,fontSize:'var(--fs-h2)',fontWeight:'var(--fw-bold)',lineHeight:1.2}}>{title}</h1>
+        {subtitle&&<p style={{margin:'6px 0 0',color:'var(--text-secondary)',fontSize:'var(--fs-body)'}}>{subtitle}</p>}
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:12}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,height:44,padding:'0 16px',background:'var(--surface-card)',border:'1px solid var(--border-subtle)',borderRadius:'var(--radius-md)',width:230}}>
+          <i data-lucide="search" width="17" height="17" style={{color:'var(--gray-500)',flexShrink:0}}></i>
+          <input placeholder="Buscar escolinha, plano…" style={{border:'none',outline:'none',background:'transparent',flex:1,fontFamily:'var(--font-ui)',fontSize:'var(--fs-sm)',color:'var(--text-primary)',minWidth:0}}/>
+        </div>
+
+        {/* Bell + notifications */}
+        <div ref={nRef} style={{position:'relative'}}>
+          <div onClick={()=>{setShowN(!showN);setShowU(false);}} style={{position:'relative',cursor:'pointer'}}>
+            <IconButton icon="bell" variant="outline" ariaLabel="Notificações"/>
+            <span style={{position:'absolute',top:7,right:7,width:8,height:8,borderRadius:'50%',background:'var(--danger)',border:'2px solid var(--surface-canvas)'}}/>
+          </div>
+          {showN&&<div style={{...drop(0),width:360}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 20px 12px',borderBottom:'1px solid var(--border-subtle)'}}>
+              <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                <span style={{fontWeight:'var(--fw-bold)',fontSize:'var(--fs-body)'}}>Notificações</span>
+                <span style={{background:'var(--danger)',color:'#fff',borderRadius:99,fontSize:11,fontWeight:700,padding:'1px 7px'}}>2</span>
+              </div>
+              <button style={{border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-xs)',color:'var(--text-secondary)',fontFamily:'var(--font-ui)'}}>Marcar como lidas</button>
+            </div>
+            {notifs.map((n,i)=>(
+              <div key={i} style={{display:'flex',gap:12,padding:'13px 20px',borderBottom:'1px solid var(--border-subtle)',background:n.u?'var(--surface-subtle)':'transparent',cursor:'pointer'}}>
+                <span style={{width:34,height:34,borderRadius:'50%',background:'var(--surface-muted)',display:'inline-flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                  <i data-lucide={n.icon} width="15" height="15" style={{color:n.c}}></i>
+                </span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:'var(--fs-sm)',fontWeight:n.u?'var(--fw-semibold)':'var(--fw-medium)',lineHeight:1.3}}>{n.title}</div>
+                  <div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{n.sub}</div>
+                  <div style={{fontSize:11,color:'var(--text-secondary)',marginTop:3}}>{n.time}</div>
+                </div>
+                {n.u&&<span style={{width:7,height:7,borderRadius:'50%',background:'var(--accent)',flexShrink:0,marginTop:5}}/>}
+              </div>
+            ))}
+            <div style={{padding:'10px 20px',textAlign:'center'}}>
+              <button style={{border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-sm)',color:'var(--text-link)',fontWeight:'var(--fw-semibold)',fontFamily:'var(--font-ui)'}}>Ver todas as notificações</button>
+            </div>
+          </div>}
+        </div>
+
+        {/* Account chip + user menu */}
+        <div ref={uRef} style={{position:'relative'}}>
+          <div onClick={()=>{setShowU(!showU);setShowN(false);}} style={{display:'flex',alignItems:'center',gap:10,height:44,padding:'0 12px 0 6px',background:'var(--surface-card)',border:'1px solid var(--border-subtle)',borderRadius:'var(--radius-pill)',cursor:'pointer'}}>
+            <Avatar name={D.acct.name} size={32}/>
+            <div>
+              <div style={{fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)',lineHeight:1.2}}>{D.acct.name}</div>
+              <div style={{fontSize:11,color:'var(--text-secondary)',lineHeight:1.1}}>{D.acct.role}</div>
+            </div>
+            <i data-lucide="chevron-down" width="14" height="14" style={{color:'var(--gray-500)',marginLeft:2}}></i>
+          </div>
+          {showU&&<div style={{...drop(0),width:230}}>
+            <div style={{padding:'14px 18px 12px',borderBottom:'1px solid var(--border-subtle)'}}>
+              <div style={{fontWeight:'var(--fw-bold)',fontSize:'var(--fs-body)'}}>{D.acct.name}</div>
+              <div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>{D.acct.role} · Craque</div>
+            </div>
+            {[['user','Meu perfil',null],['settings','Configurações','config'],['life-buoy','Suporte',null]].map(([ico,lbl,go])=>(
+              <button key={lbl} onClick={()=>{setShowU(false);go&&navigate(go);}} style={{display:'flex',alignItems:'center',gap:11,width:'100%',padding:'11px 18px',border:'none',background:'transparent',cursor:'pointer',fontFamily:'var(--font-ui)',fontSize:'var(--fs-body)',color:'var(--text-primary)',textAlign:'left'}}>
+                <i data-lucide={ico} width="16" height="16" style={{color:'var(--gray-500)'}}></i>{lbl}
+              </button>
+            ))}
+            <div style={{height:1,background:'var(--border-subtle)',margin:'3px 0'}}/>
+            <button onClick={()=>{setShowU(false);navigate('login');}} style={{display:'flex',alignItems:'center',gap:11,width:'100%',padding:'11px 18px',border:'none',background:'transparent',cursor:'pointer',fontFamily:'var(--font-ui)',fontSize:'var(--fs-body)',color:'var(--danger)',textAlign:'left'}}>
+              <i data-lucide="log-out" width="16" height="16" style={{color:'var(--danger)'}}></i>Sair
+            </button>
+          </div>}
+        </div>
+      </div>
+    </header>
+  );
+}
+window.AdminTopBar = AdminTopBar;
+</script>
+
+<!-- ── LOGIN ──────────────────────────────────────────────── -->
+<script type="text/babel">
+function AdminLogin({navigate}) {
+  const {Button, Input} = window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [email,setEmail]=React.useState('');
+  const [pw,setPw]=React.useState('');
+  const [rem,setRem]=React.useState(false);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  return (
+    <div style={{display:'flex',height:'100vh',overflow:'hidden'}}>
+      {/* Left — navy panel */}
+      <div style={{width:'46%',background:'var(--navy-900)',display:'flex',flexDirection:'column',justifyContent:'space-between',padding:'44px 52px',position:'relative',overflow:'hidden'}}>
+        <svg style={{position:'absolute',inset:0,width:'100%',height:'100%',opacity:.055,pointerEvents:'none'}} viewBox="0 0 520 720" preserveAspectRatio="xMidYMid slice">
+          <rect x="30" y="60" width="460" height="600" fill="none" stroke="white" strokeWidth="3"/>
+          <line x1="30" y1="360" x2="490" y2="360" stroke="white" strokeWidth="3"/>
+          <circle cx="260" cy="360" r="80" fill="none" stroke="white" strokeWidth="3"/>
+          <circle cx="260" cy="360" r="4" fill="white"/>
+          <rect x="160" y="60" width="200" height="110" fill="none" stroke="white" strokeWidth="3"/>
+          <rect x="160" y="550" width="200" height="110" fill="none" stroke="white" strokeWidth="3"/>
+          <rect x="205" y="60" width="110" height="46" fill="none" stroke="white" strokeWidth="3"/>
+          <rect x="205" y="614" width="110" height="46" fill="none" stroke="white" strokeWidth="3"/>
+        </svg>
+        <div style={{position:'relative',zIndex:1}}>
+          <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:60}}>
+            <span style={{width:38,height:38,borderRadius:10,background:'var(--accent)',display:'inline-flex',alignItems:'center',justifyContent:'center'}}>
+              <i data-lucide="trophy" width="18" height="18" style={{color:'var(--navy-900)'}}></i>
+            </span>
+            <span style={{fontFamily:'var(--font-display)',fontWeight:800,fontSize:22,color:'var(--white)',letterSpacing:'-0.01em'}}>Craque</span>
+            <span style={{fontSize:11,fontWeight:700,letterSpacing:'0.06em',background:'rgba(255,255,255,.1)',color:'rgba(255,255,255,.5)',padding:'3px 9px',borderRadius:99}}>ADMIN</span>
+          </div>
+          <h2 style={{margin:0,fontSize:'var(--fs-h1)',fontWeight:'var(--fw-bold)',color:'var(--white)',lineHeight:1.15,maxWidth:380}}>
+            Gestão de escolinhas, <span style={{color:'var(--accent)'}}>do campo ao caixa.</span>
+          </h2>
+          <p style={{margin:'20px 0 0',fontSize:'var(--fs-body-lg)',lineHeight:1.65,color:'rgba(255,255,255,.5)',maxWidth:340}}>
+            Painel do administrador — escolinhas, planos, cobranças e repasses em um só lugar.
+          </p>
+        </div>
+        <div style={{position:'relative',zIndex:1,display:'flex',gap:36}}>
+          {[['38','Escolinhas ativas'],['R$ 24,9k','MRR atual'],['4 mil+','Alunos']].map(([v,l])=>(
+            <div key={l}><div style={{fontSize:22,fontWeight:'var(--fw-bold)',color:'var(--accent)',lineHeight:1}}>{v}</div>
+            <div style={{fontSize:12,color:'rgba(255,255,255,.4)',marginTop:5}}>{l}</div></div>
+          ))}
+        </div>
+      </div>
+      {/* Right — form */}
+      <div style={{flex:1,background:'var(--surface-canvas)',display:'flex',alignItems:'center',justifyContent:'center',padding:48}}>
+        <div style={{width:'100%',maxWidth:400}}>
+          <h2 style={{margin:'0 0 8px',fontSize:'var(--fs-h2)',fontWeight:'var(--fw-bold)'}}>Acessar o painel</h2>
+          <p style={{margin:'0 0 32px',color:'var(--text-secondary)',fontSize:'var(--fs-body)'}}>Entre com sua conta de administrador.</p>
+          <div style={{display:'flex',flexDirection:'column',gap:16}}>
+            <Input label="E-mail" type="email" placeholder="voce@craque.com" leadingIcon="mail" value={email} onChange={e=>setEmail(e.target.value)}/>
+            <Input label="Senha" type="password" placeholder="••••••••" leadingIcon="lock" value={pw} onChange={e=>setPw(e.target.value)}/>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <label style={{display:'flex',alignItems:'center',gap:9,cursor:'pointer',fontSize:'var(--fs-body)',color:'var(--text-secondary)',userSelect:'none'}}>
+                <span onClick={()=>setRem(!rem)} style={{width:18,height:18,borderRadius:5,flexShrink:0,border:`2px solid ${rem?'var(--accent)':'var(--border-default)'}`,background:rem?'var(--accent)':'var(--surface-card)',display:'inline-flex',alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'all .14s'}}>
+                  {rem&&<i data-lucide="check" width="11" height="11" style={{color:'var(--navy-900)'}}></i>}
+                </span>
+                Manter conectado
+              </label>
+              <a href="#" style={{fontSize:'var(--fs-sm)',fontWeight:'var(--fw-semibold)',color:'var(--success)',textDecoration:'none'}}>Esqueci a senha</a>
+            </div>
+            <Button variant="primary" size="lg" fullWidth leadingIcon="log-in" onClick={()=>navigate('dashboard')} style={{marginTop:6}}>Entrar</Button>
+          </div>
+          <div style={{marginTop:24,padding:'13px 15px',background:'var(--info-tint)',borderRadius:'var(--radius-md)',display:'flex',gap:10,alignItems:'flex-start'}}>
+            <i data-lucide="info" width="15" height="15" style={{color:'var(--info)',flexShrink:0,marginTop:1}}></i>
+            <p style={{margin:0,fontSize:'var(--fs-sm)',color:'var(--text-secondary)',lineHeight:1.6}}>Acesso restrito ao time da plataforma. Convites em <strong>Usuários & Perfis</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.AdminLogin = AdminLogin;
+</script>
+
+<!-- ── DASHBOARD ──────────────────────────────────────────── -->
+<script type="text/babel">
+function AdminDashboard({navigate}) {
+  const {StatCard,Card,Badge,Button,Avatar} = window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const D=window.AD;
+  const [hov,setHov]=React.useState(null);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const th={padding:'24px',textAlign:'left',fontSize:'var(--fs-xs)',fontWeight:'var(--fw-semibold)',letterSpacing:'0.05em',textTransform:'uppercase',color:'var(--text-secondary)',borderBottom:'1px solid var(--border-subtle)',whiteSpace:'nowrap'};
+  const td={padding:'12px 24px',fontSize:'var(--fs-body)',borderBottom:'1px solid var(--gray-100)'};
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:22}}>
+      {/* Stats row — full width, 2x2 */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14}}>
+        {D.stats.map(s=><StatCard key={s.label} icon={s.icon} label={s.label} value={s.value} trend={s.trend} trendDirection={s.dir} variant={s.dark?'dark':'default'}/>)}
+      </div>
+
+      {/* Chart + right rail */}
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 268px',gap:22}}>
+        <div style={{display:'flex',flexDirection:'column',gap:20}}>
+          {/* Chart */}
+          <Card title="Receita recorrente (MRR)" subtitle="Últimos 12 meses">
+            <AdminLineChart data={D.chart} height={220}/>
+          </Card>
+          {/* Table */}
+          <Card padding={0} style={{overflow:'hidden'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'24px 24px 18px'}}>
+              <h3 style={{margin:0,fontSize:'var(--fs-h4)',fontWeight:'var(--fw-bold)',fontFamily:'var(--font-ui)'}}>Escolinhas recentes</h3>
+              <Button variant="ghost" size="sm" trailingIcon="arrow-right" onClick={()=>navigate('escolinhas')}>Ver todas</Button>
+            </div>
+            <table style={{width:'100%',borderCollapse:'collapse'}}>
+              <thead><tr>{['Escolinha','Plano','Status','Alunos','MRR'].map(h=><th key={h} style={th}>{h}</th>)}</tr></thead>
+              <tbody>
+                {D.esc.slice(0,5).map(e=>{
+                  const st=D.sm[e.status];
+                  return (
+                    <tr key={e.id} style={{cursor:'pointer',background:hov===e.id?'var(--surface-subtle)':'transparent',transition:'background .1s'}}
+                      onMouseEnter={()=>setHov(e.id)} onMouseLeave={()=>setHov(null)} onClick={()=>navigate('escolinha-cadastro')}>
+                      <td style={td}><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={e.name} size={32}/><div><div style={{fontWeight:'var(--fw-semibold)',fontSize:'var(--fs-sm)'}}>{e.name}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:1}}>{e.city}</div></div></div></td>
+                      <td style={td}><Badge tone="neutral">{e.plan}</Badge></td>
+                      <td style={td}><Badge tone={st.tone} dot>{st.label}</Badge></td>
+                      <td style={{...td,fontWeight:'var(--fw-semibold)'}}>{e.n>0?e.n:<span style={{color:'var(--text-secondary)'}}>—</span>}</td>
+                      <td style={{...td,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums'}}>{e.mrr}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <div style={{padding:'8px 24px 24px'}}><Button variant="ghost" size="sm" onClick={()=>navigate('escolinhas')}>Ver todas as 38 escolinhas →</Button></div>
+          </Card>
+        </div>
+
+        {/* Right rail */}
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          {/* MRR dark card */}
+          <div style={{background:'linear-gradient(135deg,var(--navy-900) 0%,var(--plum-800) 100%)',borderRadius:'var(--radius-lg)',padding:20,color:'var(--white)',position:'relative',overflow:'hidden'}}>
+            <div style={{position:'absolute',top:-20,right:-20,width:90,height:90,borderRadius:'50%',background:'rgba(200,238,68,.09)'}}/>
+            <div style={{fontSize:11,color:'rgba(255,255,255,.5)',letterSpacing:'0.04em'}}>MRR · Junho 2026</div>
+            <div style={{fontSize:26,fontWeight:'var(--fw-bold)',marginTop:5,letterSpacing:'-0.02em',fontVariantNumeric:'tabular-nums'}}>R$ 24.900</div>
+            <div style={{display:'flex',alignItems:'center',gap:5,marginTop:5,color:'var(--accent)',fontSize:'var(--fs-xs)',fontWeight:'var(--fw-semibold)'}}>
+              <i data-lucide="trending-up" width="13" height="13"></i>+11% vs. mês anterior
+            </div>
+            <div style={{display:'flex',marginTop:16,paddingTop:14,borderTop:'1px solid rgba(255,255,255,.1)',gap:0}}>
+              {[['Pro','R$ 2.682'],['Básico','R$ 1.106'],['Híbrido','R$ 594']].map(([k,v],i)=>(
+                <div key={k} style={{flex:1,paddingLeft:i>0?10:0,borderLeft:i>0?'1px solid rgba(255,255,255,.1)':'none',marginLeft:i>0?10:0}}>
+                  <div style={{fontSize:10,color:'rgba(255,255,255,.4)'}}>{k}</div>
+                  <div style={{fontWeight:'var(--fw-bold)',fontSize:12,marginTop:2}}>{v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Alerts */}
+          <Card title="Precisa de atenção" padding={24}>
+            {D.alerts.map((a,i)=>(
+              <div key={i}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,padding:'10px 0'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:9}}>
+                    <i data-lucide={a.icon} width="16" height="16" style={{color:a.color,flexShrink:0}}></i>
+                    <span style={{fontSize:'var(--fs-xs)',lineHeight:1.4}}>{a.text}</span>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={()=>navigate(a.go)}>Ver</Button>
+                </div>
+                {i<D.alerts.length-1&&<div style={{height:1,background:'var(--border-subtle)'}}/>}
+              </div>
+            ))}
+          </Card>
+
+          {/* Plans */}
+          <Card title="Distribuição de planos" padding={24}>
+            <div style={{display:'flex',flexDirection:'column',gap:14}}>
+              {D.plans.map(p=>(
+                <div key={p.name}>
+                  <div style={{display:'flex',justifyContent:'space-between',marginBottom:6,fontSize:'var(--fs-sm)'}}>
+                    <span style={{fontWeight:'var(--fw-medium)'}}>{p.name}</span>
+                    <span style={{color:'var(--text-secondary)'}}>{p.count}</span>
+                  </div>
+                  <div style={{height:6,borderRadius:99,background:'var(--surface-muted)',overflow:'hidden'}}>
+                    <div style={{height:'100%',width:p.pct+'%',background:'var(--accent)',borderRadius:99}}/>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.AdminDashboard = AdminDashboard;
+</script>
+
+<!-- ── ESCOLINHAS ─────────────────────────────────────────── -->
+<script type="text/babel">
+function AdminEscolinhas({navigate}) {
+  const {Card,Badge,Button,Avatar,Tabs} = window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const D=window.AD;
+  const [tab,setTab]=React.useState('all');
+  const [q,setQ]=React.useState('');
+  const [hov,setHov]=React.useState(null);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const tabs=[{value:'all',label:'Todas',count:38},{value:'active',label:'Ativas',count:31},{value:'late',label:'Inadimplentes',count:4},{value:'suspended',label:'Suspensas',count:2},{value:'kyc',label:'Pendente KYC',count:1}];
+  const list=D.esc.filter(e=>(tab==='all'||e.status===tab)&&(!q||e.name.toLowerCase().includes(q.toLowerCase())||e.owner.toLowerCase().includes(q.toLowerCase())));
+  const th={padding:'24px',textAlign:'left',fontSize:'var(--fs-xs)',fontWeight:'var(--fw-semibold)',letterSpacing:'0.05em',textTransform:'uppercase',color:'var(--text-secondary)',borderBottom:'1px solid var(--border-subtle)',whiteSpace:'nowrap'};
+  const td={padding:'14px 24px',fontSize:'var(--fs-body)',borderBottom:'1px solid var(--gray-100)'};
+  return (
+    <Card padding={0} style={{overflow:'hidden'}}>
+      <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',padding:'24px 24px 0',gap:16}}>
+        <Tabs tabs={tabs} value={tab} onChange={setTab}/>
+        <div style={{display:'flex',gap:8,paddingBottom:14,flexShrink:0}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,height:36,padding:'0 13px',background:'var(--surface-subtle)',border:'1px solid var(--border-subtle)',borderRadius:'var(--radius-md)',width:190}}>
+            <i data-lucide="search" width="15" height="15" style={{color:'var(--gray-500)',flexShrink:0}}></i>
+            <input placeholder="Buscar…" value={q} onChange={e=>setQ(e.target.value)} style={{border:'none',outline:'none',background:'transparent',flex:1,fontFamily:'var(--font-ui)',fontSize:'var(--fs-sm)',color:'var(--text-primary)',minWidth:0}}/>
+          </div>
+          <Button variant="secondary" size="sm" leadingIcon="sliders-horizontal">Filtros</Button>
+          <Button variant="primary" size="sm" leadingIcon="plus" onClick={()=>navigate('escolinha-cadastro')}>Nova escolinha</Button>
+        </div>
+      </div>
+      <table style={{width:'100%',borderCollapse:'collapse'}}>
+        <thead><tr>{['Escolinha','Responsável','Plano','Status','Alunos','MRR',''].map(h=><th key={h} style={th}>{h}</th>)}</tr></thead>
+        <tbody>
+          {list.map(e=>{
+            const st=D.sm[e.status];
+            return (
+              <tr key={e.id} style={{cursor:'pointer',background:hov===e.id?'var(--surface-subtle)':'transparent',transition:'background .1s'}}
+                onMouseEnter={()=>setHov(e.id)} onMouseLeave={()=>setHov(null)} onClick={()=>navigate('escolinha-cadastro')}>
+                <td style={td}><div style={{display:'flex',alignItems:'center',gap:12}}><Avatar name={e.name} size={36}/><div><div style={{fontWeight:'var(--fw-semibold)'}}>{e.name}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>{e.city}</div></div></div></td>
+                <td style={{...td,color:'var(--text-secondary)'}}>{e.owner}</td>
+                <td style={td}><Badge tone="neutral">{e.plan}</Badge></td>
+                <td style={td}><Badge tone={st.tone} dot>{st.label}</Badge></td>
+                <td style={{...td,fontWeight:'var(--fw-semibold)',fontVariantNumeric:'tabular-nums'}}>{e.n>0?e.n:<span style={{color:'var(--text-secondary)'}}>—</span>}</td>
+                <td style={{...td,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums'}}>{e.mrr}</td>
+                <td style={{...td,width:40}}><button onClick={ev=>ev.stopPropagation()} style={{border:'none',background:'transparent',cursor:'pointer',width:30,height:30,borderRadius:'var(--radius-md)',display:'inline-flex',alignItems:'center',justifyContent:'center',color:'var(--text-secondary)'}}><i data-lucide="more-horizontal" width="17" height="17"></i></button></td>
+              </tr>
+            );
+          })}
+          {list.length===0&&<tr><td colSpan={7} style={{padding:48,textAlign:'center',color:'var(--text-secondary)'}}>Nenhuma escolinha encontrada.</td></tr>}
+        </tbody>
+      </table>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 24px 20px',color:'var(--text-secondary)',fontSize:'var(--fs-sm)'}}>
+        <span>Mostrando {list.length} de 38</span>
+        <div style={{display:'flex',gap:4}}>
+          {[1,2,3,'…',7].map((p,i)=><button key={i} style={{width:32,height:32,borderRadius:'var(--radius-md)',border:`1px solid ${p===1?'var(--navy-900)':'var(--border-subtle)'}`,background:p===1?'var(--navy-900)':'var(--surface-card)',color:p===1?'var(--white)':'var(--text-secondary)',fontSize:'var(--fs-sm)',fontWeight:'var(--fw-medium)',cursor:'pointer',fontFamily:'var(--font-ui)'}}>{p}</button>)}
+        </div>
+      </div>
+    </Card>
+  );
+}
+window.AdminEscolinhas = AdminEscolinhas;
+</script>
+
+<!-- ── CADASTRO ────────────────────────────────────────────── -->
+<script type="text/babel">
+function DSSelect({label, defaultValue, children}) {
+  const [focus,setFocus]=React.useState(false);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      {label&&<label style={{fontSize:'var(--fs-body)',fontWeight:'var(--fw-medium)',color:'var(--text-primary)',fontFamily:'var(--font-ui)'}}>{label}</label>}
+      <div style={{position:'relative',boxShadow:focus?'0 0 0 3px var(--accent-tint)':'none',borderRadius:'var(--radius-md)',transition:'box-shadow .14s'}}>
+        <select defaultValue={defaultValue} onFocus={()=>setFocus(true)} onBlur={()=>setFocus(false)}
+          style={{width:'100%',height:50,padding:'0 38px 0 16px',border:`1px solid ${focus?'var(--accent)':'var(--border-default)'}`,borderRadius:'var(--radius-md)',background:'var(--surface-card)',fontFamily:'var(--font-ui)',fontSize:'var(--fs-body)',color:'var(--text-primary)',appearance:'none',cursor:'pointer',outline:'none',transition:'border-color .14s'}}>{children}</select>
+        <i data-lucide="chevron-down" width="15" height="15" style={{position:'absolute',right:13,top:'50%',transform:'translateY(-50%)',color:'var(--gray-500)',pointerEvents:'none'}}></i>
+      </div>
+    </div>
+  );
+}
+
+function AdminEscolinhaCadastro({navigate}) {
+  const {Card,Badge,Button,Input} = window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const g2={display:'grid',gridTemplateColumns:'1fr 1fr',gap:14};
+  const ufs=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:20}}>
+      <button onClick={()=>navigate('escolinhas')} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-sm)',color:'var(--text-secondary)',fontFamily:'var(--font-ui)',padding:0}}>
+        <i data-lucide="arrow-left" width="15" height="15"></i>
+        Escolinhas <span style={{color:'var(--border-default)',margin:'0 2px'}}>/</span> <strong style={{color:'var(--text-primary)'}}>Nova escolinha</strong>
+      </button>
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 296px',gap:20}}>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Dados da escolinha">
+            <div style={{display:'flex',flexDirection:'column',gap:14}}>
+              <div style={g2}><Input label="Nome da escolinha" placeholder="Ex.: FC Estrela"/><Input label="CNPJ / CPF" placeholder="00.000.000/0000-00"/></div>
+              <div style={g2}><Input label="Cidade" placeholder="São Paulo" leadingIcon="map-pin"/><DSSelect label="Estado" defaultValue="SP">{ufs.map(u=><option key={u} value={u}>{u}</option>)}</DSSelect></div>
+              <div>
+                <label style={{display:'block',marginBottom:8,fontSize:'var(--fs-body)',fontWeight:'var(--fw-medium)',color:'var(--text-primary)',fontFamily:'var(--font-ui)'}}>Logo da escolinha</label>
+                <div style={{height:88,border:'2px dashed var(--border-default)',borderRadius:'var(--radius-md)',background:'var(--surface-subtle)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:6,cursor:'pointer'}}>
+                  <i data-lucide="image-plus" width="22" height="22" style={{color:'var(--gray-500)'}}></i>
+                  <span style={{fontSize:'var(--fs-sm)',color:'var(--text-secondary)'}}>Clique ou arraste · PNG/JPG · máx. 2 MB</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+          <Card title="Responsável / contato">
+            <div style={{display:'flex',flexDirection:'column',gap:14}}>
+              <div style={g2}><Input label="Nome do responsável" placeholder="Carlos Nunes" leadingIcon="user"/><Input label="E-mail" type="email" placeholder="carlos@fcestrela.com" leadingIcon="mail"/></div>
+              <div style={g2}><Input label="Telefone / WhatsApp" placeholder="(11) 9xxxx-xxxx" leadingIcon="phone"/><DSSelect label="Cargo" defaultValue="owner"><option value="owner">Dono / Gestor</option><option value="dir">Diretor</option><option value="coord">Coordenador</option></DSSelect></div>
+            </div>
+          </Card>
+          <Card title="Plano & cobrança">
+            <div style={{display:'flex',flexDirection:'column',gap:14}}>
+              <div style={g2}>
+                <DSSelect label="Plano SaaS" defaultValue="pro"><option value="basico">Básico — R$ 79/mês + 2,9%</option><option value="pro">Pro — R$ 149/mês + 2,0%</option><option value="hibrido">Híbrido — R$ 99/mês + 1,5%</option></DSSelect>
+                <DSSelect label="Ciclo" defaultValue="monthly"><option value="monthly">Mensal</option><option value="annual">Anual (2 meses grátis)</option></DSSelect>
+              </div>
+              <div style={g2}>
+                <DSSelect label="Status inicial" defaultValue="active"><option value="active">Ativa</option><option value="trial">Trial (30 dias)</option><option value="kyc">Aguardar KYC</option></DSSelect>
+                <Input label="Início da assinatura" placeholder="01/05/2026" leadingIcon="calendar"/>
+              </div>
+            </div>
+          </Card>
+        </div>
+        {/* Rail */}
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <div style={{padding:'13px 15px',background:'var(--info-tint)',borderRadius:'var(--radius-md)',borderLeft:'3px solid var(--info)'}}>
+            <div style={{display:'flex',gap:9,alignItems:'flex-start'}}>
+              <i data-lucide="info" width="15" height="15" style={{color:'var(--info)',flexShrink:0,marginTop:1}}></i>
+              <p style={{margin:0,fontSize:'var(--fs-sm)',color:'var(--text-secondary)',lineHeight:1.65}}>Após salvar, a escolinha recebe um <strong>convite por e-mail</strong> e inicia o fluxo de <strong>KYC / subconta</strong> antes de cobrar.</p>
+            </div>
+          </div>
+          <Card title="Resumo do plano" padding={24}>
+            {[['Plano','Pro'],['Mensalidade SaaS','R$ 149/mês'],['% por transação','2,0%'],['Ciclo','Mensal']].map(([k,v],i)=>(
+              <div key={k} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'11px 0',borderBottom:i<3?'1px solid var(--border-subtle)':'none',fontSize:'var(--fs-body)'}}>
+                <span style={{color:'var(--text-secondary)'}}>{k}</span><strong>{v}</strong>
+              </div>
+            ))}
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:11,fontSize:'var(--fs-body)'}}>
+              <span style={{color:'var(--text-secondary)'}}>KYC</span><Badge tone="info">Será solicitado</Badge>
+            </div>
+          </Card>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            <Button variant="primary" size="md" fullWidth leadingIcon="check" onClick={()=>navigate('kyc')}>Salvar e convidar</Button>
+            <Button variant="secondary" size="md" fullWidth onClick={()=>navigate('escolinhas')}>Cancelar</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.AdminEscolinhaCadastro = AdminEscolinhaCadastro;
+</script>
+
+<!-- ── REMAINING SCREENS ───────────────────────────────────── -->
+<script type="text/babel">
+const TH={padding:'24px',textAlign:'left',fontSize:'var(--fs-xs)',fontWeight:'var(--fw-semibold)',letterSpacing:'0.05em',textTransform:'uppercase',color:'var(--text-secondary)',borderBottom:'1px solid var(--border-subtle)'};
+const TD={padding:'13px 24px',fontSize:'var(--fs-body)',borderBottom:'1px solid var(--gray-100)'};
+
+function AdminPlanos({navigate}) {
+  const {Card,Badge,Button}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const plans=[
+    {name:'Básico', price:'R$ 79', pct:'2,9%',feats:['Até 60 alunos','Pix + boleto','Relatórios básicos','1 unidade'],count:14},
+    {name:'Pro',    price:'R$ 149',pct:'2,0%',feats:['Alunos ilimitados','Pix, cartão e boleto','Split p/ professor','Relatórios avançados'],count:18,hot:true},
+    {name:'Híbrido',price:'R$ 99', pct:'1,5%',feats:['Fixo menor + % maior','Pix, cartão e boleto','Multi-unidade','Suporte prioritário'],count:6},
+  ];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:22}}>
+      <div style={{display:'flex',justifyContent:'flex-end',gap:10}}>
+        <Button variant="primary" size="sm" leadingIcon="plus" onClick={()=>navigate('plano-form')}>Novo plano</Button>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:20}}>
+        {plans.map(p=>(
+          <Card key={p.name} style={p.hot?{borderColor:'var(--accent)',borderWidth:2}:{}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+              <h3 style={{margin:0,fontSize:'var(--fs-h4)',fontWeight:'var(--fw-bold)'}}>{p.name}</h3>
+              {p.hot&&<Badge tone="accent">Mais usado</Badge>}
+            </div>
+            <div style={{display:'flex',gap:8,alignItems:'baseline',margin:'14px 0 2px'}}>
+              <span style={{fontSize:32,fontWeight:'var(--fw-bold)',letterSpacing:'-0.02em',fontVariantNumeric:'tabular-nums'}}>{p.price}</span>
+              <span style={{fontSize:14,color:'var(--text-secondary)'}}>/mês</span>
+            </div>
+            <div style={{fontSize:'var(--fs-sm)',color:'var(--text-secondary)',marginBottom:14}}>+ {p.pct} por transação</div>
+            <Badge tone="neutral">{p.count} escolinhas ativas</Badge>
+            <div style={{height:1,background:'var(--border-subtle)',margin:'16px 0'}}/>
+            {p.feats.map(f=>(<div key={f} style={{display:'flex',gap:9,alignItems:'center',fontSize:'var(--fs-sm)',color:'var(--text-secondary)',marginBottom:8}}>
+              <i data-lucide="check" width="14" height="14" style={{color:'var(--success)',flexShrink:0}}></i>{f}
+            </div>))}
+            <Button variant="secondary" size="sm" fullWidth leadingIcon="pencil" style={{marginTop:16}} onClick={()=>navigate('plano-form')}>Editar plano</Button>
+          </Card>
+        ))}
+      </div>
+      <div style={{padding:'13px 16px',background:'var(--info-tint)',borderRadius:'var(--radius-md)',display:'flex',gap:10,alignItems:'flex-start'}}>
+        <i data-lucide="info" width="14" height="14" style={{color:'var(--info)',flexShrink:0,marginTop:2}}></i>
+        <span style={{fontSize:'var(--fs-sm)',color:'var(--text-secondary)'}}>Mudança de plano não recalcula cobranças já geradas. O split vigente é o do momento da criação da cobrança.</span>
+      </div>
+    </div>
+  );
+}
+window.AdminPlanos=AdminPlanos;
+
+function AdminAssinaturas({navigate}) {
+  const {Card,Badge,Button,StatCard,Avatar,Tabs}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [tab,setTab]=React.useState('all');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const sm={active:{label:'Ativa',tone:'success'},late:{label:'Em atraso',tone:'danger'},suspended:{label:'Cancelada',tone:'neutral'}};
+  const rows=[
+    {name:'FC Estrela',    plan:'Pro',    ciclo:'Mensal',prox:'01 mai 2026',valor:'R$ 149',status:'active'},
+    {name:'Academia Bola', plan:'Híbrido',ciclo:'Mensal',prox:'03 mai 2026',valor:'R$ 99', status:'active'},
+    {name:'Gol de Placa',  plan:'Básico', ciclo:'Mensal',prox:'28 abr 2026',valor:'R$ 79', status:'late'},
+    {name:'Vila Futebol',  plan:'Híbrido',ciclo:'Anual', prox:'12 jan 2027',valor:'R$ 990',status:'active'},
+    {name:'Meninos de Ouro',plan:'Básico',ciclo:'Mensal',prox:'—',          valor:'R$ 79', status:'suspended'},
+  ];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:22}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14}}>
+        <StatCard icon="repeat"    label="Assinaturas ativas" value="34"/>
+        <StatCard icon="wallet"    label="MRR"                value="R$ 24.900" variant="dark"/>
+        <StatCard icon="user-minus"label="Churn (mês)"        value="2,1%" trend="-0,4pp" trendDirection="down"/>
+      </div>
+      <Card padding={0} style={{overflow:'hidden'}}>
+        <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',padding:'24px 24px 0',gap:16}}>
+          <Tabs tabs={[{value:'all',label:'Todas'},{value:'active',label:'Ativas'},{value:'late',label:'Em atraso'},{value:'suspended',label:'Canceladas'}]} value={tab} onChange={setTab}/>
+          <div style={{paddingBottom:14}}><Button variant="ghost" size="sm" leadingIcon="download">Exportar</Button></div>
+        </div>
+        <table style={{width:'100%',borderCollapse:'collapse'}}>
+          <thead><tr>{['Escolinha','Plano','Ciclo','Próx. cobrança','Valor','Status'].map(h=><th key={h} style={TH}>{h}</th>)}</tr></thead>
+          <tbody>{rows.filter(r=>tab==='all'||r.status===tab).map((r,i)=>{const s=sm[r.status]||{label:r.status,tone:'neutral'};return(<tr key={i}>
+            <td style={TD}><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={r.name} size={32}/><span style={{fontWeight:'var(--fw-semibold)'}}>{r.name}</span></div></td>
+            <td style={TD}><Badge tone="neutral">{r.plan}</Badge></td>
+            <td style={{...TD,color:'var(--text-secondary)'}}>{r.ciclo}</td>
+            <td style={{...TD,color:'var(--text-secondary)'}}>{r.prox}</td>
+            <td style={{...TD,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums'}}>{r.valor}</td>
+            <td style={TD}><Badge tone={s.tone} dot>{s.label}</Badge></td>
+          </tr>);})}</tbody>
+        </table>
+      </Card>
+    </div>
+  );
+}
+window.AdminAssinaturas=AdminAssinaturas;
+
+function AdminCobrancas({navigate}) {
+  const {Card,Badge,Button,StatCard,Avatar,Tabs}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [tab,setTab]=React.useState('all');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const sm={paid:{label:'Pago',tone:'success'},late:{label:'Vencido',tone:'danger'},pending:{label:'A vencer',tone:'info'}};
+  const rows=[
+    {name:'FC Estrela',   ref:'Abr/2026 · Pro',   valor:'R$ 149',venc:'01 abr',met:'Cartão',status:'paid'},
+    {name:'Academia Bola',ref:'Abr/2026 · Híbrido',valor:'R$ 99', venc:'03 abr',met:'Pix',   status:'paid'},
+    {name:'Gol de Placa', ref:'Abr/2026 · Básico', valor:'R$ 79', venc:'28 abr',met:'Boleto',status:'late'},
+    {name:'CT Raízes',    ref:'Abr/2026 · Pro',    valor:'R$ 149',venc:'30 abr',met:'Pix',   status:'pending'},
+  ];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:22}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14}}>
+        <StatCard icon="check-circle-2" label="Recebido em abril" value="R$ 22.100" variant="dark"/>
+        <StatCard icon="clock"          label="A vencer"           value="R$ 2.800"/>
+        <StatCard icon="alert-circle"   label="Vencido"            value="R$ 940" trend="4 faturas" trendDirection="down"/>
+      </div>
+      <Card padding={0} style={{overflow:'hidden'}}>
+        <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',padding:'24px 24px 0',gap:16}}>
+          <Tabs tabs={[{value:'all',label:'Todas'},{value:'paid',label:'Pagas'},{value:'pending',label:'A vencer'},{value:'late',label:'Vencidas'}]} value={tab} onChange={setTab}/>
+          <div style={{paddingBottom:14}}><Button variant="ghost" size="sm" leadingIcon="send">Reenviar lembretes</Button></div>
+        </div>
+        <table style={{width:'100%',borderCollapse:'collapse'}}>
+          <thead><tr>{['Escolinha','Referência','Valor','Vencimento','Método','Status',''].map(h=><th key={h} style={TH}>{h}</th>)}</tr></thead>
+          <tbody>{rows.filter(r=>tab==='all'||r.status===tab).map((r,i)=>{const s=sm[r.status]||{};return(<tr key={i}>
+            <td style={TD}><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={r.name} size={32}/><span style={{fontWeight:'var(--fw-semibold)'}}>{r.name}</span></div></td>
+            <td style={{...TD,fontSize:'var(--fs-sm)',color:'var(--text-secondary)'}}>{r.ref}</td>
+            <td style={{...TD,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums'}}>{r.valor}</td>
+            <td style={{...TD,color:'var(--text-secondary)'}}>{r.venc}</td>
+            <td style={TD}><Badge tone="neutral">{r.met}</Badge></td>
+            <td style={TD}><Badge tone={s.tone} dot>{s.label}</Badge></td>
+            <td style={TD}><Button variant="ghost" size="sm">{r.status==='late'?'2ª via':r.status==='pending'?'Cobrar':'Recibo'}</Button></td>
+          </tr>);})}</tbody>
+        </table>
+      </Card>
+    </div>
+  );
+}
+window.AdminCobrancas=AdminCobrancas;
+
+function AdminFinanceiro({navigate}) {
+  const {Card,Badge,Button,StatCard}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const bars=[58,74,66,88,80,96,94,100,96,100,92,100];
+  const txs=[
+    {id:'#TX-90412',esc:'FC Estrela',   bruto:'R$ 250,00',taxa:'R$ 5,00', liq:'R$ 245,00',status:'paid'},
+    {id:'#TX-90410',esc:'Academia Bola',bruto:'R$ 220,00',taxa:'R$ 3,30', liq:'R$ 216,70',status:'paid'},
+    {id:'#TX-90408',esc:'Gol de Placa', bruto:'R$ 280,00',taxa:'R$ 8,12', liq:'R$ 271,88',status:'pending'},
+    {id:'#TX-90405',esc:'Vila Futebol', bruto:'R$ 250,00',taxa:'R$ 3,75', liq:'R$ 246,25',status:'late'},
+  ];
+  const sm={paid:{label:'Repassado',tone:'success'},pending:{label:'Em processamento',tone:'info'},late:{label:'Estornado',tone:'danger'}};
+  return (
+    <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 268px',gap:22}}>
+      <div style={{display:'flex',flexDirection:'column',gap:20}}>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14}}>
+          <StatCard icon="arrow-down-left" label="Volume transacionado"   value="R$ 412 mil"/>
+          <StatCard icon="scissors"        label="Taxa retida"            value="R$ 8.240" variant="dark"/>
+          <StatCard icon="arrow-up-right"  label="Repasses às escolinhas" value="R$ 392 mil"/>
+          <StatCard icon="piggy-bank"      label="Saldo a repassar"       value="R$ 11.500"/>
+        </div>
+        <Card title="Volume mensal" subtitle="Transações em R$ mil">
+          <div style={{display:'flex',alignItems:'flex-end',gap:5,height:110,paddingTop:8}}>
+            {bars.map((h,i)=><div key={i} style={{flex:1,background:i===bars.length-1?'var(--accent)':'var(--surface-muted)',borderRadius:'3px 3px 0 0',height:h+'%'}}/>)}
+          </div>
+          <div style={{display:'flex',justifyContent:'space-between',marginTop:7,fontSize:'var(--fs-xs)',color:'var(--text-secondary)'}}>
+            {['Mai','','Jul','','Set','','Nov','','Jan','','Mar','Abr'].map((l,i)=><span key={i}>{l}</span>)}
+          </div>
+        </Card>
+        <Card title="Movimentações recentes" action={<Button variant="ghost" size="sm" leadingIcon="download">Conciliação</Button>}>
+          <div style={{margin:'0 -24px -24px',overflow:'hidden',borderRadius:'0 0 15px 15px'}}>
+          <table style={{width:'100%',borderCollapse:'collapse'}}>
+            <thead><tr>{['Transação','Escolinha','Bruto','Taxa','Líquido','Status'].map(h=><th key={h} style={TH}>{h}</th>)}</tr></thead>
+            <tbody>{txs.map((r,i)=>{const s=sm[r.status]||{};return(<tr key={i}>
+              <td style={{...TD,fontFamily:'monospace',fontSize:'var(--fs-xs)',color:'var(--text-secondary)'}}>{r.id}</td>
+              <td style={{...TD,fontWeight:'var(--fw-semibold)'}}>{r.esc}</td>
+              <td style={{...TD,fontVariantNumeric:'tabular-nums'}}>{r.bruto}</td>
+              <td style={{...TD,color:'var(--text-secondary)',fontVariantNumeric:'tabular-nums'}}>{r.taxa}</td>
+              <td style={{...TD,fontWeight:'var(--fw-bold)',fontVariantNumeric:'tabular-nums'}}>{r.liq}</td>
+              <td style={TD}><Badge tone={s.tone} dot>{s.label}</Badge></td>
+            </tr>);})}</tbody>
+          </table>
+          </div>
+        </Card>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:18}}>
+        <Card title="Próximo repasse" padding={24}>
+          <div style={{fontSize:26,fontWeight:'var(--fw-bold)',letterSpacing:'-0.02em',fontVariantNumeric:'tabular-nums',margin:'8px 0 4px'}}>R$ 11.500,00</div>
+          <div style={{fontSize:'var(--fs-sm)',color:'var(--text-secondary)',marginBottom:16}}>30 abr · 28 escolinhas</div>
+          <Button variant="primary" size="sm" fullWidth leadingIcon="banknote">Liberar repasses</Button>
+        </Card>
+        <Card title="Saúde de webhooks" padding={24}>
+          {[['Entregues (24h)','1.284','success'],['Reprocessados','12','warning'],['Com falha','1','danger']].map(([lbl,val,tone])=>(
+            <div key={lbl} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'9px 0',borderBottom:'1px solid var(--border-subtle)'}}>
+              <span style={{fontSize:'var(--fs-sm)',color:'var(--text-secondary)'}}>{lbl}</span><Badge tone={tone}>{val}</Badge>
+            </div>
+          ))}
+          <Button variant="ghost" size="sm" fullWidth style={{marginTop:12}}>Ver log de eventos</Button>
+        </Card>
+      </div>
+    </div>
+  );
+}
+window.AdminFinanceiro=AdminFinanceiro;
+
+function AdminGateway({navigate}) {
+  const {Card,Badge,Button,Input}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const splitRules=[
+    {plan:'Básico', plat:'2,9%',esc:'97,1%',prof:'—',      status:'active'},
+    {plan:'Pro',    plat:'2,0%',esc:'88,0%',prof:'até 10%', status:'active'},
+    {plan:'Híbrido',plat:'1,5%',esc:'88,5%',prof:'até 10%', status:'active'},
+  ];
+  const FF=({label,val})=>(<div style={{display:'flex',flexDirection:'column',gap:7}}>
+    <label style={{fontSize:'var(--fs-sm)',fontWeight:'var(--fw-medium)',color:'var(--text-primary)'}}>{label}</label>
+    <div style={{height:44,padding:'0 14px',border:'1px solid var(--border-default)',borderRadius:'var(--radius-md)',background:'var(--surface-card)',display:'flex',alignItems:'center',justifyContent:'space-between',fontSize:'var(--fs-body)',cursor:'pointer'}}>
+      <span>{val}</span><i data-lucide="chevron-down" width="14" height="14" style={{color:'var(--gray-500)'}}></i>
+    </div>
+  </div>);
+  return (
+    <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 268px',gap:22}}>
+      <div style={{display:'flex',flexDirection:'column',gap:20}}>
+        <Card title="Provedor de pagamento" action={<Badge tone="info" dot>Conectado · Sandbox</Badge>}>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:16}}>
+            <FF label="Gateway" val="Pagar.me"/><FF label="Ambiente" val="Sandbox"/>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:14}}>
+            <Input label="Public key"   defaultValue="pk_test_••••••••" trailingIcon="eye-off"/>
+            <Input label="Secret key"   defaultValue="sk_test_••••••••" trailingIcon="eye-off"/>
+            <Input label="URL webhook"  defaultValue="https://api.craque.com/webhooks/payment-gateway" leadingIcon="link"/>
+          </div>
+          <div style={{marginTop:18,paddingTop:16,borderTop:'1px solid var(--border-subtle)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <div><div style={{fontWeight:'var(--fw-semibold)',fontSize:'var(--fs-body)'}}>Métodos habilitados</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>Checkout do responsável</div></div>
+            <div style={{display:'flex',gap:6}}>{['Pix','Cartão','Boleto'].map((m,i)=><Badge key={m} tone={i<2?'success':'neutral'}>{m}</Badge>)}</div>
+          </div>
+          <Button variant="primary" size="sm" leadingIcon="check" style={{marginTop:14}}>Salvar configurações</Button>
+        </Card>
+        <Card title="Regras de split por plano" action={<Button variant="primary" size="sm" leadingIcon="plus">Nova regra</Button>}>
+          <div style={{margin:'0 -24px -24px',overflow:'hidden',borderRadius:'0 0 15px 15px'}}>
+          <table style={{width:'100%',borderCollapse:'collapse'}}>
+            <thead><tr>{['Plano','Plataforma','Escolinha','Professor (opc.)',''].map((h,i)=><th key={i} style={{...TH,...(i===4?{textAlign:'right'}:{})}}>{h}</th>)}</tr></thead>
+            <tbody>{splitRules.map(r=>(<tr key={r.plan}>
+              <td style={TD}><Badge tone="neutral">{r.plan}</Badge></td>
+              <td style={{...TD,fontWeight:'var(--fw-bold)'}}>{r.plat}</td>
+              <td style={TD}>{r.esc}</td>
+              <td style={{...TD,color:'var(--text-secondary)'}}>{r.prof}</td>
+              <td style={{...TD,textAlign:'right'}}><Button variant="ghost" size="sm" leadingIcon="pencil">Editar</Button></td>
+            </tr>))}</tbody>
+          </table>
+          </div>
+        </Card>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:18}}>
+        <Card title="Exemplo · R$ 100" padding={24}>
+          {[['Responsável paga','R$ 100,00',''],['Plataforma (2%)','R$ 2,00','var(--lime-700)'],['Taxa gateway','R$ 1,99',''],['Escolinha recebe','R$ 96,01','']].map(([k,v,c],i)=>(
+            <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'10px 0',borderBottom:i<3?'1px solid var(--border-subtle)':'none',fontSize:'var(--fs-body)'}}>
+              <span style={{color:'var(--text-secondary)'}}>{k}</span><strong style={{color:c||'inherit'}}>{v}</strong>
+            </div>
+          ))}
+        </Card>
+        <Card title="Recursos do gateway" padding={24}>
+          {['Pix / cartão / boleto','Recorrência','Split multi-recebedor','Subcontas / KYC','Webhooks','Estorno & chargeback'].map(f=>(
+            <div key={f} style={{display:'flex',gap:9,alignItems:'center',padding:'7px 0',fontSize:'var(--fs-sm)',color:'var(--text-secondary)'}}>
+              <i data-lucide="check" width="14" height="14" style={{color:'var(--success)',flexShrink:0}}></i>{f}
+            </div>
+          ))}
+        </Card>
+      </div>
+    </div>
+  );
+}
+window.AdminGateway=AdminGateway;
+
+function AdminKYC({navigate}) {
+  const {Card,Badge,Button,StatCard,Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [hov,setHov]=React.useState(null);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const sm={active:{label:'Aprovado',tone:'success'},kyc:{label:'Em análise',tone:'info'},late:{label:'Pendência',tone:'warning'},suspended:{label:'Recusado',tone:'danger'}};
+  const rows=[
+    {name:'FC Estrela',     sub:'rec_8841',docs:'Completos',         status:'active'},
+    {name:'Academia Bola',  sub:'rec_8839',docs:'Completos',         status:'active'},
+    {name:'CT Raízes',      sub:'—',        docs:'CNPJ + sócio',     status:'kyc'},
+    {name:'Gol de Placa',   sub:'rec_8801',docs:'Falta comprovante', status:'late'},
+    {name:'Meninos de Ouro',sub:'—',        docs:'Reprovado',        status:'suspended'},
+  ];
+  const steps=[['Dados cadastrais','done'],['Documento do responsável','done'],['CNPJ / contrato social','active'],['Conta bancária','pending'],['Aprovação do gateway','pending']];
+  return (
+    <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 268px',gap:22}}>
+      <div style={{display:'flex',flexDirection:'column',gap:20}}>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14}}>
+          <StatCard icon="shield-check" label="Aprovadas"      value="31" variant="dark"/>
+          <StatCard icon="clock"        label="Em análise"     value="3"/>
+          <StatCard icon="file-warning" label="Pendência docs" value="2"/>
+          <StatCard icon="shield-x"     label="Recusadas"      value="1"/>
+        </div>
+        <Card padding={0} style={{overflow:'hidden'}}>
+          <table style={{width:'100%',borderCollapse:'collapse'}}>
+            <thead><tr>{['Escolinha','Subconta','Documentos','KYC','Ação'].map(h=><th key={h} style={TH}>{h}</th>)}</tr></thead>
+            <tbody>{rows.map((r,i)=>{const s=sm[r.status]||{};return(<tr key={i} style={{background:hov===i?'var(--surface-subtle)':'transparent',cursor:'pointer',transition:'background .1s'}} onMouseEnter={()=>setHov(i)} onMouseLeave={()=>setHov(null)}>
+              <td style={TD}><div style={{display:'flex',alignItems:'center',gap:10}}><Avatar name={r.name} size={32}/><span style={{fontWeight:'var(--fw-semibold)'}}>{r.name}</span></div></td>
+              <td style={{...TD,fontFamily:'monospace',fontSize:'var(--fs-xs)',color:'var(--text-secondary)'}}>{r.sub}</td>
+              <td style={{...TD,fontSize:'var(--fs-sm)',color:'var(--text-secondary)'}}>{r.docs}</td>
+              <td style={TD}><Badge tone={s.tone} dot>{s.label}</Badge></td>
+              <td style={TD}><Button variant="ghost" size="sm">Revisar</Button></td>
+            </tr>);})}</tbody>
+          </table>
+        </Card>
+      </div>
+      <Card title="Etapas do KYC" padding={24}>
+        {steps.map(([step,status],i)=>(
+          <div key={step} style={{display:'flex',gap:12,alignItems:'flex-start',padding:'10px 0',borderBottom:i<steps.length-1?'1px solid var(--border-subtle)':'none'}}>
+            <span style={{width:24,height:24,borderRadius:'50%',flexShrink:0,display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,
+              border:`2px solid ${status==='done'?'var(--success)':status==='active'?'var(--accent)':'var(--border-default)'}`,
+              background:status==='done'?'var(--success-tint)':status==='active'?'var(--accent-tint)':'transparent',
+              color:status==='done'?'var(--success)':status==='active'?'var(--lime-700)':'var(--text-secondary)'}}>
+              {status==='done'?'✓':i+1}
+            </span>
+            <div>
+              <div style={{fontSize:'var(--fs-sm)',fontWeight:status==='pending'?400:'var(--fw-medium)',color:status==='pending'?'var(--text-secondary)':'var(--text-primary)'}}>{step}</div>
+              {status==='active'&&<div style={{fontSize:'var(--fs-xs)',color:'var(--info)',marginTop:2}}>Em análise pelo gateway</div>}
+            </div>
+          </div>
+        ))}
+        <div style={{marginTop:14,padding:'11px 13px',background:'var(--warning-tint)',borderRadius:'var(--radius-md)',fontSize:'var(--fs-xs)',color:'var(--text-secondary)'}}>
+          Escolinha só fica apta a cobrar após subconta aprovada pelo gateway.
+        </div>
+      </Card>
+    </div>
+  );
+}
+window.AdminKYC=AdminKYC;
+
+function AdminRelatorios({navigate}) {
+  const {Card,Button}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const types=[
+    {icon:'bar-chart-3',    name:'Financeiro consolidado',sub:'Receita, taxas e repasses'},
+    {icon:'user-x',         name:'Inadimplência',         sub:'Por escolinha e período'},
+    {icon:'arrow-left-right',name:'Transações',           sub:'Detalhe de cada pagamento'},
+    {icon:'repeat',         name:'Assinaturas SaaS',      sub:'MRR, churn e upgrades'},
+    {icon:'git-merge',      name:'Splits & repasses',     sub:'Auditoria de divisão'},
+    {icon:'shield-check',   name:'KYC / compliance',      sub:'Status das subcontas'},
+  ];
+  const FS=({label,val,w})=>(<div style={{display:'flex',flexDirection:'column',gap:6,width:w}}>
+    <label style={{fontSize:'var(--fs-sm)',fontWeight:'var(--fw-medium)'}}>{label}</label>
+    <div style={{height:44,padding:'0 14px',border:'1px solid var(--border-default)',borderRadius:'var(--radius-md)',background:'var(--surface-card)',display:'flex',alignItems:'center',justifyContent:'space-between',fontSize:'var(--fs-body)',cursor:'pointer'}}>
+      <span>{val}</span><i data-lucide="chevron-down" width="14" height="14" style={{color:'var(--gray-500)'}}></i>
+    </div>
+  </div>);
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:22}}>
+      <Card>
+        <div style={{display:'flex',gap:14,alignItems:'flex-end',flexWrap:'wrap'}}>
+          <FS label="Tipo de relatório" val="Financeiro consolidado" w="220px"/>
+          <FS label="Escolinha"         val="Todas"                  w="150px"/>
+          <FS label="Período"           val="Abril 2026"             w="140px"/>
+          <FS label="Formato"           val="CSV"                    w="110px"/>
+          <Button variant="primary" leadingIcon="download" style={{flexShrink:0}}>Exportar</Button>
+        </div>
+      </Card>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14}}>
+        {types.map(t=>(
+          <div key={t.name} style={{background:'var(--surface-card)',border:'1px solid var(--border-subtle)',borderRadius:'var(--radius-lg)',padding:20,cursor:'pointer',display:'flex',gap:14,alignItems:'flex-start'}}>
+            <span style={{width:40,height:40,borderRadius:'var(--radius-md)',background:'var(--surface-muted)',display:'inline-flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <i data-lucide={t.icon} width="18" height="18" style={{color:'var(--text-secondary)'}}></i>
+            </span>
+            <div style={{flex:1}}><div style={{fontWeight:'var(--fw-semibold)',fontSize:'var(--fs-body)'}}>{t.name}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:3}}>{t.sub}</div></div>
+            <i data-lucide="arrow-up-right" width="15" height="15" style={{color:'var(--gray-300)',flexShrink:0}}></i>
+          </div>
+        ))}
+      </div>
+      <Card title="Prévia · Financeiro consolidado" subtitle="Abril 2026">
+        <div style={{margin:'0 -24px -24px',overflow:'hidden',borderRadius:'0 0 15px 15px'}}>
+        <table style={{width:'100%',borderCollapse:'collapse'}}>
+          <thead><tr>{['Escolinha','Volume','Taxa plataforma','Repassado','Inadimplência'].map(h=><th key={h} style={TH}>{h}</th>)}</tr></thead>
+          <tbody>{[['FC Estrela','R$ 34.200','R$ 684','R$ 33.516','2,1%'],['Academia Bola','R$ 21.600','R$ 324','R$ 21.276','4,0%'],['Gol de Placa','R$ 11.880','R$ 344','R$ 11.536','9,3%'],['Vila Futebol','R$ 28.800','R$ 432','R$ 28.368','1,2%']].map(([n,...vs])=>(
+            <tr key={n}><td style={{...TD,fontWeight:'var(--fw-semibold)'}}>{n}</td>{vs.map((v,i)=><td key={i} style={{...TD,fontVariantNumeric:'tabular-nums'}}>{v}</td>)}</tr>
+          ))}</tbody>
+        </table>
+        </div>
+      </Card>
+    </div>
+  );
+}
+window.AdminRelatorios=AdminRelatorios;
+
+function AdminUsuarios({navigate}) {
+  const {Card,Badge,Button,Avatar,Tabs}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [tab,setTab]=React.useState('active');
+  const [hov,setHov]=React.useState(null);
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const sm={active:{label:'Ativo',tone:'success'},invite:{label:'Convite',tone:'info'}};
+  const users=[
+    {name:'Ricardo Antunes',email:'ricardo@craque.com',role:'Super Admin',status:'active',last:'há 2 min'},
+    {name:'Júlia Moraes',   email:'julia@craque.com',  role:'Financeiro', status:'active',last:'há 1 h'},
+    {name:'Leo Pires',      email:'leo@craque.com',    role:'Suporte',    status:'active',last:'ontem'},
+    {name:'Marina Castro',  email:'marina@craque.com', role:'Suporte',    status:'invite',last:'—'},
+    {name:'Carlos Menezes', email:'carlos@craque.com', role:'Comercial',  status:'invite',last:'—'},
+  ];
+  const profiles=[
+    {name:'Super Admin',sub:'Acesso total'},
+    {name:'Financeiro', sub:'Cobranças, splits, repasses'},
+    {name:'Suporte',    sub:'Escolinhas e KYC (leitura)'},
+    {name:'Comercial',  sub:'Planos e assinaturas'},
+  ];
+  return (
+    <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 268px',gap:22}}>
+      <Card padding={0} style={{overflow:'hidden'}}>
+        <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',padding:'24px 24px 0',gap:16}}>
+          <Tabs tabs={[{value:'active',label:'Ativos · 6'},{value:'invite',label:'Convites · 2'}]} value={tab} onChange={setTab}/>
+          <div style={{paddingBottom:14}}><Button variant="primary" size="sm" leadingIcon="user-plus" onClick={()=>navigate('convidar-usuario')}>Convidar usuário</Button></div>
+        </div>
+        <table style={{width:'100%',borderCollapse:'collapse'}}>
+          <thead><tr>{['Usuário','Perfil','Status','Último acesso',''].map(h=><th key={h} style={TH}>{h}</th>)}</tr></thead>
+          <tbody>{users.filter(u=>tab==='active'?u.status==='active':u.status==='invite').map((u,i)=>{const s=sm[u.status]||{};return(<tr key={i} style={{background:hov===i?'var(--surface-subtle)':'transparent',transition:'background .1s'}} onMouseEnter={()=>setHov(i)} onMouseLeave={()=>setHov(null)}>
+            <td style={TD}><div style={{display:'flex',alignItems:'center',gap:12}}><Avatar name={u.name} size={34}/><div><div style={{fontWeight:'var(--fw-semibold)'}}>{u.name}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:1}}>{u.email}</div></div></div></td>
+            <td style={TD}><Badge tone="neutral">{u.role}</Badge></td>
+            <td style={TD}><Badge tone={s.tone} dot>{s.label}</Badge></td>
+            <td style={{...TD,color:'var(--text-secondary)',fontSize:'var(--fs-sm)'}}>{u.last}</td>
+            <td style={TD}><button style={{border:'none',background:'transparent',cursor:'pointer',width:28,height:28,borderRadius:'var(--radius-md)',display:'inline-flex',alignItems:'center',justifyContent:'center',color:'var(--text-secondary)'}}><i data-lucide="more-horizontal" width="16" height="16"></i></button></td>
+          </tr>);})}</tbody>
+        </table>
+      </Card>
+      <Card title="Perfis & permissões" padding={24}>
+        {profiles.map((p,i)=>(
+          <div key={p.name}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'11px 0'}}>
+              <div><div style={{fontWeight:'var(--fw-semibold)',fontSize:'var(--fs-body)'}}>{p.name}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>{p.sub}</div></div>
+              <button style={{border:'none',background:'transparent',cursor:'pointer',color:'var(--text-secondary)'}}><i data-lucide="pencil" width="13" height="13"></i></button>
+            </div>
+            {i<profiles.length-1&&<div style={{height:1,background:'var(--border-subtle)'}}/>}
+          </div>
+        ))}
+        <Button variant="secondary" size="sm" fullWidth leadingIcon="plus" style={{marginTop:14}}>Novo perfil</Button>
+      </Card>
+    </div>
+  );
+}
+window.AdminUsuarios=AdminUsuarios;
+
+function AdminConfig({navigate}) {
+  const {Card,Button,Tabs}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [tab,setTab]=React.useState('geral');
+  const [tgl,setTgl]=React.useState({lemb:true,inadim:true,wh:true,susp:false,fa2:true});
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const Toggle=({id})=>(<div onClick={()=>setTgl(t=>({...t,[id]:!t[id]}))} style={{width:42,height:23,borderRadius:99,background:tgl[id]?'var(--accent)':'var(--gray-300)',cursor:'pointer',position:'relative',transition:'background .2s',flexShrink:0}}>
+    <span style={{position:'absolute',top:3,left:tgl[id]?21:3,width:17,height:17,borderRadius:'50%',background:'white',transition:'left .2s',boxShadow:'0 1px 3px rgba(0,0,0,.2)'}}/>
+  </div>);
+  const Row=({label,sub,id})=>(<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'13px 0',borderBottom:'1px solid var(--border-subtle)',gap:16}}>
+    <div><div style={{fontWeight:'var(--fw-medium)',fontSize:'var(--fs-body)'}}>{label}</div>{sub&&<div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>{sub}</div>}</div>
+    <Toggle id={id}/>
+  </div>);
+  const FI=({label,val})=>(<div style={{display:'flex',flexDirection:'column',gap:6}}>
+    <label style={{fontSize:'var(--fs-sm)',fontWeight:'var(--fw-medium)',color:'var(--text-primary)'}}>{label}</label>
+    <div style={{height:44,padding:'0 14px',border:'1px solid var(--border-default)',borderRadius:'var(--radius-md)',background:'var(--surface-card)',display:'flex',alignItems:'center',fontSize:'var(--fs-body)'}}>{val}</div>
+  </div>);
+  return (
+    <div>
+      <Tabs style={{marginBottom:24}} tabs={[{value:'geral',label:'Geral'},{value:'marca',label:'Marca'},{value:'notif',label:'Notificações'},{value:'seg',label:'Segurança'},{value:'fat',label:'Faturamento'}]} value={tab} onChange={setTab}/>
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 280px',gap:22}}>
+        <div style={{display:'flex',flexDirection:'column',gap:20}}>
+          {(tab==='geral'||tab==='marca')&&<Card title="Identidade da plataforma">
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
+              <FI label="Nome da plataforma" val="Craque"/><FI label="Domínio" val="app.craque.com"/>
+              <FI label="Idioma padrão" val="Português (BR)"/><FI label="Fuso horário" val="America/Sao_Paulo"/>
+            </div>
+            <div style={{marginTop:14}}>
+              <label style={{fontSize:'var(--fs-sm)',fontWeight:'var(--fw-medium)',color:'var(--text-primary)',display:'block',marginBottom:8}}>Logo & cores da marca</label>
+              <div style={{height:72,border:'2px dashed var(--border-default)',borderRadius:'var(--radius-md)',background:'var(--surface-subtle)',display:'flex',alignItems:'center',justifyContent:'center',gap:8,cursor:'pointer',color:'var(--text-secondary)',fontSize:'var(--fs-sm)'}}>
+                <i data-lucide="image-plus" width="18" height="18"></i>Clique ou arraste para enviar
+              </div>
+            </div>
+          </Card>}
+          {(tab==='geral'||tab==='notif')&&<Card title="Notificações & lembretes">
+            <Row label="Lembrete de mensalidade a vencer"       sub="E-mail e WhatsApp ao responsável" id="lemb"/>
+            <Row label="Aviso de inadimplência"                 sub="Para escolinha e responsável"     id="inadim"/>
+            <Row label="Alertas de webhook com falha"           sub="Para o time financeiro"           id="wh"/>
+            <Row label="Suspensão automática por inadimplência" sub="Após 15 dias de atraso"           id="susp"/>
+          </Card>}
+          {(tab==='geral'||tab==='seg')&&<Card title="Segurança">
+            <Row label="Exigir 2FA no time" sub="Autenticação em dois fatores" id="fa2"/>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'13px 0',fontSize:'var(--fs-body)'}}>
+              <span style={{color:'var(--text-secondary)'}}>Sessão expira em</span><strong>8 horas</strong>
+            </div>
+          </Card>}
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <div style={{padding:'12px 15px',background:'var(--info-tint)',borderRadius:'var(--radius-md)',borderLeft:'3px solid var(--info)',display:'flex',gap:9,alignItems:'flex-start'}}>
+            <i data-lucide="info" width="14" height="14" style={{color:'var(--info)',flexShrink:0,marginTop:1}}></i>
+            <p style={{margin:0,fontSize:'var(--fs-sm)',color:'var(--text-secondary)',lineHeight:1.6}}>Toda ação crítica gera <strong>audit log</strong>. Dados sensíveis seguem a <strong>LGPD</strong>.</p>
+          </div>
+          <Button variant="primary" fullWidth leadingIcon="check">Salvar alterações</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.AdminConfig=AdminConfig;
+
+function AdminPlanoForm({navigate}) {
+  const {Card,Badge,Button,Input}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [feats,setFeats]=React.useState({ilim:true,split:true,multi:false,prior:false,api:false});
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const g2={display:'grid',gridTemplateColumns:'1fr 1fr',gap:14};
+  const Toggle=({id})=>(<div onClick={()=>setFeats(t=>({...t,[id]:!t[id]}))} style={{width:42,height:23,borderRadius:99,background:feats[id]?'var(--accent)':'var(--gray-300)',cursor:'pointer',position:'relative',transition:'background .2s',flexShrink:0}}>
+    <span style={{position:'absolute',top:3,left:feats[id]?21:3,width:17,height:17,borderRadius:'50%',background:'white',transition:'left .2s',boxShadow:'0 1px 3px rgba(0,0,0,.2)'}}/>
+  </div>);
+  const FRow=({label,id})=>(<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 0',borderBottom:'1px solid var(--border-subtle)',gap:16}}>
+    <span style={{fontSize:'var(--fs-body)'}}>{label}</span><Toggle id={id}/>
+  </div>);
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:20}}>
+      <button onClick={()=>navigate('planos')} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-sm)',color:'var(--text-secondary)',fontFamily:'var(--font-ui)',padding:0}}>
+        <i data-lucide="arrow-left" width="15" height="15"></i>
+        Planos SaaS <span style={{color:'var(--border-default)',margin:'0 2px'}}>/</span> <strong style={{color:'var(--text-primary)'}}>Novo plano</strong>
+      </button>
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 296px',gap:20}}>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Dados do plano">
+            <div style={{display:'flex',flexDirection:'column',gap:14}}>
+              <div style={g2}><Input label="Nome do plano" placeholder="Ex.: Pro"/><DSSelect label="Ciclo de cobrança" defaultValue="monthly"><option value="monthly">Mensal</option><option value="annual">Anual (2 meses grátis)</option></DSSelect></div>
+              <div style={g2}><Input label="Mensalidade SaaS" placeholder="R$ 149,00" leadingIcon="dollar-sign"/><Input label="% por transação" placeholder="2,0%" leadingIcon="percent"/></div>
+              <Input label="Descrição curta" placeholder="Ex.: Para escolinhas em crescimento"/>
+            </div>
+          </Card>
+          <Card title="Limites & recursos">
+            <div style={{display:'flex',flexDirection:'column',gap:14,marginBottom:4}}>
+              <div style={g2}><Input label="Limite de alunos" placeholder="Ilimitado"/><Input label="Unidades incluídas" placeholder="1"/></div>
+            </div>
+            <FRow label="Alunos ilimitados"          id="ilim"/>
+            <FRow label="Split para professor"       id="split"/>
+            <FRow label="Multi-unidade"              id="multi"/>
+            <FRow label="Suporte prioritário"        id="prior"/>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 0',gap:16}}>
+              <span style={{fontSize:'var(--fs-body)'}}>Acesso à API</span><Toggle id="api"/>
+            </div>
+          </Card>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <div style={{padding:'13px 15px',background:'var(--info-tint)',borderRadius:'var(--radius-md)',borderLeft:'3px solid var(--info)'}}>
+            <div style={{display:'flex',gap:9,alignItems:'flex-start'}}>
+              <i data-lucide="info" width="15" height="15" style={{color:'var(--info)',flexShrink:0,marginTop:1}}></i>
+              <p style={{margin:0,fontSize:'var(--fs-sm)',color:'var(--text-secondary)',lineHeight:1.65}}>A mudança de plano <strong>não recalcula</strong> cobranças já geradas. O split vigente é o do momento da criação da cobrança.</p>
+            </div>
+          </div>
+          <Card title="Pré-visualização" padding={24}>
+            {[['Mensalidade','R$ 149/mês'],['% por transação','2,0%'],['Ciclo','Mensal'],['Limite de alunos','Ilimitado']].map(([k,v],i)=>(
+              <div key={k} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'11px 0',borderBottom:i<3?'1px solid var(--border-subtle)':'none',fontSize:'var(--fs-body)'}}>
+                <span style={{color:'var(--text-secondary)'}}>{k}</span><strong>{v}</strong>
+              </div>
+            ))}
+          </Card>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            <Button variant="primary" size="md" fullWidth leadingIcon="check" onClick={()=>navigate('planos')}>Salvar plano</Button>
+            <Button variant="secondary" size="md" fullWidth onClick={()=>navigate('planos')}>Cancelar</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.AdminPlanoForm=AdminPlanoForm;
+
+function AdminConvidarUsuario({navigate}) {
+  const {Card,Badge,Button,Input,Avatar}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const [role,setRole]=React.useState('suporte');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const g2={display:'grid',gridTemplateColumns:'1fr 1fr',gap:14};
+  const roles=[
+    {key:'super',  name:'Super Admin',sub:'Acesso total à plataforma'},
+    {key:'fin',    name:'Financeiro', sub:'Cobranças, splits e repasses'},
+    {key:'suporte',name:'Suporte',    sub:'Escolinhas e KYC (leitura)'},
+    {key:'com',    name:'Comercial',  sub:'Planos e assinaturas'},
+  ];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:20}}>
+      <button onClick={()=>navigate('usuarios')} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:'transparent',cursor:'pointer',fontSize:'var(--fs-sm)',color:'var(--text-secondary)',fontFamily:'var(--font-ui)',padding:0}}>
+        <i data-lucide="arrow-left" width="15" height="15"></i>
+        Usuários & Perfis <span style={{color:'var(--border-default)',margin:'0 2px'}}>/</span> <strong style={{color:'var(--text-primary)'}}>Convidar usuário</strong>
+      </button>
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) 296px',gap:20}}>
+        <div style={{display:'flex',flexDirection:'column',gap:18}}>
+          <Card title="Dados do convidado">
+            <div style={{display:'flex',flexDirection:'column',gap:14}}>
+              <div style={g2}><Input label="Nome completo" placeholder="Ex.: Marina Castro" leadingIcon="user"/><Input label="E-mail" type="email" placeholder="marina@craque.com" leadingIcon="mail"/></div>
+              <Input label="Mensagem (opcional)" placeholder="Bem-vinda ao time! Acesse com este convite." leadingIcon="message-square"/>
+            </div>
+          </Card>
+          <Card title="Perfil de acesso">
+            <div style={{display:'flex',flexDirection:'column',gap:10}}>
+              {roles.map(r=>{const on=role===r.key;return(
+                <div key={r.key} onClick={()=>setRole(r.key)} style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,padding:'14px 16px',border:`1px solid ${on?'var(--accent)':'var(--border-default)'}`,borderRadius:'var(--radius-md)',background:on?'var(--accent-tint)':'var(--surface-card)',cursor:'pointer',transition:'all .14s'}}>
+                  <div><div style={{fontWeight:'var(--fw-semibold)',fontSize:'var(--fs-body)'}}>{r.name}</div><div style={{fontSize:'var(--fs-xs)',color:'var(--text-secondary)',marginTop:2}}>{r.sub}</div></div>
+                  <div style={{width:20,height:20,borderRadius:'50%',border:`2px solid ${on?'var(--accent)':'var(--border-default)'}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{on&&<span style={{width:10,height:10,borderRadius:'50%',background:'var(--accent)'}}/>}</div>
+                </div>
+              );})}
+            </div>
+          </Card>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <div style={{padding:'13px 15px',background:'var(--info-tint)',borderRadius:'var(--radius-md)',borderLeft:'3px solid var(--info)'}}>
+            <div style={{display:'flex',gap:9,alignItems:'flex-start'}}>
+              <i data-lucide="info" width="15" height="15" style={{color:'var(--info)',flexShrink:0,marginTop:1}}></i>
+              <p style={{margin:0,fontSize:'var(--fs-sm)',color:'var(--text-secondary)',lineHeight:1.65}}>O convidado recebe um <strong>link por e-mail</strong> válido por 7 dias para criar a senha e ativar a conta.</p>
+            </div>
+          </div>
+          <Card title="Resumo do convite" padding={24}>
+            {[['Perfil',roles.find(r=>r.key===role)?.name],['Status','Convite pendente'],['Validade','7 dias'],['2FA','Será exigido']].map(([k,v],i)=>(
+              <div key={k} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'11px 0',borderBottom:i<3?'1px solid var(--border-subtle)':'none',fontSize:'var(--fs-body)'}}>
+                <span style={{color:'var(--text-secondary)'}}>{k}</span>{i===1?<Badge tone="info">{v}</Badge>:<strong>{v}</strong>}
+              </div>
+            ))}
+          </Card>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            <Button variant="primary" size="md" fullWidth leadingIcon="send" onClick={()=>navigate('usuarios')}>Enviar convite</Button>
+            <Button variant="secondary" size="md" fullWidth onClick={()=>navigate('usuarios')}>Cancelar</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.AdminConvidarUsuario=AdminConvidarUsuario;
+
+// ── APP SHELL ────────────────────────────────────────────────
+function AdminApp() {
+  const {SidebarNav,Card}=window.CampoFootballSchoolManagementDesignSystem_a7c81e;
+  const D=window.AD;
+  const [view,setView]=React.useState('login');
+  React.useEffect(()=>{ window.lucide?.createIcons({attrs:{'stroke-width':1.75}}); });
+  const nav=s=>setView(s);
+  if(view==='login') return <AdminLogin navigate={nav}/>;
+  const SCREENS={
+    dashboard:           {title:'Dashboard geral',          subtitle:'Olá, Ricardo 👋 — visão da plataforma em junho de 2026.',   Screen:AdminDashboard},
+    escolinhas:          {title:'Gestão de escolinhas',     subtitle:'38 escolinhas cadastradas na plataforma.',                  Screen:AdminEscolinhas},
+    'escolinha-cadastro':{title:'Cadastro de escolinha',    subtitle:'Preencha os dados e defina o plano SaaS.',                  Screen:AdminEscolinhaCadastro},
+    planos:              {title:'Planos SaaS',              subtitle:'Defina valores, percentuais por transação e limites.',       Screen:AdminPlanos},
+    'plano-form':        {title:'Novo plano',                subtitle:'Defina valores, percentuais e recursos do plano SaaS.',     Screen:AdminPlanoForm},
+    assinaturas:         {title:'Assinaturas SaaS',         subtitle:'Assinaturas das escolinhas na plataforma.',                 Screen:AdminAssinaturas},
+    cobrancas:           {title:'Cobranças SaaS',           subtitle:'Faturas da plataforma para as escolinhas.',                 Screen:AdminCobrancas},
+    financeiro:          {title:'Financeiro da plataforma', subtitle:'Receita, taxas retidas e repasses às escolinhas.',           Screen:AdminFinanceiro},
+    gateway:             {title:'Gateway & Split',          subtitle:'Conexão com o provedor de pagamentos e divisão de valores.', Screen:AdminGateway},
+    kyc:                 {title:'Subcontas / KYC',          subtitle:'Verificação das escolinhas para receber pagamentos.',        Screen:AdminKYC},
+    relatorios:          {title:'Relatórios',               subtitle:'Exporte e analise dados consolidados da plataforma.',        Screen:AdminRelatorios},
+    usuarios:            {title:'Usuários & Perfis',         subtitle:'Time da plataforma e permissões de acesso.',                Screen:AdminUsuarios},
+    'convidar-usuario':  {title:'Convidar usuário',          subtitle:'Envie um convite de acesso e defina o perfil do usuário.',   Screen:AdminConvidarUsuario},
+    config:              {title:'Configurações gerais',     subtitle:'Marca, notificações, segurança e faturamento.',              Screen:AdminConfig},
+  };
+  const meta=SCREENS[view];
+  const Screen=meta?.Screen;
+  const activeNav=view==='escolinha-cadastro'?'escolinhas':view==='plano-form'?'planos':view==='convidar-usuario'?'usuarios':view;
+  return (
+    <div style={{display:'flex',height:'100vh',background:'var(--surface-canvas)',overflow:'hidden'}}>
+      <SidebarNav brand="Craque" items={D.nav} footerItems={D.navFoot} activeKey={activeNav} onSelect={nav}/>
+      <main style={{flex:1,overflowY:'auto',padding:'34px 36px',display:'flex',flexDirection:'column'}}>
+        <AdminTopBar title={meta?.title||''} subtitle={meta?.subtitle||''} navigate={nav}/>
+        {Screen
+          ? <Screen navigate={nav}/>
+          : <Card style={{textAlign:'center',padding:64}}><i data-lucide="hammer" width="28" height="28" style={{color:'var(--gray-300)'}}></i><p style={{margin:'14px 0 0',color:'var(--text-secondary)'}}>Em construção — roadmap.</p></Card>
+        }
+      </main>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<AdminApp/>);
+</script>
+
+</body>
+</html>
