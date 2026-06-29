@@ -1,0 +1,16 @@
+/* ============================================================
+   Campo — Webfonts
+   ------------------------------------------------------------
+   UI / body:  Kumbh Sans  (matches the source kit exactly)
+   Display:    Plus Jakarta Sans  — SUBSTITUTE for "Gordita"
+               (Gordita is a paid font with no free license;
+                Plus Jakarta Sans is the closest geometric-
+                humanist match. Flagged for the user to replace
+                if a licensed Gordita is available.)
+
+   Loaded from the Google Fonts CDN so they ship to any online
+   consumer. For fully-offline use, self-host the .woff2 files
+   and replace these @import lines with local @font-face rules.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
