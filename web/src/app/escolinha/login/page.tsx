@@ -180,6 +180,12 @@ export default function EscolinhaLoginPage() {
               Recebeu um convite da plataforma? Use o link do e-mail para <strong>ativar a escolinha</strong>.
             </p>
           </div>
+          <p style={{ marginTop: 18, textAlign: 'center', fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>
+            Ainda não tem conta?{' '}
+            <a href="/signup" style={{ fontWeight: 'var(--fw-semibold)', color: 'var(--success)' }}>
+              Criar conta grátis
+            </a>
+          </p>
         </div>
       </div>
     </div>

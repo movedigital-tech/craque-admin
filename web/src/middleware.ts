@@ -9,7 +9,7 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const { pathname } = req.nextUrl;
 
-  const isEscolinhaProtected = pathname.startsWith('/escolinha') && pathname !== '/escolinha/login';
+  const isEscolinhaProtected = (pathname.startsWith('/escolinha') && pathname !== '/escolinha/login') || pathname.startsWith('/onboarding');
   const isAdminProtected = ADMIN_PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   if (!isLoggedIn) {
@@ -19,5 +19,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/organizations/:path*', '/subscriptions/:path*', '/webhook-logs/:path*', '/usuarios/:path*', '/config/:path*', '/escolinha/:path*'],
+  matcher: ['/dashboard/:path*', '/organizations/:path*', '/subscriptions/:path*', '/webhook-logs/:path*', '/usuarios/:path*', '/config/:path*', '/escolinha/:path*', '/onboarding/:path*'],
 };
