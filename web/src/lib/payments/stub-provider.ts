@@ -10,6 +10,12 @@ export class StubPaymentProvider implements PaymentProvider {
   async createCheckoutSession({ organizationId }: CreateCheckoutSessionInput): Promise<CreateCheckoutSessionResult> {
     return { url: `/billing/checkout-stub?org=${organizationId}` };
   }
+
+  // No real gateway to verify against yet — accepts everything. A concrete
+  // provider replaces this with an HMAC/signature check against its secret.
+  verifyWebhookSignature(): boolean {
+    return true;
+  }
 }
 
 export const paymentProvider: PaymentProvider = new StubPaymentProvider();

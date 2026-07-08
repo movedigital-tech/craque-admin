@@ -14,4 +14,7 @@ export interface CreateCheckoutSessionResult {
 
 export interface PaymentProvider {
   createCheckoutSession(input: CreateCheckoutSessionInput): Promise<CreateCheckoutSessionResult>;
+
+  /** Verifies a webhook request actually came from the gateway before it's trusted. */
+  verifyWebhookSignature(rawBody: string, signatureHeader: string | null): boolean;
 }
