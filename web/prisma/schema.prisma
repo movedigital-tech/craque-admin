@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +8,294 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ---------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------
+
+enum PlatformRole {
+  ADMIN
+  SUPPORT
+}
+
+enum MembershipRole {
+  OWNER
+  MANAGER
+  TEACHER
+  GUARDIAN
+}
+
+enum OrganizationStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  BLOCKED
+}
+
+enum MemberStatus {
+  ACTIVE
+  INVITED
+  SUSPENDED
+  REMOVED
+}
+
+enum ClassStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum EnrollmentStatus {
+  PENDING
+  ACTIVE
+  CANCELED
+  COMPLETED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  JUSTIFIED
+  LATE
+}
+
+enum ChargeStatus {
+  PENDING
+  PAID
+  LATE
+  CANCELED
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+}
+
+// ---------------------------------------------------------------
+// Identity & tenancy
+// ---------------------------------------------------------------
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  passwordHash String
+  platformRole PlatformRole?
+  memberships  Membership[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Organization {
+  id                   String                @id @default(cuid())
+  name                 String
+  slug                 String                @unique
+  document             String?
+  city                 String?
+  state                String?
+  status               OrganizationStatus    @default(TRIALING)
+  memberships          Membership[]
+  units                SchoolUnit[]
+  classes              ClassGroup[]
+  students             Student[]
+  studentCharges       StudentCharge[]
+  webhookEvents        WebhookEvent[]
+  auditLogs            AuditLog[]
+  platformSubscription PlatformSubscription?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+}
+
+model Membership {
+  id                String            @id @default(cuid())
+  userId            String
+  organizationId    String
+  role              MembershipRole
+  status            MemberStatus      @default(ACTIVE)
+  user              User              @relation(fields: [userId], references: [id])
+  organization      Organization      @relation(fields: [organizationId], references: [id])
+  teachingClasses   ClassGroup[]      @relation("ClassTeacher")
+  guardianStudents  StudentGuardian[]
+  markedAttendances Attendance[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@unique([userId, organizationId])
+}
+
+model SchoolUnit {
+  id             String       @id @default(cuid())
+  organizationId String
+  name           String
+  isDefault      Boolean      @default(false)
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  classes        ClassGroup[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+// ---------------------------------------------------------------
+// Operação da escolinha
+// ---------------------------------------------------------------
+
+model ClassGroup {
+  id                  String         @id @default(cuid())
+  organizationId      String
+  schoolUnitId        String
+  name                String
+  ageRange            String?
+  status              ClassStatus    @default(ACTIVE)
+  capacity            Int            @default(0)
+  teacherMembershipId String?
+  weekday             Int?
+  startTime           String?
+  endTime             String?
+  organization        Organization   @relation(fields: [organizationId], references: [id])
+  schoolUnit          SchoolUnit     @relation(fields: [schoolUnitId], references: [id])
+  teacher             Membership?    @relation("ClassTeacher", fields: [teacherMembershipId], references: [id])
+  enrollments         Enrollment[]
+  sessions            ClassSession[]
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+}
+
+model Student {
+  id             String            @id @default(cuid())
+  organizationId String
+  name           String
+  birthDate      DateTime?
+  status         StudentStatus     @default(ACTIVE)
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+  guardians      StudentGuardian[]
+  enrollments    Enrollment[]
+  attendances    Attendance[]
+  charges        StudentCharge[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model StudentGuardian {
+  id            String     @id @default(cuid())
+  studentId     String
+  membershipId  String
+  relationLabel String?
+  isPrimary     Boolean    @default(true)
+  student       Student    @relation(fields: [studentId], references: [id])
+  membership    Membership @relation(fields: [membershipId], references: [id])
+  createdAt     DateTime   @default(now())
+
+  @@unique([studentId, membershipId])
+}
+
+model Enrollment {
+  id           String           @id @default(cuid())
+  studentId    String
+  classGroupId String
+  status       EnrollmentStatus @default(ACTIVE)
+  enrolledAt   DateTime         @default(now())
+  canceledAt   DateTime?
+  student      Student          @relation(fields: [studentId], references: [id])
+  classGroup   ClassGroup       @relation(fields: [classGroupId], references: [id])
+  charges      StudentCharge[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model ClassSession {
+  id           String       @id @default(cuid())
+  classGroupId String
+  date         DateTime
+  startTime    String?
+  endTime      String?
+  classGroup   ClassGroup   @relation(fields: [classGroupId], references: [id])
+  attendances  Attendance[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Attendance {
+  id                   String           @id @default(cuid())
+  classSessionId       String
+  studentId            String
+  status               AttendanceStatus
+  markedByMembershipId String?
+  markedAt             DateTime         @default(now())
+  session              ClassSession     @relation(fields: [classSessionId], references: [id])
+  student              Student          @relation(fields: [studentId], references: [id])
+  markedBy             Membership?      @relation(fields: [markedByMembershipId], references: [id])
+  createdAt            DateTime         @default(now())
+
+  @@unique([classSessionId, studentId])
+}
+
+// ---------------------------------------------------------------
+// Financeiro da plataforma (gateway-driven) vs. financeiro da escolinha
+// ---------------------------------------------------------------
+
+model PlatformSubscription {
+  id                    String             @id @default(cuid())
+  organizationId        String             @unique
+  gatewayProvider       String             @default("stub")
+  gatewayCustomerId     String?
+  gatewaySubscriptionId String?
+  gatewayPriceId        String?
+  status                SubscriptionStatus @default(TRIALING)
+  trialEndsAt           DateTime?
+  currentPeriodEnd      DateTime?
+  lastPaymentStatus     String?
+  lastWebhookEventId    String?
+  organization          Organization       @relation(fields: [organizationId], references: [id])
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+}
+
+model WebhookEvent {
+  id             String        @id @default(cuid())
+  provider       String
+  eventId        String        @unique
+  type           String
+  payload        Json
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  receivedAt     DateTime      @default(now())
+  processedAt    DateTime?
+}
+
+// Schema only this round — no routes/UI/Server Actions wired yet (MVP2).
+model StudentCharge {
+  id             String       @id @default(cuid())
+  organizationId String
+  studentId      String
+  enrollmentId   String?
+  amountCents    Int
+  dueDate        DateTime
+  status         ChargeStatus @default(PENDING)
+  paidAt         DateTime?
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  student        Student      @relation(fields: [studentId], references: [id])
+  enrollment     Enrollment?  @relation(fields: [enrollmentId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model AuditLog {
+  id             String        @id @default(cuid())
+  organizationId String?
+  userId         String?
+  action         String
+  entityType     String
+  entityId       String?
+  metadata       Json?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime      @default(now())
 }

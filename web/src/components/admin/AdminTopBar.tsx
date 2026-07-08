@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { Avatar, Icon, IconButton } from '../ds';
 import { account, topBarNotifications } from '../../data/admin';
 
@@ -263,7 +264,7 @@ export function AdminTopBar({ title, subtitle }: AdminTopBarProps) {
               <button
                 onClick={() => {
                   setShowU(false);
-                  router.push('/login');
+                  signOut({ callbackUrl: '/login' });
                 }}
                 style={{
                   display: 'flex',

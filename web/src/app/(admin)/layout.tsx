@@ -1,5 +1,7 @@
 import { AdminShell } from '@/components/admin/AdminShell';
+import { requireStaffContext } from '@/lib/tenant';
 
-export default function AdminRouteLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminRouteLayout({ children }: { children: React.ReactNode }) {
+  await requireStaffContext();
   return <AdminShell>{children}</AdminShell>;
 }

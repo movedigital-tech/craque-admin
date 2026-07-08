@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { Avatar, Icon, IconButton } from '../ds';
 import { account, topBarNotifications } from '../../data/escolinha';
 
@@ -265,7 +266,7 @@ export function EscolinhaTopBar({ title, subtitle }: EscolinhaTopBarProps) {
               <button
                 onClick={() => {
                   setShowU(false);
-                  router.push('/escolinha/login');
+                  signOut({ callbackUrl: '/escolinha/login' });
                 }}
                 style={{
                   display: 'flex',

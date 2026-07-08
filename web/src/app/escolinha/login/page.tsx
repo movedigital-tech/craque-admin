@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { Button, Icon, Input } from '@/components/ds';
 
 export default function EscolinhaLoginPage() {
@@ -9,6 +10,20 @@ export default function EscolinhaLoginPage() {
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [rem, setRem] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit() {
+    setError('');
+    setLoading(true);
+    const result = await signIn('credentials', { email, password: pw, redirect: false });
+    setLoading(false);
+    if (result?.error) {
+      setError('E-mail ou senha inválidos.');
+      return;
+    }
+    router.push('/escolinha/home');
+  }
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -142,8 +157,11 @@ export default function EscolinhaLoginPage() {
                 Esqueci a senha
               </a>
             </div>
-            <Button variant="primary" size="lg" fullWidth leadingIcon="log-in" onClick={() => router.push('/escolinha/home')} style={{ marginTop: 6 }}>
-              Entrar
+            {error && (
+              <p style={{ margin: 0, color: 'var(--danger)', fontSize: 'var(--fs-sm)' }}>{error}</p>
+            )}
+            <Button variant="primary" size="lg" fullWidth leadingIcon="log-in" onClick={handleSubmit} disabled={loading} style={{ marginTop: 6 }}>
+              {loading ? 'Entrando…' : 'Entrar'}
             </Button>
           </div>
           <div

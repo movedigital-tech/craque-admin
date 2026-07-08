@@ -1,5 +1,7 @@
 import { EscolinhaShell } from '@/components/escolinha/EscolinhaShell';
+import { requireOrgContext } from '@/lib/tenant';
 
-export default function EscolinhaRouteLayout({ children }: { children: React.ReactNode }) {
+export default async function EscolinhaRouteLayout({ children }: { children: React.ReactNode }) {
+  await requireOrgContext();
   return <EscolinhaShell>{children}</EscolinhaShell>;
 }
