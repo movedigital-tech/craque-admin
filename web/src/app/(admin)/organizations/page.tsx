@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import { Badge, Card } from '@/components/ds';
-import { orgStatusMap, organizations } from '@/data/admin';
+import { db } from '@/lib/db';
+import { orgStatusMap } from '@/lib/statusMaps';
+import { formatDate } from '@/lib/format';
 
 const th: CSSProperties = {
   padding: '14px 24px',
@@ -21,7 +23,15 @@ const td: CSSProperties = {
   borderBottom: '1px solid var(--gray-100)',
 };
 
-export default function OrganizationsPage() {
+export default async function OrganizationsPage() {
+  const organizations = await db.organization.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      memberships: { where: { role: 'OWNER' }, include: { user: true }, take: 1 },
+      _count: { select: { students: true } },
+    },
+  });
+
   return (
     <Card padding={0} style={{ overflow: 'hidden' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -37,14 +47,14 @@ export default function OrganizationsPage() {
             <tr key={o.id}>
               <td style={{ ...td, fontWeight: 'var(--fw-semibold)' }}>
                 {o.name}
-                <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)', fontWeight: 400 }}>{o.city}</div>
+                <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)', fontWeight: 400 }}>{o.city ?? '—'}</div>
               </td>
-              <td style={{ ...td, color: 'var(--text-secondary)' }}>{o.ownerName}</td>
+              <td style={{ ...td, color: 'var(--text-secondary)' }}>{o.memberships[0]?.user.name ?? '—'}</td>
               <td style={td}>
                 <Badge tone={orgStatusMap[o.status].tone} dot>{orgStatusMap[o.status].label}</Badge>
               </td>
-              <td style={td}>{o.studentCount}</td>
-              <td style={{ ...td, color: 'var(--text-secondary)' }}>{o.createdAt}</td>
+              <td style={td}>{o._count.students}</td>
+              <td style={{ ...td, color: 'var(--text-secondary)' }}>{formatDate(o.createdAt)}</td>
               <td style={{ ...td, textAlign: 'right' }}>
                 <Link href={`/organizations/${o.id}`} style={{ color: 'var(--text-link)', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)' }}>
                   Ver detalhe

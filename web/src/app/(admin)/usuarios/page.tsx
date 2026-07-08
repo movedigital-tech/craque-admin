@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { Avatar, Badge, Card } from '@/components/ds';
+import { db } from '@/lib/db';
 
 const th: CSSProperties = {
   padding: '14px 24px',
@@ -19,12 +20,12 @@ const td: CSSProperties = {
   borderBottom: '1px solid var(--gray-100)',
 };
 
-const staff: { name: string; email: string; role: 'ADMIN' | 'SUPPORT' }[] = [
-  { name: 'Ricardo Antunes', email: 'ricardo@movedigital.com.br', role: 'ADMIN' },
-  { name: 'Equipe de Suporte', email: 'suporte@craque.app', role: 'SUPPORT' },
-];
+export default async function UsuariosPage() {
+  const staff = await db.user.findMany({
+    where: { platformRole: { not: null } },
+    orderBy: { createdAt: 'asc' },
+  });
 
-export default function UsuariosPage() {
   return (
     <Card padding={0} style={{ overflow: 'hidden' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -37,7 +38,7 @@ export default function UsuariosPage() {
         </thead>
         <tbody>
           {staff.map((s) => (
-            <tr key={s.email}>
+            <tr key={s.id}>
               <td style={td}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <Avatar name={s.name} size={34} />
@@ -46,7 +47,7 @@ export default function UsuariosPage() {
               </td>
               <td style={{ ...td, color: 'var(--text-secondary)' }}>{s.email}</td>
               <td style={td}>
-                <Badge tone={s.role === 'ADMIN' ? 'success' : 'neutral'}>{s.role}</Badge>
+                <Badge tone={s.platformRole === 'ADMIN' ? 'success' : 'neutral'}>{s.platformRole}</Badge>
               </td>
             </tr>
           ))}

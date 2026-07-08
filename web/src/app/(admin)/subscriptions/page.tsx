@@ -1,7 +1,8 @@
 import type { CSSProperties } from 'react';
 import { Badge, Card } from '@/components/ds';
-import { subscriptions } from '@/data/admin';
-import type { StatusMapEntry, SubscriptionStatus } from '@/data/admin/types';
+import { db } from '@/lib/db';
+import { subscriptionStatusMap } from '@/lib/statusMaps';
+import { formatDate } from '@/lib/format';
 
 const th: CSSProperties = {
   padding: '14px 24px',
@@ -21,15 +22,12 @@ const td: CSSProperties = {
   borderBottom: '1px solid var(--gray-100)',
 };
 
-const statusMap: Record<SubscriptionStatus, StatusMapEntry> = {
-  trialing: { label: 'Em trial', tone: 'info' },
-  active: { label: 'Ativa', tone: 'success' },
-  past_due: { label: 'Inadimplente', tone: 'warning' },
-  canceled: { label: 'Cancelada', tone: 'neutral' },
-  incomplete: { label: 'Incompleta', tone: 'danger' },
-};
+export default async function SubscriptionsPage() {
+  const subscriptions = await db.platformSubscription.findMany({
+    include: { organization: true },
+    orderBy: { createdAt: 'desc' },
+  });
 
-export default function SubscriptionsPage() {
   return (
     <Card padding={0} style={{ overflow: 'hidden' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -42,13 +40,13 @@ export default function SubscriptionsPage() {
         </thead>
         <tbody>
           {subscriptions.map((s) => (
-            <tr key={s.organizationId}>
-              <td style={{ ...td, fontWeight: 'var(--fw-semibold)' }}>{s.organizationName}</td>
+            <tr key={s.id}>
+              <td style={{ ...td, fontWeight: 'var(--fw-semibold)' }}>{s.organization.name}</td>
               <td style={td}>
-                <Badge tone={statusMap[s.status].tone} dot>{statusMap[s.status].label}</Badge>
+                <Badge tone={subscriptionStatusMap[s.status].tone} dot>{subscriptionStatusMap[s.status].label}</Badge>
               </td>
               <td style={{ ...td, color: 'var(--text-secondary)' }}>{s.gatewayCustomerId ?? '—'}</td>
-              <td style={{ ...td, color: 'var(--text-secondary)' }}>{s.currentPeriodEnd ?? '—'}</td>
+              <td style={{ ...td, color: 'var(--text-secondary)' }}>{formatDate(s.currentPeriodEnd)}</td>
               <td style={{ ...td, color: 'var(--text-secondary)' }}>{s.lastPaymentStatus ?? '—'}</td>
             </tr>
           ))}

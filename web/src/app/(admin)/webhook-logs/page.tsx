@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { Badge, Card } from '@/components/ds';
-import { webhookEvents } from '@/data/admin';
+import { db } from '@/lib/db';
+import { formatDateTime } from '@/lib/format';
 
 const th: CSSProperties = {
   padding: '14px 24px',
@@ -21,7 +22,12 @@ const td: CSSProperties = {
   fontVariantNumeric: 'tabular-nums',
 };
 
-export default function WebhookLogsPage() {
+export default async function WebhookLogsPage() {
+  const webhookEvents = await db.webhookEvent.findMany({
+    include: { organization: true },
+    orderBy: { receivedAt: 'desc' },
+  });
+
   return (
     <Card padding={0} style={{ overflow: 'hidden' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -33,17 +39,23 @@ export default function WebhookLogsPage() {
           </tr>
         </thead>
         <tbody>
-          {webhookEvents.map((w) => (
-            <tr key={w.id}>
-              <td style={{ ...td, fontWeight: 'var(--fw-semibold)' }}>{w.eventId}</td>
-              <td style={td}>{w.type}</td>
-              <td style={{ ...td, color: 'var(--text-secondary)' }}>{w.organizationName ?? '—'}</td>
-              <td style={{ ...td, color: 'var(--text-secondary)' }}>{w.receivedAt}</td>
-              <td style={td}>
-                <Badge tone={w.processedAt ? 'success' : 'warning'} dot>{w.processedAt ? 'Processado' : 'Pendente'}</Badge>
-              </td>
+          {webhookEvents.length === 0 ? (
+            <tr>
+              <td style={{ ...td, color: 'var(--text-secondary)' }} colSpan={5}>Nenhum evento recebido ainda.</td>
             </tr>
-          ))}
+          ) : (
+            webhookEvents.map((w) => (
+              <tr key={w.id}>
+                <td style={{ ...td, fontWeight: 'var(--fw-semibold)' }}>{w.eventId}</td>
+                <td style={td}>{w.type}</td>
+                <td style={{ ...td, color: 'var(--text-secondary)' }}>{w.organization?.name ?? '—'}</td>
+                <td style={{ ...td, color: 'var(--text-secondary)' }}>{formatDateTime(w.receivedAt)}</td>
+                <td style={td}>
+                  <Badge tone={w.processedAt ? 'success' : 'warning'} dot>{w.processedAt ? 'Processado' : 'Pendente'}</Badge>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
       <div style={{ height: 8 }} />

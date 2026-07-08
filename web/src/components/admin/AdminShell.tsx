@@ -11,7 +11,12 @@ const SUB_ROUTE_PARENT: Record<string, string> = {
   '/usuarios/convidar': 'usuarios',
 };
 
-export function AdminShell({ children }: { children: ReactNode }) {
+export interface AdminAccount {
+  name: string;
+  role: string;
+}
+
+export function AdminShell({ children, account }: { children: ReactNode; account: AdminAccount }) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -24,7 +29,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     <div style={{ display: 'flex', height: '100vh', background: 'var(--surface-canvas)', overflow: 'hidden' }}>
       <SidebarNav brand="Craque" items={navItems} footerItems={navFootItems} activeKey={activeNav} onSelect={handleSelect} />
       <main style={{ flex: 1, overflowY: 'auto', padding: '34px 36px', display: 'flex', flexDirection: 'column' }}>
-        <AdminTopBar title={meta?.title ?? ''} subtitle={meta?.subtitle ?? ''} />
+        <AdminTopBar title={meta?.title ?? ''} subtitle={meta?.subtitle ?? ''} account={account} />
         {children}
       </main>
     </div>

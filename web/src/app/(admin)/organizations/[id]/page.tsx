@@ -1,23 +1,33 @@
 import { notFound } from 'next/navigation';
 import { Badge, Card } from '@/components/ds';
-import { orgStatusMap, organizations, subscriptions } from '@/data/admin';
+import { db } from '@/lib/db';
+import { orgStatusMap } from '@/lib/statusMaps';
+import { formatDate } from '@/lib/format';
 
 export default async function OrganizationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const org = organizations.find((o) => o.id === id);
+  const org = await db.organization.findUnique({
+    where: { id },
+    include: {
+      memberships: { where: { role: 'OWNER' }, include: { user: true }, take: 1 },
+      platformSubscription: true,
+      _count: { select: { students: true } },
+    },
+  });
   if (!org) notFound();
 
-  const subscription = subscriptions.find((s) => s.organizationId === id);
+  const owner = org.memberships[0]?.user;
+  const subscription = org.platformSubscription;
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 300px', gap: 22 }}>
-      <Card title={org.name} subtitle={org.city}>
+      <Card title={org.name} subtitle={org.city ?? undefined}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           {([
-            ['Responsável', org.ownerName],
-            ['E-mail', org.ownerEmail],
-            ['Criada em', org.createdAt],
-            ['Alunos', String(org.studentCount)],
+            ['Responsável', owner?.name ?? '—'],
+            ['E-mail', owner?.email ?? '—'],
+            ['Criada em', formatDate(org.createdAt)],
+            ['Alunos', String(org._count.students)],
           ] as [string, string][]).map(([k, v]) => (
             <div key={k}>
               <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k}</div>
@@ -29,8 +39,8 @@ export default async function OrganizationDetailPage({ params }: { params: Promi
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <Card title="Status da conta">
           <Badge tone={orgStatusMap[org.status].tone} dot>{orgStatusMap[org.status].label}</Badge>
-          {org.trialEndsAt && (
-            <p style={{ marginTop: 10, fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>Trial expira em {org.trialEndsAt}</p>
+          {subscription?.trialEndsAt && (
+            <p style={{ marginTop: 10, fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>Trial expira em {formatDate(subscription.trialEndsAt)}</p>
           )}
         </Card>
         <Card title="Gateway">
@@ -39,10 +49,7 @@ export default async function OrganizationDetailPage({ params }: { params: Promi
               <p style={{ margin: '0 0 8px', fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>
                 Customer ID: <strong>{subscription.gatewayCustomerId}</strong>
               </p>
-              <a
-                href="#"
-                style={{ fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', color: 'var(--text-link)' }}
-              >
+              <a href="#" style={{ fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', color: 'var(--text-link)' }}>
                 Ver no painel do gateway →
               </a>
             </>

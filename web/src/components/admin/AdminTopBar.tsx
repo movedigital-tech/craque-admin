@@ -5,11 +5,13 @@ import type { CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { Avatar, Icon, IconButton } from '../ds';
-import { account, topBarNotifications } from '../../data/admin';
+import { topBarNotifications } from '../../data/admin';
+import type { AdminAccount } from './AdminShell';
 
 export interface AdminTopBarProps {
   title: string;
   subtitle?: string;
+  account: AdminAccount;
 }
 
 const dropStyle = (right: number, width: number): CSSProperties => ({
@@ -31,7 +33,7 @@ const userMenuItems: [string, string, string | null][] = [
   ['life-buoy', 'Suporte', null],
 ];
 
-export function AdminTopBar({ title, subtitle }: AdminTopBarProps) {
+export function AdminTopBar({ title, subtitle, account }: AdminTopBarProps) {
   const router = useRouter();
   const [showN, setShowN] = useState(false);
   const [showU, setShowU] = useState(false);
