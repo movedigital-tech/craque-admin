@@ -5,9 +5,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    // Integration tests need a live DB — run sequentially
-    pool: 'forks',
-    singleFork: true,
+    // Integration tests use unique IDs per test so parallel runs are safe
     setupFiles: ['src/__tests__/integration/setup.ts'],
   },
 });
