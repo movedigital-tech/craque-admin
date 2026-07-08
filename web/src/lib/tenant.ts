@@ -78,6 +78,36 @@ export async function requireOrgContext(allowedRoles?: MembershipRole[]): Promis
 }
 
 /**
+ * Authoritative tenancy check for the Instrutor (teacher) shell.
+ * Same rules as requireOrgContext but redirects to /instrutor/login
+ * and defaults to allowing TEACHER/MANAGER/OWNER.
+ */
+export async function requireInstrutorContext(allowedRoles?: MembershipRole[]): Promise<OrgContext> {
+  const session = await auth();
+  if (!session?.user?.id) redirect('/instrutor/login');
+
+  const user = await db.user.findUnique({ where: { id: session.user.id } });
+  if (!user) redirect('/instrutor/login');
+
+  const membership = await db.membership.findFirst({
+    where: { userId: user.id, status: 'ACTIVE' },
+    orderBy: { createdAt: 'asc' },
+    include: { organization: { include: { platformSubscription: true } } },
+  });
+  if (!membership) redirect('/instrutor/login');
+
+  const { organization } = membership;
+  if (BLOCKING_STATUSES.includes(organization.status) || isTrialExpired(organization)) {
+    redirect('/billing/blocked');
+  }
+
+  const roles = allowedRoles ?? (['TEACHER', 'MANAGER', 'OWNER'] as MembershipRole[]);
+  if (!roles.includes(membership.role)) redirect('/instrutor/home');
+
+  return { user, membership, organization };
+}
+
+/**
  * Authoritative check for Admin (internal Craque staff) routes: authenticated
  * user with a non-null platformRole.
  */

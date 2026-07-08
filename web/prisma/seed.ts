@@ -36,10 +36,22 @@ async function main() {
     },
   });
 
+  const teacher = await db.user.upsert({
+    where: { email: 'joao@fcestrela.com' },
+    update: {},
+    create: { name: 'João Ferreira', email: 'joao@fcestrela.com', passwordHash },
+  });
+
   const ownerMembership = await db.membership.upsert({
     where: { userId_organizationId: { userId: owner.id, organizationId: org.id } },
     update: {},
     create: { userId: owner.id, organizationId: org.id, role: 'OWNER' },
+  });
+
+  const teacherMembership = await db.membership.upsert({
+    where: { userId_organizationId: { userId: teacher.id, organizationId: org.id } },
+    update: {},
+    create: { userId: teacher.id, organizationId: org.id, role: 'TEACHER' },
   });
 
   const unit = await db.schoolUnit.upsert({
@@ -50,7 +62,7 @@ async function main() {
 
   const turmaSub9 = await db.classGroup.upsert({
     where: { id: 'seed-turma-sub9' },
-    update: {},
+    update: { teacherMembershipId: teacherMembership.id },
     create: {
       id: 'seed-turma-sub9',
       organizationId: org.id,
@@ -58,7 +70,7 @@ async function main() {
       name: 'Sub-9',
       ageRange: '8 a 9 anos',
       capacity: 24,
-      teacherMembershipId: ownerMembership.id,
+      teacherMembershipId: teacherMembership.id,
       weekday: 3,
       startTime: '18:00',
       endTime: '19:30',
@@ -83,7 +95,7 @@ async function main() {
     create: { id: 'seed-aula-sub9-1', classGroupId: turmaSub9.id, date: new Date('2026-07-08T18:00:00-03:00'), startTime: '18:00', endTime: '19:30' },
   });
 
-  console.log({ owner: owner.email, staff: staff.email, org: org.slug });
+  console.log({ owner: owner.email, teacher: teacher.email, staff: staff.email, org: org.slug });
 }
 
 main()

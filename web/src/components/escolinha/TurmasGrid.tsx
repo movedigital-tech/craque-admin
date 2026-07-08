@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Badge, Button, Card, Icon } from '../ds';
 
 export interface TurmaCardData {
@@ -17,6 +18,7 @@ export interface TurmaCardData {
 
 export function TurmasGrid({ turmas }: { turmas: TurmaCardData[] }) {
   const [chip, setChip] = useState('all');
+  const router = useRouter();
 
   const chips: [string, string][] = [
     ['all', `Todas · ${turmas.length}`],
