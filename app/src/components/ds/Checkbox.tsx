@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import type { LabelHTMLAttributes, ReactNode } from 'react';
 import { Icon } from './Icon';

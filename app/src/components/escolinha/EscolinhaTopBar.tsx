@@ -1,12 +1,22 @@
+"use client";
+
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { Avatar, Icon, IconButton } from '../ds';
-import { account, topBarNotifications } from '../../data/escolinha';
+import { topBarNotifications } from '../../data/escolinha';
+
+export interface EscolinhaAccount {
+  name: string;
+  role: string;
+  orgName: string;
+}
 
 export interface EscolinhaTopBarProps {
   title: string;
   subtitle?: string;
+  account: EscolinhaAccount;
 }
 
 const dropStyle = (right: number, width: number): CSSProperties => ({
@@ -28,8 +38,8 @@ const userMenuItems: [string, string, string | null][] = [
   ['life-buoy', 'Suporte', null],
 ];
 
-export function EscolinhaTopBar({ title, subtitle }: EscolinhaTopBarProps) {
-  const navigate = useNavigate();
+export function EscolinhaTopBar({ title, subtitle, account }: EscolinhaTopBarProps) {
+  const router = useRouter();
   const [showN, setShowN] = useState(false);
   const [showU, setShowU] = useState(false);
   const nRef = useRef<HTMLDivElement>(null);
@@ -231,14 +241,14 @@ export function EscolinhaTopBar({ title, subtitle }: EscolinhaTopBarProps) {
             <div style={dropStyle(0, 230)}>
               <div style={{ padding: '14px 18px 12px', borderBottom: '1px solid var(--border-subtle)' }}>
                 <div style={{ fontWeight: 'var(--fw-bold)', fontSize: 'var(--fs-body)' }}>{account.name}</div>
-                <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)', marginTop: 2 }}>{account.role} · FC Estrela</div>
+                <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)', marginTop: 2 }}>{account.role} · {account.orgName}</div>
               </div>
               {userMenuItems.map(([ico, lbl, go]) => (
                 <button
                   key={lbl}
                   onClick={() => {
                     setShowU(false);
-                    if (go) navigate(go);
+                    if (go) router.push(go);
                   }}
                   style={{
                     display: 'flex',
@@ -263,7 +273,7 @@ export function EscolinhaTopBar({ title, subtitle }: EscolinhaTopBarProps) {
               <button
                 onClick={() => {
                   setShowU(false);
-                  navigate('/escolinha/login');
+                  signOut({ callbackUrl: '/escolinha/login' });
                 }}
                 style={{
                   display: 'flex',

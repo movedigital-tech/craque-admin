@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { Icon } from './Icon';

@@ -1,12 +1,17 @@
+"use client";
+
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { Avatar, Icon, IconButton } from '../ds';
-import { account, topBarNotifications } from '../../data';
+import { topBarNotifications } from '../../data/admin';
+import type { AdminAccount } from './AdminShell';
 
 export interface AdminTopBarProps {
   title: string;
   subtitle?: string;
+  account: AdminAccount;
 }
 
 const dropStyle = (right: number, width: number): CSSProperties => ({
@@ -28,8 +33,8 @@ const userMenuItems: [string, string, string | null][] = [
   ['life-buoy', 'Suporte', null],
 ];
 
-export function AdminTopBar({ title, subtitle }: AdminTopBarProps) {
-  const navigate = useNavigate();
+export function AdminTopBar({ title, subtitle, account }: AdminTopBarProps) {
+  const router = useRouter();
   const [showN, setShowN] = useState(false);
   const [showU, setShowU] = useState(false);
   const nRef = useRef<HTMLDivElement>(null);
@@ -68,7 +73,7 @@ export function AdminTopBar({ title, subtitle }: AdminTopBarProps) {
         >
           <Icon name="search" size={17} style={{ color: 'var(--gray-500)', flexShrink: 0 }} />
           <input
-            placeholder="Buscar escolinha, plano…"
+            placeholder="Buscar organização…"
             style={{
               border: 'none',
               outline: 'none',
@@ -82,7 +87,6 @@ export function AdminTopBar({ title, subtitle }: AdminTopBarProps) {
           />
         </div>
 
-        {/* Bell + notifications */}
         <div ref={nRef} style={{ position: 'relative' }}>
           <div
             onClick={() => {
@@ -201,7 +205,6 @@ export function AdminTopBar({ title, subtitle }: AdminTopBarProps) {
           )}
         </div>
 
-        {/* Account chip + user menu */}
         <div ref={uRef} style={{ position: 'relative' }}>
           <div
             onClick={() => {
@@ -238,7 +241,7 @@ export function AdminTopBar({ title, subtitle }: AdminTopBarProps) {
                   key={lbl}
                   onClick={() => {
                     setShowU(false);
-                    if (go) navigate(go);
+                    if (go) router.push(go);
                   }}
                   style={{
                     display: 'flex',
@@ -263,7 +266,7 @@ export function AdminTopBar({ title, subtitle }: AdminTopBarProps) {
               <button
                 onClick={() => {
                   setShowU(false);
-                  navigate('/login');
+                  signOut({ callbackUrl: '/login' });
                 }}
                 style={{
                   display: 'flex',
