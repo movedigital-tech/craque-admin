@@ -5,11 +5,18 @@ import type { CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { Avatar, Icon, IconButton } from '../ds';
-import { account, topBarNotifications } from '../../data/escolinha';
+import { topBarNotifications } from '../../data/escolinha';
+
+export interface EscolinhaAccount {
+  name: string;
+  role: string;
+  orgName: string;
+}
 
 export interface EscolinhaTopBarProps {
   title: string;
   subtitle?: string;
+  account: EscolinhaAccount;
 }
 
 const dropStyle = (right: number, width: number): CSSProperties => ({
@@ -31,7 +38,7 @@ const userMenuItems: [string, string, string | null][] = [
   ['life-buoy', 'Suporte', null],
 ];
 
-export function EscolinhaTopBar({ title, subtitle }: EscolinhaTopBarProps) {
+export function EscolinhaTopBar({ title, subtitle, account }: EscolinhaTopBarProps) {
   const router = useRouter();
   const [showN, setShowN] = useState(false);
   const [showU, setShowU] = useState(false);
@@ -234,7 +241,7 @@ export function EscolinhaTopBar({ title, subtitle }: EscolinhaTopBarProps) {
             <div style={dropStyle(0, 230)}>
               <div style={{ padding: '14px 18px 12px', borderBottom: '1px solid var(--border-subtle)' }}>
                 <div style={{ fontWeight: 'var(--fw-bold)', fontSize: 'var(--fs-body)' }}>{account.name}</div>
-                <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)', marginTop: 2 }}>{account.role} · FC Estrela</div>
+                <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)', marginTop: 2 }}>{account.role} · {account.orgName}</div>
               </div>
               {userMenuItems.map(([ico, lbl, go]) => (
                 <button
