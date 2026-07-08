@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Badge, Button, Card, Icon } from '../ds';
 
 export interface TurmaCardData {
@@ -16,7 +16,6 @@ export interface TurmaCardData {
 }
 
 export function TurmasGrid({ turmas }: { turmas: TurmaCardData[] }) {
-  const router = useRouter();
   const [chip, setChip] = useState('all');
 
   const chips: [string, string][] = [
@@ -63,33 +62,35 @@ export function TurmasGrid({ turmas }: { turmas: TurmaCardData[] }) {
           {list.map((t) => {
             const cheia = t.alunos >= t.vagas;
             return (
-              <Card key={t.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/escolinha/turmas/${t.id}`)}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h3 style={{ margin: 0, fontSize: 'var(--fs-h4)', fontWeight: 'var(--fw-bold)' }}>{t.nome}</h3>
-                  <Badge tone="neutral">{t.cat}</Badge>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginTop: 14, fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>
-                  <div style={{ display: 'flex', gap: 9, alignItems: 'center' }}>
-                    <Icon name="calendar" size={15} style={{ color: 'var(--gray-500)' }} />
-                    {t.agenda}
+              <Link key={t.id} href={`/escolinha/turmas/${t.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                <Card style={{ cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h3 style={{ margin: 0, fontSize: 'var(--fs-h4)', fontWeight: 'var(--fw-bold)' }}>{t.nome}</h3>
+                    <Badge tone="neutral">{t.cat}</Badge>
                   </div>
-                  <div style={{ display: 'flex', gap: 9, alignItems: 'center' }}>
-                    <Icon name="map-pin" size={15} style={{ color: 'var(--gray-500)' }} />
-                    {t.local}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginTop: 14, fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>
+                    <div style={{ display: 'flex', gap: 9, alignItems: 'center' }}>
+                      <Icon name="calendar" size={15} style={{ color: 'var(--gray-500)' }} />
+                      {t.agenda}
+                    </div>
+                    <div style={{ display: 'flex', gap: 9, alignItems: 'center' }}>
+                      <Icon name="map-pin" size={15} style={{ color: 'var(--gray-500)' }} />
+                      {t.local}
+                    </div>
+                    <div style={{ display: 'flex', gap: 9, alignItems: 'center' }}>
+                      <Icon name="graduation-cap" size={15} style={{ color: 'var(--gray-500)' }} />
+                      {t.prof}
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', gap: 9, alignItems: 'center' }}>
-                    <Icon name="graduation-cap" size={15} style={{ color: 'var(--gray-500)' }} />
-                    {t.prof}
+                  <div style={{ height: 1, background: 'var(--border-subtle)', margin: '16px 0' }} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>
+                      <strong style={{ color: 'var(--text-primary)' }}>{t.alunos}</strong> / {t.vagas} vagas
+                    </span>
+                    {cheia ? <Badge tone="warning" dot>Lotada</Badge> : <Badge tone="success" dot>Aberta</Badge>}
                   </div>
-                </div>
-                <div style={{ height: 1, background: 'var(--border-subtle)', margin: '16px 0' }} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>
-                    <strong style={{ color: 'var(--text-primary)' }}>{t.alunos}</strong> / {t.vagas} vagas
-                  </span>
-                  {cheia ? <Badge tone="warning" dot>Lotada</Badge> : <Badge tone="success" dot>Aberta</Badge>}
-                </div>
-              </Card>
+                </Card>
+              </Link>
             );
           })}
         </div>
