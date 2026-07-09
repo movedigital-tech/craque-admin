@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Card, Icon, Input, Select } from '../ds';
@@ -20,6 +21,7 @@ export interface TurmaOption {
 
 export function AlunoForm({ turmas, defaultTurmaId }: { turmas: TurmaOption[]; defaultTurmaId?: string }) {
   const router = useRouter();
+  const [hasGuardian, setHasGuardian] = useState(false);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -84,19 +86,32 @@ export function AlunoForm({ turmas, defaultTurmaId }: { turmas: TurmaOption[]; d
                 />
               </div>
             </Card>
-            <Card title="Contato do responsável">
-              <div style={g2}>
-                <Input label="Nome do responsável" name="guardianName" placeholder="Ex.: Marcos Lima" leadingIcon="user" />
-                <Input label="WhatsApp" name="guardianPhone" placeholder="(11) 9 9999-9999" leadingIcon="phone" />
+            <Card title="Responsável">
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 'var(--fs-body)', fontFamily: 'var(--font-ui)' }}>
+                  <input type="checkbox" checked={hasGuardian} onChange={(e) => setHasGuardian(e.target.checked)} style={{ width: 16, height: 16, accentColor: 'var(--navy-900)' }} />
+                  Vincular responsável agora
+                </label>
               </div>
-              <div style={{ marginTop: 14 }}>
-                <Input label="E-mail" name="guardianEmail" type="email" placeholder="responsavel@email.com" leadingIcon="mail" />
-              </div>
+              {hasGuardian && (
+                <>
+                  <div style={g2}>
+                    <Input label="Nome do responsável" name="guardianName" placeholder="Ex.: Marcos Lima" leadingIcon="user" required />
+                    <Input label="WhatsApp" name="guardianPhone" placeholder="(11) 9 9999-9999" leadingIcon="phone" />
+                  </div>
+                  <div style={{ marginTop: 14 }}>
+                    <Input label="E-mail" name="guardianEmail" type="email" placeholder="responsavel@email.com" leadingIcon="mail" required />
+                  </div>
+                  <p style={{ margin: '10px 0 0', fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)', fontFamily: 'var(--font-ui)' }}>
+                    O e-mail é obrigatório para o responsável aparecer na listagem e receber convite de acesso.
+                  </p>
+                </>
+              )}
             </Card>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <InfoNote>
-              Se o e-mail do responsável for informado, um convite fica pendente até o primeiro acesso dele.
+              Responsável vinculado aqui aparece automaticamente na lista de <strong>Responsáveis</strong>. Pode vincular mais responsáveis depois pelo cadastro do aluno.
             </InfoNote>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <Button type="submit" variant="primary" size="md" fullWidth leadingIcon="check">
