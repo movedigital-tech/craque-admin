@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Avatar, Badge, Button, Card, Icon } from '@/components/ds';
 import { InfoNote } from '@/components/escolinha/InfoNote';
 import { TurmaRoster } from '@/components/escolinha/TurmaRoster';
+import { MatricularAlunoForm } from '@/components/escolinha/MatricularAlunoForm';
 import { db } from '@/lib/db';
 import { requireOrgContext } from '@/lib/tenant';
 import { scheduleLabel } from '@/lib/schedule';
@@ -11,7 +12,7 @@ import { presencaPercent } from '@/lib/attendance';
 
 export default async function EscolinhaTurmaDetalhePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { organization } = await requireOrgContext();
+  const { organization, membership } = await requireOrgContext();
 
   const classGroup = await db.classGroup.findFirst({
     where: { id, organizationId: organization.id },
@@ -53,6 +54,17 @@ export default async function EscolinhaTurmaDetalhePage({ params }: { params: Pr
 
   const cheia = enrollments.length >= classGroup.capacity;
 
+  const canEdit = ['OWNER', 'MANAGER'].includes(membership.role);
+
+  // Alunos da org que ainda NÃO estão ativos nesta turma
+  const enrolledStudentIds = new Set(enrollments.map((e) => e.studentId));
+  const alunosDisponiveis = canEdit
+    ? (await db.student.findMany({
+        where: { organizationId: organization.id, status: 'ACTIVE' },
+        orderBy: { name: 'asc' },
+      })).filter((s) => !enrolledStudentIds.has(s.id))
+    : [];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <Link
@@ -62,19 +74,19 @@ export default async function EscolinhaTurmaDetalhePage({ params }: { params: Pr
         <Icon name="arrow-left" size={15} />
         Turmas <span style={{ color: 'var(--border-default)', margin: '0 2px' }}>/</span> <strong style={{ color: 'var(--text-primary)' }}>{classGroup.name}</strong>
       </Link>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {cheia ? <Badge tone="warning" dot>Lotada</Badge> : <Badge tone="success" dot>Aberta</Badge>}
           <Badge tone="neutral">{classGroup.ageRange ?? '—'}</Badge>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <Link href="/escolinha/turmas/novo">
-            <Button variant="secondary" size="sm" leadingIcon="pencil">Editar turma</Button>
-          </Link>
-          <Link href={`/escolinha/alunos/novo?turma=${classGroup.id}`}>
-            <Button variant="primary" size="sm" leadingIcon="user-plus">Adicionar aluno</Button>
-          </Link>
-        </div>
+        {canEdit && (
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <Link href={`/escolinha/turmas/${id}/editar`}>
+              <Button variant="secondary" size="sm" leadingIcon="pencil">Editar turma</Button>
+            </Link>
+            <MatricularAlunoForm classGroupId={id} alunosDisponiveis={alunosDisponiveis} />
+          </div>
+        )}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 300px', gap: 20 }}>
         <Card padding={0} style={{ overflow: 'hidden' }}>
@@ -87,7 +99,7 @@ export default async function EscolinhaTurmaDetalhePage({ params }: { params: Pr
           <Card title="Informações" padding={24}>
             {([
               ['Categoria', classGroup.ageRange ?? '—'],
-              ['Agenda', scheduleLabel(classGroup.weekday, classGroup.startTime, classGroup.endTime)],
+              ['Agenda', scheduleLabel(classGroup.weekdays, classGroup.startTime, classGroup.endTime)],
               ['Local', classGroup.schoolUnit.name],
             ] as [string, string][]).map(([k, v]) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-subtle)', fontSize: 'var(--fs-body)' }}>
@@ -110,11 +122,7 @@ export default async function EscolinhaTurmaDetalhePage({ params }: { params: Pr
             <div style={{ height: 8, borderRadius: 99, background: 'var(--surface-muted)', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${Math.min(100, (enrollments.length / (classGroup.capacity || 1)) * 100)}%`, background: cheia ? 'var(--warning)' : 'var(--accent)', borderRadius: 99 }} />
             </div>
-            {cheia && (
-              <div style={{ marginTop: 10 }}>
-                <Badge tone="warning" dot>Turma lotada</Badge>
-              </div>
-            )}
+            {cheia && <div style={{ marginTop: 10 }}><Badge tone="warning" dot>Turma lotada</Badge></div>}
           </Card>
           <Card padding={24}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 'var(--fs-sm)' }}>

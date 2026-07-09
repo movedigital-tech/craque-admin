@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { db } from '@/lib/db';
 import { requireInstrutorContext } from '@/lib/tenant';
 import { Badge, Icon } from '@/components/ds';
+import { scheduleLabel } from '@/lib/schedule';
 
 export default async function InstrutorTurmasPage() {
   const { membership, organization } = await requireInstrutorContext();
@@ -52,7 +53,7 @@ export default async function InstrutorTurmasPage() {
                   <Badge tone="neutral">{t._count.enrollments} alunos</Badge>
                   <Icon name="chevron-right" size={18} style={{ color: 'var(--gray-500)' }} />
                 </div>
-                {(t.weekday || t.startTime) && (
+                {(t.weekdays.length > 0 || t.startTime) && (
                   <div
                     style={{
                       marginTop: 12,
@@ -66,7 +67,7 @@ export default async function InstrutorTurmasPage() {
                     }}
                   >
                     <Icon name="calendar" size={14} />
-                    {[t.weekday, t.startTime && t.endTime ? `${t.startTime}–${t.endTime}` : t.startTime].filter(Boolean).join(' · ')}
+                    {scheduleLabel(t.weekdays, t.startTime, t.endTime)}
                   </div>
                 )}
               </div>

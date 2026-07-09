@@ -71,7 +71,7 @@ async function main() {
       ageRange: '8 a 9 anos',
       capacity: 24,
       teacherMembershipId: teacherMembership.id,
-      weekday: 3,
+      weekdays: [3],
       startTime: '18:00',
       endTime: '19:30',
     },

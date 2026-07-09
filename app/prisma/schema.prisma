@@ -158,7 +158,7 @@ model ClassGroup {
   status              ClassStatus    @default(ACTIVE)
   capacity            Int            @default(0)
   teacherMembershipId String?
-  weekday             Int?
+  weekdays            Int[]
   startTime           String?
   endTime             String?
   organization        Organization   @relation(fields: [organizationId], references: [id])

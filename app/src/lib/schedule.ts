@@ -11,10 +11,12 @@ export function weekdayShortLabel(weekday: number | null | undefined): string {
   return WEEKDAYS_SHORT[weekday] ?? '—';
 }
 
-export function scheduleLabel(weekday: number | null | undefined, startTime: string | null | undefined, endTime: string | null | undefined): string {
-  const day = weekdayLabel(weekday);
-  if (!startTime) return day;
-  return `${day} · ${startTime}${endTime ? `–${endTime}` : ''}`;
+export function scheduleLabel(weekdays: number[] | null | undefined, startTime: string | null | undefined, endTime: string | null | undefined): string {
+  const days = weekdays && weekdays.length > 0
+    ? weekdays.map((d) => WEEKDAYS_SHORT[d] ?? '?').join(', ')
+    : '—';
+  if (!startTime) return days;
+  return `${days} · ${startTime}${endTime ? `–${endTime}` : ''}`;
 }
 
 export function ageFromBirthDate(birthDate: Date | null | undefined): string {

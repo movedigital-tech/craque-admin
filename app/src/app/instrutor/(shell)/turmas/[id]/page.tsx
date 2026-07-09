@@ -54,7 +54,7 @@ export default async function InstrutorTurmaPage({ params }: { params: Promise<{
     };
   });
 
-  const horario = scheduleLabel(turma.weekday, turma.startTime, turma.endTime);
+  const horario = scheduleLabel(turma.weekdays, turma.startTime, turma.endTime);
 
   return (
     <div>

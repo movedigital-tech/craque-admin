@@ -67,7 +67,7 @@ export default async function EscolinhaAgendaPage() {
               >
                 <div>
                   <div style={{ fontWeight: 'var(--fw-semibold)' }}>{c.name}</div>
-                  <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)' }}>{scheduleLabel(c.weekday, c.startTime, c.endTime)}</div>
+                  <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)' }}>{scheduleLabel(c.weekdays, c.startTime, c.endTime)}</div>
                 </div>
                 <form action={generateTodaySession.bind(null, c.id)}>
                   <Button type="submit" variant="secondary" size="sm" leadingIcon="plus">Gerar aula de hoje</Button>

@@ -20,7 +20,7 @@ export default async function EscolinhaTurmasPage() {
     id: t.id,
     nome: t.name,
     cat: t.ageRange ?? '—',
-    agenda: scheduleLabel(t.weekday, t.startTime, t.endTime),
+    agenda: scheduleLabel(t.weekdays, t.startTime, t.endTime),
     local: t.schoolUnit.name,
     prof: t.teacher?.user.name ?? 'Sem professor',
     alunos: t._count.enrollments,
