@@ -44,14 +44,22 @@ describe('weekdayShortLabel', () => {
 
 describe('scheduleLabel', () => {
   it('returns day only when no time', () => {
-    expect(scheduleLabel(3, null, null)).toBe('Quarta');
+    expect(scheduleLabel([3], null, null)).toBe('QUA');
   });
 
   it('includes start time when available', () => {
-    expect(scheduleLabel(3, '18:00', null)).toBe('Quarta · 18:00');
+    expect(scheduleLabel([3], '18:00', null)).toBe('QUA · 18:00');
   });
 
   it('includes start–end range', () => {
-    expect(scheduleLabel(3, '18:00', '19:30')).toBe('Quarta · 18:00–19:30');
+    expect(scheduleLabel([3], '18:00', '19:30')).toBe('QUA · 18:00–19:30');
+  });
+
+  it('handles multiple weekdays', () => {
+    expect(scheduleLabel([1, 3, 5], '09:00', null)).toBe('SEG, QUA, SEX · 09:00');
+  });
+
+  it('returns — for empty array', () => {
+    expect(scheduleLabel([], null, null)).toBe('—');
   });
 });

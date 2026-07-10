@@ -1,4 +1,5 @@
-import { Avatar, Badge, Card, StatCard } from '@/components/ds';
+import Link from 'next/link';
+import { Avatar, Badge, Button, Card, StatCard } from '@/components/ds';
 import { db } from '@/lib/db';
 import { requireOrgContext } from '@/lib/tenant';
 import { weekdayShortLabel } from '@/lib/schedule';
@@ -7,8 +8,9 @@ import { presencaPercent } from '@/lib/attendance';
 export default async function EscolinhaHomePage() {
   const { organization } = await requireOrgContext();
 
-  const [studentCount, classGroups, staffCount, attendances, upcomingSessions] = await Promise.all([
+  const [studentCount, pendingCount, classGroups, staffCount, attendances, upcomingSessions] = await Promise.all([
     db.student.count({ where: { organizationId: organization.id, status: 'ACTIVE' } }),
+    db.enrollment.count({ where: { student: { organizationId: organization.id }, status: 'PENDING' } }),
     db.classGroup.findMany({
       where: { organizationId: organization.id, status: 'ACTIVE' },
       include: { teacher: { include: { user: true } }, _count: { select: { enrollments: { where: { status: 'ACTIVE' } } } } },
@@ -27,8 +29,10 @@ export default async function EscolinhaHomePage() {
   const present = attendances.filter((a) => a.status === 'PRESENT').length;
   const media = presencaPercent(present, attendances.length);
 
+  const pendingTrend = pendingCount > 0 ? `${pendingCount} pré-matrículas` : undefined;
+
   const homeStats = [
-    { icon: 'users', label: 'Alunos ativos', value: String(studentCount), trend: undefined, dir: 'up' as const, dark: false },
+    { icon: 'users', label: 'Alunos ativos', value: String(studentCount), trend: pendingTrend, dir: 'up' as const, dark: false },
     { icon: 'goal', label: 'Turmas ativas', value: String(classGroups.length), trend: `${classGroups.reduce((sum, c) => sum + c.capacity, 0)} vagas no total`, dir: 'up' as const, dark: true },
     { icon: 'percent', label: 'Presença média', value: media.pct, trend: undefined, dir: 'up' as const, dark: false },
     { icon: 'graduation-cap', label: 'Professores', value: String(staffCount), trend: undefined, dir: 'up' as const, dark: false },
@@ -65,7 +69,9 @@ export default async function EscolinhaHomePage() {
                       <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)', marginTop: 1 }}>{t.teacher?.user.name ?? 'Sem professor'}</div>
                     </div>
                   </div>
-                  <Badge tone={t._count.enrollments >= t.capacity ? 'warning' : 'success'}>{t._count.enrollments}/{t.capacity} alunos</Badge>
+                  <Badge tone={t.capacity > 0 && t._count.enrollments >= t.capacity ? 'warning' : 'success'}>
+                    {t._count.enrollments}{t.capacity > 0 ? `/${t.capacity}` : ''} alunos
+                  </Badge>
                 </div>
               ))}
             </div>
@@ -73,7 +79,12 @@ export default async function EscolinhaHomePage() {
         </Card>
         <Card title="Próximas aulas" padding={24}>
           {upcomingSessions.length === 0 ? (
-            <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 'var(--fs-body)' }}>Nenhuma aula agendada.</p>
+            <div style={{ textAlign: 'center', padding: '8px 0 4px' }}>
+              <p style={{ margin: '0 0 12px', color: 'var(--text-secondary)', fontSize: 'var(--fs-body)' }}>Nenhuma aula agendada.</p>
+              <Link href="/escolinha/agenda">
+                <Button variant="secondary" size="sm" leadingIcon="calendar">Ir para Agenda</Button>
+              </Link>
+            </div>
           ) : (
             upcomingSessions.map((s, i) => (
               <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0', borderBottom: i < upcomingSessions.length - 1 ? '1px solid var(--border-subtle)' : 'none' }}>
