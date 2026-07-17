@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
 import { signupSchema } from '@/lib/validation/signup';
 import { slugify } from '@/lib/slug';
+import { sendWelcomeEmail } from '@/lib/email';
 
 const TRIAL_DAYS = Number(process.env.TRIAL_DAYS ?? '7');
 
@@ -57,6 +58,8 @@ export async function POST(request: Request) {
       data: { organizationId: organization.id, name: 'Unidade principal', isDefault: true },
     });
   });
+
+  await sendWelcomeEmail(email, name, schoolName).catch(console.error);
 
   return NextResponse.json({ ok: true });
 }

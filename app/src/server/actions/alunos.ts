@@ -6,6 +6,11 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import { requireOrgContext } from '@/lib/tenant';
+import { sendGuardianInviteEmail } from '@/lib/email';
+
+function tempPassword() {
+  return `Craque@${Math.floor(1000 + Math.random() * 9000)}`;
+}
 
 export async function createStudentWithGuardian(formData: FormData) {
   const { organization } = await requireOrgContext(['OWNER', 'MANAGER']);
@@ -28,8 +33,11 @@ export async function createStudentWithGuardian(formData: FormData) {
 
   if (guardianEmail && guardianName) {
     let guardianUser = await db.user.findUnique({ where: { email: guardianEmail } });
+    const isNewGuardian = !guardianUser;
+    const pwd = tempPassword();
+
     if (!guardianUser) {
-      const passwordHash = await bcrypt.hash(randomUUID(), 10);
+      const passwordHash = await bcrypt.hash(pwd, 10);
       guardianUser = await db.user.create({
         data: { name: guardianName, email: guardianEmail, phone: guardianPhone, passwordHash },
       });
@@ -45,6 +53,10 @@ export async function createStudentWithGuardian(formData: FormData) {
     }
 
     await db.studentGuardian.create({ data: { studentId: student.id, membershipId: membership.id, isPrimary: true } });
+
+    if (isNewGuardian) {
+      await sendGuardianInviteEmail(guardianEmail, guardianName, student.name, organization.name, pwd).catch(console.error);
+    }
   }
 
   if (classGroupId) {

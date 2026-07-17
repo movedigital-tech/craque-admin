@@ -6,7 +6,12 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import { requireOrgContext } from '@/lib/tenant';
+import { sendMemberInviteEmail } from '@/lib/email';
 import type { MembershipRole } from '@/generated/prisma/client';
+
+function tempPassword() {
+  return `Craque@${Math.floor(1000 + Math.random() * 9000)}`;
+}
 
 export async function inviteMember(formData: FormData) {
   const { organization } = await requireOrgContext(['OWNER', 'MANAGER']);
@@ -19,8 +24,11 @@ export async function inviteMember(formData: FormData) {
   if (!name || !email) throw new Error('Nome e e-mail são obrigatórios');
 
   let user = await db.user.findUnique({ where: { email } });
+  const isNewUser = !user;
+  const pwd = tempPassword();
+
   if (!user) {
-    const passwordHash = await bcrypt.hash(randomUUID(), 10);
+    const passwordHash = await bcrypt.hash(pwd, 10);
     user = await db.user.create({ data: { name, email, phone, passwordHash } });
   }
 
@@ -29,6 +37,10 @@ export async function inviteMember(formData: FormData) {
   });
   if (!existing) {
     await db.membership.create({ data: { userId: user.id, organizationId: organization.id, role, status: 'INVITED' } });
+  }
+
+  if (isNewUser && (role === 'TEACHER' || role === 'MANAGER')) {
+    await sendMemberInviteEmail(email, name, organization.name, pwd, role).catch(console.error);
   }
 
   revalidatePath('/escolinha/professores');
