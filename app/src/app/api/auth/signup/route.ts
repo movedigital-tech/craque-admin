@@ -3,7 +3,9 @@ import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
 import { signupSchema } from '@/lib/validation/signup';
 import { slugify } from '@/lib/slug';
-import { sendWelcomeEmail } from '@/lib/email';
+import { createInvitationToken } from '@/lib/email/tokens';
+import { emailProvider } from '@/lib/email/resend-provider';
+import { welcomeEmailTemplate } from '@/lib/email/templates';
 
 const TRIAL_DAYS = Number(process.env.TRIAL_DAYS ?? '7');
 
@@ -36,7 +38,7 @@ export async function POST(request: Request) {
   const slug = await uniqueSlug(schoolName);
   const trialEndsAt = new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
 
-  await db.$transaction(async (tx) => {
+  const verificationToken = await db.$transaction(async (tx) => {
     const user = await tx.user.create({ data: { name, email, passwordHash } });
 
     const organization = await tx.organization.create({
@@ -57,9 +59,16 @@ export async function POST(request: Request) {
     await tx.schoolUnit.create({
       data: { organizationId: organization.id, name: 'Unidade principal', isDefault: true },
     });
+
+    return createInvitationToken(tx, { userId: user.id, type: 'EMAIL_VERIFICATION' });
   });
 
-  await sendWelcomeEmail(email, name, schoolName).catch(console.error);
+  try {
+    const verifyUrl = `${process.env.APP_BASE_URL}/api/auth/verify-email?token=${verificationToken}`;
+    await emailProvider.send({ to: email, ...welcomeEmailTemplate({ name, verifyUrl }) });
+  } catch (err) {
+    console.error('[signup] failed to send welcome email', err);
+  }
 
   return NextResponse.json({ ok: true });
 }

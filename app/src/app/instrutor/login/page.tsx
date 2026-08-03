@@ -48,7 +48,7 @@ export default function InstrutorLoginPage() {
     const result = await signIn('credentials', { email, password: pw, redirect: false });
     setLoading(false);
     if (result?.error) {
-      setError('E-mail ou senha inválidos.');
+      setError(result.error === 'email_not_verified' ? 'Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada.' : 'E-mail ou senha inválidos.');
       return;
     }
     router.push('/instrutor/home');

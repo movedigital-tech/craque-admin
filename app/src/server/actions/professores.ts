@@ -6,12 +6,17 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import { requireOrgContext } from '@/lib/tenant';
-import { sendMemberInviteEmail } from '@/lib/email';
 import type { MembershipRole } from '@/generated/prisma/client';
+import { createInvitationToken } from '@/lib/email/tokens';
+import { emailProvider } from '@/lib/email/resend-provider';
+import { memberInviteEmailTemplate } from '@/lib/email/templates';
 
-function tempPassword() {
-  return `Craque@${Math.floor(1000 + Math.random() * 9000)}`;
-}
+const ROLE_LABELS: Record<MembershipRole, string> = {
+  OWNER: 'proprietário(a)',
+  MANAGER: 'gestor(a)',
+  TEACHER: 'instrutor(a)',
+  GUARDIAN: 'responsável',
+};
 
 export async function inviteMember(formData: FormData) {
   const { organization } = await requireOrgContext(['OWNER', 'MANAGER']);
@@ -24,23 +29,26 @@ export async function inviteMember(formData: FormData) {
   if (!name || !email) throw new Error('Nome e e-mail são obrigatórios');
 
   let user = await db.user.findUnique({ where: { email } });
-  const isNewUser = !user;
-  const pwd = tempPassword();
-
   if (!user) {
-    const passwordHash = await bcrypt.hash(pwd, 10);
+    const passwordHash = await bcrypt.hash(randomUUID(), 10);
     user = await db.user.create({ data: { name, email, phone, passwordHash } });
   }
 
-  const existing = await db.membership.findUnique({
+  let membership = await db.membership.findUnique({
     where: { userId_organizationId: { userId: user.id, organizationId: organization.id } },
   });
-  if (!existing) {
-    await db.membership.create({ data: { userId: user.id, organizationId: organization.id, role, status: 'INVITED' } });
-  }
+  if (!membership) {
+    membership = await db.membership.create({ data: { userId: user.id, organizationId: organization.id, role, status: 'INVITED' } });
 
-  if (isNewUser && (role === 'TEACHER' || role === 'MANAGER')) {
-    await sendMemberInviteEmail(email, name, organization.name, pwd, role).catch(console.error);
+    try {
+      const token = await db.$transaction((tx) =>
+        createInvitationToken(tx, { userId: user!.id, type: 'MEMBER_INVITE', membershipId: membership!.id }),
+      );
+      const acceptUrl = `${process.env.APP_BASE_URL}/aceitar-convite?token=${token}`;
+      await emailProvider.send({ to: email, ...memberInviteEmailTemplate({ name, orgName: organization.name, roleLabel: ROLE_LABELS[role], acceptUrl }) });
+    } catch (err) {
+      console.error('[inviteMember] failed to send invite email', err);
+    }
   }
 
   revalidatePath('/escolinha/professores');

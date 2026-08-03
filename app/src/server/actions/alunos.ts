@@ -6,11 +6,9 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import { requireOrgContext } from '@/lib/tenant';
-import { sendGuardianInviteEmail } from '@/lib/email';
-
-function tempPassword() {
-  return `Craque@${Math.floor(1000 + Math.random() * 9000)}`;
-}
+import { createInvitationToken } from '@/lib/email/tokens';
+import { emailProvider } from '@/lib/email/resend-provider';
+import { guardianInviteEmailTemplate } from '@/lib/email/templates';
 
 export async function createStudentWithGuardian(formData: FormData) {
   const { organization } = await requireOrgContext(['OWNER', 'MANAGER']);
@@ -33,11 +31,8 @@ export async function createStudentWithGuardian(formData: FormData) {
 
   if (guardianEmail && guardianName) {
     let guardianUser = await db.user.findUnique({ where: { email: guardianEmail } });
-    const isNewGuardian = !guardianUser;
-    const pwd = tempPassword();
-
     if (!guardianUser) {
-      const passwordHash = await bcrypt.hash(pwd, 10);
+      const passwordHash = await bcrypt.hash(randomUUID(), 10);
       guardianUser = await db.user.create({
         data: { name: guardianName, email: guardianEmail, phone: guardianPhone, passwordHash },
       });
@@ -46,16 +41,29 @@ export async function createStudentWithGuardian(formData: FormData) {
     let membership = await db.membership.findUnique({
       where: { userId_organizationId: { userId: guardianUser.id, organizationId: organization.id } },
     });
+    let isNewMembership = false;
     if (!membership) {
       membership = await db.membership.create({
         data: { userId: guardianUser.id, organizationId: organization.id, role: 'GUARDIAN', status: 'INVITED' },
       });
+      isNewMembership = true;
     }
 
     await db.studentGuardian.create({ data: { studentId: student.id, membershipId: membership.id, isPrimary: true } });
 
-    if (isNewGuardian) {
-      await sendGuardianInviteEmail(guardianEmail, guardianName, student.name, organization.name, pwd).catch(console.error);
+    if (isNewMembership) {
+      try {
+        const token = await db.$transaction((tx) =>
+          createInvitationToken(tx, { userId: guardianUser!.id, type: 'GUARDIAN_INVITE', membershipId: membership!.id }),
+        );
+        const acceptUrl = `${process.env.APP_BASE_URL}/aceitar-convite?token=${token}`;
+        await emailProvider.send({
+          to: guardianEmail,
+          ...guardianInviteEmailTemplate({ guardianName, studentName: name, orgName: organization.name, acceptUrl }),
+        });
+      } catch (err) {
+        console.error('[createStudentWithGuardian] failed to send guardian invite email', err);
+      }
     }
   }
 

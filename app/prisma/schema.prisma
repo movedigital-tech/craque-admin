@@ -81,20 +81,28 @@ enum SubscriptionStatus {
   INCOMPLETE
 }
 
+enum InvitationTokenType {
+  EMAIL_VERIFICATION
+  MEMBER_INVITE
+  GUARDIAN_INVITE
+}
+
 // ---------------------------------------------------------------
 // Identity & tenancy
 // ---------------------------------------------------------------
 
 model User {
-  id           String        @id @default(cuid())
-  name         String
-  email        String        @unique
-  phone        String?
-  passwordHash String
-  platformRole PlatformRole?
-  memberships  Membership[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id               String            @id @default(cuid())
+  name             String
+  email            String            @unique
+  phone            String?
+  passwordHash     String
+  emailVerified    DateTime?
+  platformRole     PlatformRole?
+  memberships      Membership[]
+  invitationTokens InvitationToken[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 model Organization {
@@ -128,6 +136,7 @@ model Membership {
   teachingClasses   ClassGroup[]      @relation("ClassTeacher")
   guardianStudents  StudentGuardian[]
   markedAttendances Attendance[]
+  invitationTokens  InvitationToken[]
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
@@ -299,4 +308,19 @@ model AuditLog {
   metadata       Json?
   organization   Organization? @relation(fields: [organizationId], references: [id])
   createdAt      DateTime      @default(now())
+}
+
+// Backs e-mail verification and invite-acceptance links: the raw token only
+// ever exists in the emailed URL, the DB keeps its SHA-256 hash.
+model InvitationToken {
+  id           String              @id @default(cuid())
+  tokenHash    String              @unique
+  type         InvitationTokenType
+  userId       String
+  membershipId String?
+  expiresAt    DateTime
+  usedAt       DateTime?
+  user         User                @relation(fields: [userId], references: [id])
+  membership   Membership?         @relation(fields: [membershipId], references: [id])
+  createdAt    DateTime            @default(now())
 }
