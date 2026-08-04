@@ -1,8 +1,8 @@
+import type { SubscriptionStatus } from '@/generated/prisma/client';
+
 /**
- * Abstraction seam over the (not yet chosen) payment gateway. Concrete
- * providers (Stripe, Mercado Pago, Pagar.me, ...) implement this interface;
- * application code only ever depends on `PaymentProvider`, never on a
- * specific gateway SDK.
+ * Abstraction seam over the payment gateway (Stripe). Application code only
+ * ever depends on `PaymentProvider`, never on the Stripe SDK directly.
  */
 export interface CreateCheckoutSessionInput {
   organizationId: string;
@@ -12,9 +12,24 @@ export interface CreateCheckoutSessionResult {
   url: string;
 }
 
+/**
+ * Gateway-agnostic shape a webhook event is normalized into. Deliberately
+ * has no `organizationId` — the provider only knows gateway-side identifiers
+ * (customer id), resolving that to an org is the caller's job (it owns the
+ * Prisma lookup).
+ */
+export interface NormalizedWebhookEvent {
+  eventId: string;
+  type: string;
+  gatewayCustomerId?: string;
+  subscriptionStatus?: SubscriptionStatus;
+  currentPeriodEnd?: Date;
+  lastPaymentStatus?: string;
+}
+
 export interface PaymentProvider {
   createCheckoutSession(input: CreateCheckoutSessionInput): Promise<CreateCheckoutSessionResult>;
 
-  /** Verifies a webhook request actually came from the gateway before it's trusted. */
-  verifyWebhookSignature(rawBody: string, signatureHeader: string | null): boolean;
+  /** Verifies the request actually came from the gateway and normalizes it. Returns null if the signature is invalid. */
+  parseWebhookEvent(rawBody: string, signatureHeader: string | null): NormalizedWebhookEvent | null;
 }

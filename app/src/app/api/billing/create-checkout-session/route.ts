@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireMembership } from '@/lib/tenant';
-import { paymentProvider } from '@/lib/payments/stub-provider';
+import { paymentProvider } from '@/lib/payments/stripe-provider';
 
 export async function POST() {
   const { organization } = await requireMembership();

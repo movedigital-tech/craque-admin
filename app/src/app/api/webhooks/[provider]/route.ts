@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { Prisma } from '@/generated/prisma/client';
-import type { SubscriptionStatus, OrganizationStatus } from '@/generated/prisma/client';
-import { paymentProvider } from '@/lib/payments/stub-provider';
+import type { OrganizationStatus, SubscriptionStatus } from '@/generated/prisma/client';
+import { paymentProvider } from '@/lib/payments/stripe-provider';
 
 const SUBSCRIPTION_TO_ORG_STATUS: Partial<Record<SubscriptionStatus, OrganizationStatus>> = {
   TRIALING: 'TRIALING',
@@ -11,35 +11,19 @@ const SUBSCRIPTION_TO_ORG_STATUS: Partial<Record<SubscriptionStatus, Organizatio
   CANCELED: 'CANCELED',
 };
 
-interface WebhookPayload {
-  eventId: string;
-  type: string;
-  organizationId?: string;
-  subscriptionStatus?: SubscriptionStatus;
-  gatewayCustomerId?: string;
-  currentPeriodEnd?: string;
-  lastPaymentStatus?: string;
-}
-
 export async function POST(request: Request, { params }: { params: Promise<{ provider: string }> }) {
   const { provider } = await params;
   const rawBody = await request.text();
 
-  const signatureHeader = request.headers.get('x-webhook-signature');
-  if (!paymentProvider.verifyWebhookSignature(rawBody, signatureHeader)) {
+  const signatureHeader = request.headers.get('stripe-signature');
+  const normalized = paymentProvider.parseWebhookEvent(rawBody, signatureHeader);
+  if (!normalized) {
     return NextResponse.json({ error: 'invalid signature' }, { status: 401 });
   }
 
-  let payload: WebhookPayload;
-  try {
-    payload = JSON.parse(rawBody);
-  } catch {
-    return NextResponse.json({ error: 'invalid JSON body' }, { status: 400 });
-  }
-
-  if (!payload.eventId || !payload.type) {
-    return NextResponse.json({ error: 'eventId and type are required' }, { status: 400 });
-  }
+  const organizationId = normalized.gatewayCustomerId
+    ? (await db.platformSubscription.findFirst({ where: { gatewayCustomerId: normalized.gatewayCustomerId } }))?.organizationId ?? null
+    : null;
 
   // Store the raw event before processing, keyed by eventId, so a replayed
   // delivery hits the unique constraint and is treated as a no-op.
@@ -48,10 +32,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
     event = await db.webhookEvent.create({
       data: {
         provider,
-        eventId: payload.eventId,
-        type: payload.type,
-        payload: payload as unknown as Prisma.InputJsonValue,
-        organizationId: payload.organizationId ?? null,
+        eventId: normalized.eventId,
+        type: normalized.type,
+        payload: normalized as unknown as Prisma.InputJsonValue,
+        organizationId,
       },
     });
   } catch (error) {
@@ -61,21 +45,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
     throw error;
   }
 
-  if (payload.organizationId && payload.subscriptionStatus) {
+  if (organizationId && (normalized.subscriptionStatus || normalized.gatewayCustomerId || normalized.currentPeriodEnd || normalized.lastPaymentStatus)) {
     await db.platformSubscription.update({
-      where: { organizationId: payload.organizationId },
+      where: { organizationId },
       data: {
-        status: payload.subscriptionStatus,
-        gatewayCustomerId: payload.gatewayCustomerId,
-        currentPeriodEnd: payload.currentPeriodEnd ? new Date(payload.currentPeriodEnd) : undefined,
-        lastPaymentStatus: payload.lastPaymentStatus,
+        status: normalized.subscriptionStatus,
+        gatewayCustomerId: normalized.gatewayCustomerId,
+        currentPeriodEnd: normalized.currentPeriodEnd,
+        lastPaymentStatus: normalized.lastPaymentStatus,
         lastWebhookEventId: event.eventId,
       },
     });
 
-    const orgStatus = SUBSCRIPTION_TO_ORG_STATUS[payload.subscriptionStatus];
+    const orgStatus = normalized.subscriptionStatus ? SUBSCRIPTION_TO_ORG_STATUS[normalized.subscriptionStatus] : undefined;
     if (orgStatus) {
-      await db.organization.update({ where: { id: payload.organizationId }, data: { status: orgStatus } });
+      await db.organization.update({ where: { id: organizationId }, data: { status: orgStatus } });
     }
   }
 
