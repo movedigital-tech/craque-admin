@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: craque
+          POSTGRES_PASSWORD: craque
+          POSTGRES_DB: craque_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U craque"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://craque:craque@localhost:5432/craque_ci
+      AUTH_SECRET: ci-dummy-auth-secret
+      TRIAL_DAYS: "7"
+      APP_BASE_URL: http://localhost:3000
+      RESEND_API_KEY: ci-dummy-resend-key
+      EMAIL_FROM: "Craque <noreply@craqueapp.com.br>"
+      STRIPE_SECRET_KEY: sk_test_ci_dummy
+      STRIPE_WEBHOOK_SECRET: whsec_ci_dummy
+      STRIPE_PRICE_ID: price_ci_dummy
+
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Apply migrations
+        run: npx prisma migrate deploy
+
+      - name: Integration tests
+        run: npm run test:integration
+
+      - name: Build
+        run: npx next build

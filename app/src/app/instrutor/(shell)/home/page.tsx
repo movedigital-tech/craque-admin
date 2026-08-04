@@ -6,7 +6,7 @@ import { Badge, Icon } from '@/components/ds';
 function MiniStat({ icon, val, label, tint, ink }: { icon: string; val: string; label: string; tint: string; ink: string }) {
   return (
     <div style={{ flex: 1, background: tint, border: '1px solid var(--border-subtle)', borderRadius: 16, padding: '14px 10px', textAlign: 'center' }}>
-      <Icon name={icon as any} size={22} style={{ color: ink, display: 'block', margin: '0 auto 6px' }} />
+      <Icon name={icon} size={22} style={{ color: ink, display: 'block', margin: '0 auto 6px' }} />
       <div style={{ fontSize: 24, fontWeight: 'var(--fw-bold)', color: ink, lineHeight: 1 }}>{val}</div>
       <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)', marginTop: 4 }}>{label}</div>
     </div>
@@ -152,7 +152,7 @@ export default async function InstrutorHomePage() {
             }}
           >
             <span style={{ width: 46, height: 46, borderRadius: 13, background: 'var(--surface-muted)', display: 'inline-grid', placeItems: 'center', marginBottom: 8 }}>
-              <Icon name={icon as any} size={22} style={{ color: 'var(--text-secondary)' }} />
+              <Icon name={icon} size={22} style={{ color: 'var(--text-secondary)' }} />
             </span>
             <div style={{ fontSize: 13, fontWeight: 'var(--fw-bold)' }}>{label}</div>
           </Link>
