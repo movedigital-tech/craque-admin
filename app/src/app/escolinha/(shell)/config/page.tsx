@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
-import { Badge, Button, Card, Icon, Input, Select, Toggle, useToast } from '@/components/ds';
+import { Badge, Button, Card, Input, Select, Toggle, useToast } from '@/components/ds';
 import { InfoNote } from '@/components/escolinha/InfoNote';
+import { LogoUploader } from '@/components/escolinha/LogoUploader';
 
 const g2: CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 };
 
@@ -125,24 +126,7 @@ export default function EscolinhaConfigPage() {
             </div>
             <div style={{ marginTop: 14 }}>
               <label style={{ display: 'block', marginBottom: 8, fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-medium)' }}>Logo da escolinha</label>
-              <div
-                style={{
-                  height: 80,
-                  border: '2px dashed var(--border-default)',
-                  borderRadius: 'var(--radius-md)',
-                  background: 'var(--surface-subtle)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  cursor: 'pointer',
-                  color: 'var(--text-secondary)',
-                  fontSize: 'var(--fs-sm)',
-                }}
-              >
-                <Icon name="image-plus" size={18} />
-                Clique ou arraste para enviar
-              </div>
+              <LogoUploader />
             </div>
           </Card>
           <PlanoRail />

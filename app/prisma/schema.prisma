@@ -112,6 +112,7 @@ model Organization {
   document             String?
   city                 String?
   state                String?
+  logoUrl              String?
   status               OrganizationStatus    @default(TRIALING)
   memberships          Membership[]
   units                SchoolUnit[]
