@@ -42,3 +42,9 @@ export type { SelectProps, SelectOption } from './Select';
 
 export { Toggle } from './Toggle';
 export type { ToggleProps } from './Toggle';
+
+export { ToastProvider, useToast } from './Toast';
+export type { ToastTone } from './Toast';
+
+export { ConfirmDialog } from './ConfirmDialog';
+export type { ConfirmDialogProps } from './ConfirmDialog';

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { SidebarNav } from '../ds';
+import { SidebarNav, ToastProvider } from '../ds';
 import { navFootItems, navItems } from '../../data/escolinha';
 import { escolinhaPageMeta } from '../../data/escolinha/pageMeta';
 import { EscolinhaTopBar, type EscolinhaAccount } from './EscolinhaTopBar';
@@ -27,12 +27,14 @@ export function EscolinhaShell({ children, account }: { children: ReactNode; acc
   const handleSelect = (key: string) => router.push(`/escolinha/${key}`);
 
   return (
-    <div style={{ display: 'flex', height: '100vh', background: 'var(--surface-canvas)', overflow: 'hidden' }}>
-      <SidebarNav brand="Craque" items={navItems} footerItems={navFootItems} activeKey={activeNav} onSelect={handleSelect} />
-      <main style={{ flex: 1, overflowY: 'auto', padding: '34px 36px', display: 'flex', flexDirection: 'column' }}>
-        <EscolinhaTopBar title={meta?.title ?? ''} subtitle={meta?.subtitle ?? ''} account={account} />
-        {children}
-      </main>
-    </div>
+    <ToastProvider>
+      <div style={{ display: 'flex', height: '100vh', background: 'var(--surface-canvas)', overflow: 'hidden' }}>
+        <SidebarNav brand="Craque" items={navItems} footerItems={navFootItems} activeKey={activeNav} onSelect={handleSelect} />
+        <main style={{ flex: 1, overflowY: 'auto', padding: '34px 36px', display: 'flex', flexDirection: 'column' }}>
+          <EscolinhaTopBar title={meta?.title ?? ''} subtitle={meta?.subtitle ?? ''} account={account} />
+          {children}
+        </main>
+      </div>
+    </ToastProvider>
   );
 }

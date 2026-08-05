@@ -54,3 +54,25 @@ export async function inviteMember(formData: FormData) {
   revalidatePath('/escolinha/professores');
   redirect('/escolinha/professores');
 }
+
+export async function resendMemberInvite(membershipId: string): Promise<void> {
+  const { organization } = await requireOrgContext(['OWNER', 'MANAGER']);
+
+  const membership = await db.membership.findFirst({
+    where: { id: membershipId, organizationId: organization.id },
+    include: { user: true },
+  });
+  if (!membership) throw new Error('Membro não encontrado');
+  if (membership.status !== 'INVITED') throw new Error('Este convite já foi aceito');
+
+  const token = await db.$transaction((tx) =>
+    createInvitationToken(tx, { userId: membership.userId, type: 'MEMBER_INVITE', membershipId: membership.id }),
+  );
+  const acceptUrl = `${process.env.APP_BASE_URL}/aceitar-convite?token=${token}`;
+  await emailProvider.send({
+    to: membership.user.email,
+    ...memberInviteEmailTemplate({ name: membership.user.name, orgName: organization.name, roleLabel: ROLE_LABELS[membership.role], acceptUrl }),
+  });
+
+  revalidatePath('/escolinha/professores');
+}

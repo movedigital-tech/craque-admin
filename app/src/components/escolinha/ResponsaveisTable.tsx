@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import type { CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
-import { Avatar, Badge, Button, Card } from '../ds';
+import { Avatar, Badge, Button, Card, useToast } from '../ds';
+import { resendGuardianInvite } from '@/server/actions/responsaveis';
 
 const th: CSSProperties = {
   padding: '24px',
@@ -36,6 +37,23 @@ export function ResponsaveisTable({ responsaveis }: { responsaveis: ResponsavelR
   const router = useRouter();
   const [chip, setChip] = useState('all');
   const [hov, setHov] = useState<string | null>(null);
+  const [resendingId, setResendingId] = useState<string | null>(null);
+  const [, startTransition] = useTransition();
+  const { showToast } = useToast();
+
+  const handleResend = (r: ResponsavelRow) => {
+    setResendingId(r.id);
+    startTransition(async () => {
+      try {
+        await resendGuardianInvite(r.id);
+        showToast(`Convite reenviado para ${r.name}.`, 'success');
+      } catch (err) {
+        showToast(err instanceof Error ? err.message : 'Não foi possível reenviar o convite.', 'error');
+      } finally {
+        setResendingId(null);
+      }
+    });
+  };
 
   const chips: [string, string][] = [
     ['all', `Todos · ${responsaveis.length}`],
@@ -102,7 +120,13 @@ export function ResponsaveisTable({ responsaveis }: { responsaveis: ResponsavelR
                   {r.completo ? <Badge tone="success" dot>Completo</Badge> : <Badge tone="warning" dot>Convite pendente</Badge>}
                 </td>
                 <td style={{ ...td, textAlign: 'right' }}>
-                  <Button variant="ghost" size="sm">{r.completo ? 'Ver' : 'Reenviar'}</Button>
+                  {r.completo ? (
+                    <Button variant="ghost" size="sm">Ver</Button>
+                  ) : (
+                    <Button variant="ghost" size="sm" disabled={resendingId === r.id} onClick={() => handleResend(r)}>
+                      {resendingId === r.id ? 'Enviando…' : 'Reenviar'}
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}

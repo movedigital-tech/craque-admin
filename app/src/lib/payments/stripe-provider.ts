@@ -2,6 +2,8 @@ import Stripe from 'stripe';
 import { db } from '@/lib/db';
 import type { SubscriptionStatus } from '@/generated/prisma/client';
 import type {
+  CreateBillingPortalSessionInput,
+  CreateBillingPortalSessionResult,
   CreateCheckoutSessionInput,
   CreateCheckoutSessionResult,
   NormalizedWebhookEvent,
@@ -57,6 +59,21 @@ export class StripeProvider implements PaymentProvider {
     });
 
     return { url: session.url! };
+  }
+
+  async createBillingPortalSession({ organizationId }: CreateBillingPortalSessionInput): Promise<CreateBillingPortalSessionResult> {
+    const stripe = this.client();
+    const baseUrl = requiredEnv('APP_BASE_URL');
+
+    const subscription = await db.platformSubscription.findUnique({ where: { organizationId } });
+    if (!subscription?.gatewayCustomerId) throw new Error('Nenhuma assinatura Stripe encontrada para esta organização');
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: subscription.gatewayCustomerId,
+      return_url: `${baseUrl}/escolinha/config`,
+    });
+
+    return { url: session.url };
   }
 
   parseWebhookEvent(rawBody: string, signatureHeader: string | null): NormalizedWebhookEvent | null {

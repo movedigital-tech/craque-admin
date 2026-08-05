@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Avatar, Badge, Button, Card, Icon } from '../ds';
 import { Presenca } from './Presenca';
 
@@ -37,16 +37,41 @@ export interface AlunoRow {
 
 export function AlunosTable({ alunos, turmaNames }: { alunos: AlunoRow[]; turmaNames: string[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [chip, setChip] = useState('all');
   const [hov, setHov] = useState<string | null>(null);
+  const [q, setQ] = useState(searchParams.get('q') ?? '');
 
   const chips: [string, string][] = [['all', `Todos · ${alunos.length}`], ...turmaNames.map((t): [string, string] => [t, t])];
-  const list = chip === 'all' ? alunos : alunos.filter((r) => r.turma === chip);
+  const list = alunos
+    .filter((r) => chip === 'all' || r.turma === chip)
+    .filter((r) => !q.trim() || r.name.toLowerCase().includes(q.trim().toLowerCase()));
 
   return (
     <Card padding={0} style={{ overflow: 'hidden' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 24px 0', gap: 16 }}>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 24px 0', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          {q.trim() && (
+            <button
+              onClick={() => setQ('')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                border: '1px solid var(--border-default)',
+                background: 'var(--surface-muted)',
+                color: 'var(--text-primary)',
+                borderRadius: 'var(--radius-pill)',
+                padding: '7px 12px',
+                fontSize: 'var(--fs-sm)',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-ui)',
+              }}
+            >
+              &ldquo;{q}&rdquo;
+              <Icon name="x" size={13} />
+            </button>
+          )}
           {chips.map(([v, l]) => (
             <button
               key={v}

@@ -7,6 +7,11 @@ import { signOut } from 'next-auth/react';
 import { Avatar, Icon, IconButton } from '../ds';
 import { topBarNotifications } from '../../data/escolinha';
 
+interface SearchResult {
+  students: { id: string; name: string }[];
+  classGroups: { id: string; name: string }[];
+}
+
 export interface EscolinhaAccount {
   name: string;
   role: string;
@@ -45,14 +50,48 @@ export function EscolinhaTopBar({ title, subtitle, account }: EscolinhaTopBarPro
   const nRef = useRef<HTMLDivElement>(null);
   const uRef = useRef<HTMLDivElement>(null);
 
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<SearchResult | null>(null);
+  const [searching, setSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const sRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const h = (e: MouseEvent) => {
       if (nRef.current && !nRef.current.contains(e.target as Node)) setShowN(false);
       if (uRef.current && !uRef.current.contains(e.target as Node)) setShowU(false);
+      if (sRef.current && !sRef.current.contains(e.target as Node)) setShowResults(false);
     };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
   }, []);
+
+  useEffect(() => {
+    if (query.trim().length < 2) return;
+    const timer = setTimeout(() => {
+      setSearching(true);
+      fetch(`/api/search?q=${encodeURIComponent(query.trim())}`)
+        .then((res) => res.json())
+        .then((data: SearchResult) => setResults(data))
+        .catch(() => setResults(null))
+        .finally(() => setSearching(false));
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const goToStudent = (name: string) => {
+    setShowResults(false);
+    setQuery('');
+    router.push(`/escolinha/alunos?q=${encodeURIComponent(name)}`);
+  };
+
+  const goToClassGroup = (id: string) => {
+    setShowResults(false);
+    setQuery('');
+    router.push(`/escolinha/turmas/${id}`);
+  };
+
+  const hasResults = results && (results.students.length > 0 || results.classGroups.length > 0);
 
   const unreadCount = topBarNotifications.filter((n) => n.unread).length;
 
@@ -63,33 +102,87 @@ export function EscolinhaTopBar({ title, subtitle, account }: EscolinhaTopBarPro
         {subtitle && <p style={{ margin: '6px 0 0', color: 'var(--text-secondary)', fontSize: 'var(--fs-body)' }}>{subtitle}</p>}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            height: 44,
-            padding: '0 16px',
-            background: 'var(--surface-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            width: 230,
-          }}
-        >
-          <Icon name="search" size={17} style={{ color: 'var(--gray-500)', flexShrink: 0 }} />
-          <input
-            placeholder="Buscar aluno, turma…"
+        <div ref={sRef} style={{ position: 'relative' }}>
+          <div
             style={{
-              border: 'none',
-              outline: 'none',
-              background: 'transparent',
-              flex: 1,
-              fontFamily: 'var(--font-ui)',
-              fontSize: 'var(--fs-sm)',
-              color: 'var(--text-primary)',
-              minWidth: 0,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              height: 44,
+              padding: '0 16px',
+              background: 'var(--surface-card)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-md)',
+              width: 230,
             }}
-          />
+          >
+            <Icon name="search" size={17} style={{ color: 'var(--gray-500)', flexShrink: 0 }} />
+            <input
+              placeholder="Buscar aluno, turma…"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setShowResults(true);
+              }}
+              onFocus={() => setShowResults(true)}
+              style={{
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+                flex: 1,
+                fontFamily: 'var(--font-ui)',
+                fontSize: 'var(--fs-sm)',
+                color: 'var(--text-primary)',
+                minWidth: 0,
+              }}
+            />
+          </div>
+          {showResults && query.trim().length >= 2 && (
+            <div style={dropStyle(0, 280)}>
+              {searching ? (
+                <div style={{ padding: '16px 18px', fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>Buscando…</div>
+              ) : hasResults ? (
+                <>
+                  {results!.classGroups.length > 0 && (
+                    <div>
+                      <div style={{ padding: '10px 18px 4px', fontSize: 'var(--fs-xs)', fontWeight: 'var(--fw-semibold)', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Turmas
+                      </div>
+                      {results!.classGroups.map((c) => (
+                        <button
+                          key={c.id}
+                          onClick={() => goToClassGroup(c.id)}
+                          style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '9px 18px', border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', color: 'var(--text-primary)', textAlign: 'left' }}
+                        >
+                          <Icon name="goal" size={15} style={{ color: 'var(--gray-500)' }} />
+                          {c.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {results!.students.length > 0 && (
+                    <div>
+                      <div style={{ padding: '10px 18px 4px', fontSize: 'var(--fs-xs)', fontWeight: 'var(--fw-semibold)', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Alunos
+                      </div>
+                      {results!.students.map((s) => (
+                        <button
+                          key={s.id}
+                          onClick={() => goToStudent(s.name)}
+                          style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '9px 18px', border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', color: 'var(--text-primary)', textAlign: 'left' }}
+                        >
+                          <Icon name="user" size={15} style={{ color: 'var(--gray-500)' }} />
+                          {s.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div style={{ padding: '16px 18px', fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>Nenhum resultado para &ldquo;{query}&rdquo;.</div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Bell + notifications */}

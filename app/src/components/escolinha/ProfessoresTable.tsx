@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import type { CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
-import { Avatar, Badge, Button, Card, Icon } from '../ds';
+import { Avatar, Badge, Button, Card, Icon, useToast } from '../ds';
 import { InfoNote } from './InfoNote';
+import { resendMemberInvite } from '@/server/actions/professores';
 
 const th: CSSProperties = {
   padding: '24px',
@@ -36,10 +37,27 @@ export interface ProfessorRow {
 export function ProfessoresTable({ professores }: { professores: ProfessorRow[] }) {
   const router = useRouter();
   const [tab, setTab] = useState('active');
+  const [resendingId, setResendingId] = useState<string | null>(null);
+  const [, startTransition] = useTransition();
+  const { showToast } = useToast();
 
   const activeCount = professores.filter((p) => p.active).length;
   const inviteCount = professores.length - activeCount;
   const list = professores.filter((p) => (tab === 'active' ? p.active : !p.active));
+
+  const handleResend = (r: ProfessorRow) => {
+    setResendingId(r.id);
+    startTransition(async () => {
+      try {
+        await resendMemberInvite(r.id);
+        showToast(`Convite reenviado para ${r.name}.`, 'success');
+      } catch (err) {
+        showToast(err instanceof Error ? err.message : 'Não foi possível reenviar o convite.', 'error');
+      } finally {
+        setResendingId(null);
+      }
+    });
+  };
 
   const tabs: [string, string][] = [
     ['active', `Ativos · ${activeCount}`],
@@ -108,10 +126,17 @@ export function ProfessoresTable({ professores }: { professores: ProfessorRow[] 
                   <td style={td}>
                     {r.active ? <Badge tone="success" dot>Ativo</Badge> : <Badge tone="warning" dot>Convite pendente</Badge>}
                   </td>
-                  <td style={{ ...td, width: 40, textAlign: 'right' }}>
-                    <button style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}>
-                      <Icon name="more-horizontal" size={17} />
-                    </button>
+                  <td style={{ ...td, width: r.active ? 40 : 150, textAlign: 'right' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
+                      {!r.active && (
+                        <Button variant="ghost" size="sm" disabled={resendingId === r.id} onClick={() => handleResend(r)}>
+                          {resendingId === r.id ? 'Enviando…' : 'Reenviar convite'}
+                        </Button>
+                      )}
+                      <button style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+                        <Icon name="more-horizontal" size={17} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

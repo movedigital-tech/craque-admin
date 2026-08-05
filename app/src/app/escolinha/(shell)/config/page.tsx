@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
-import { Badge, Button, Card, Icon, Input, Select, Toggle } from '@/components/ds';
+import { Badge, Button, Card, Icon, Input, Select, Toggle, useToast } from '@/components/ds';
 import { InfoNote } from '@/components/escolinha/InfoNote';
 
 const g2: CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 };
@@ -27,6 +27,22 @@ function ToggleRow({ label, sub, defaultOn = true }: { label: string; sub: strin
 }
 
 function PlanoRail({ saveLabel }: { saveLabel?: string }) {
+  const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);
+
+  const handleManagePlan = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/billing/create-portal-session', { method: 'POST' });
+      if (!res.ok) throw new Error();
+      const { url } = await res.json();
+      window.location.href = url;
+    } catch {
+      showToast('Não foi possível abrir o portal de faturamento. Tente novamente.', 'error');
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ background: 'linear-gradient(135deg,var(--navy-900) 0%,var(--plum-800) 100%)', borderRadius: 'var(--radius-lg)', padding: 20, color: 'var(--white)' }}>
@@ -38,6 +54,8 @@ function PlanoRail({ saveLabel }: { saveLabel?: string }) {
           R$ 149/mês <span style={{ fontSize: 13, color: 'rgba(255,255,255,.5)', fontWeight: 400 }}>+ 2%</span>
         </div>
         <button
+          onClick={handleManagePlan}
+          disabled={loading}
           style={{
             width: '100%',
             marginTop: 14,
@@ -49,10 +67,11 @@ function PlanoRail({ saveLabel }: { saveLabel?: string }) {
             fontFamily: 'var(--font-ui)',
             fontSize: 'var(--fs-sm)',
             fontWeight: 'var(--fw-semibold)',
-            cursor: 'pointer',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            opacity: loading ? 0.6 : 1,
           }}
         >
-          Gerenciar plano
+          {loading ? 'Abrindo…' : 'Gerenciar plano'}
         </button>
       </div>
       <InfoNote>

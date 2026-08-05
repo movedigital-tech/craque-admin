@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { Fragment, useState, useTransition } from 'react';
 import type { CSSProperties } from 'react';
-import { Avatar, Icon } from '../ds';
+import { Avatar, ConfirmDialog, Icon, useToast } from '../ds';
 import { Presenca } from './Presenca';
 import { unenrollStudent } from '@/server/actions/matriculas';
 
@@ -36,12 +36,31 @@ export interface RosterRow {
 
 export function TurmaRoster({ rows, classGroupId }: { rows: RosterRow[]; classGroupId: string }) {
   const [hov, setHov] = useState<string | null>(null);
+  const [pending, setPending] = useState<RosterRow | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const { showToast } = useToast();
+
+  const confirmRemove = () => {
+    if (!pending) return;
+    const row = pending;
+    startTransition(async () => {
+      try {
+        await unenrollStudent(row.enrollmentId, classGroupId);
+        showToast(`${row.name} removido(a) da turma.`, 'success');
+      } catch {
+        showToast('Não foi possível remover o aluno. Tente novamente.', 'error');
+      } finally {
+        setPending(null);
+      }
+    });
+  };
 
   if (rows.length === 0) {
     return <p style={{ padding: '0 24px 20px', margin: 0, color: 'var(--text-secondary)', fontSize: 'var(--fs-body)' }}>Nenhum aluno matriculado ainda.</p>;
   }
 
   return (
+    <Fragment>
     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
       <thead>
         <tr>
@@ -67,15 +86,28 @@ export function TurmaRoster({ rows, classGroupId }: { rows: RosterRow[]; classGr
               <Presenca pct={r.pre} ok={r.ok} />
             </td>
             <td style={{ ...td, width: 40, textAlign: 'right' }}>
-              <form action={unenrollStudent.bind(null, r.enrollmentId, classGroupId)}>
-                <button type="submit" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }} title="Remover da turma">
-                  <Icon name="x" size={16} />
-                </button>
-              </form>
+              <button
+                type="button"
+                onClick={() => setPending(r)}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}
+                title="Remover da turma"
+              >
+                <Icon name="x" size={16} />
+              </button>
             </td>
           </tr>
         ))}
       </tbody>
     </table>
+    <ConfirmDialog
+      open={pending !== null}
+      title="Remover aluno da turma?"
+      description={pending ? `${pending.name} deixará de fazer parte desta turma. O cadastro do aluno não será excluído — você pode matriculá-lo novamente depois.` : undefined}
+      confirmLabel="Remover"
+      loading={isPending}
+      onConfirm={confirmRemove}
+      onCancel={() => setPending(null)}
+    />
+    </Fragment>
   );
 }
