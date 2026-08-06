@@ -26,7 +26,7 @@ export function StatCard({ icon, label, value, trend, trendDirection = 'up', var
         padding: '22px 24px',
         borderRadius: 'var(--radius-md)',
         background: dark ? 'var(--surface-stat-dark)' : 'var(--surface-card)',
-        border: dark ? 'none' : '1px solid var(--border-default)',
+        border: dark ? 'none' : '1px solid var(--border-subtle)',
         boxShadow: dark ? 'none' : 'var(--shadow-sm)',
         minWidth: 0,
         ...style,

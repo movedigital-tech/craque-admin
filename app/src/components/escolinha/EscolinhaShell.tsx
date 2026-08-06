@@ -17,7 +17,7 @@ function resolveMeta(pathname: string, firstName: string) {
   return undefined;
 }
 
-export function EscolinhaShell({ children, account }: { children: ReactNode; account: EscolinhaAccount }) {
+export function EscolinhaShell({ children, account, logoUrl }: { children: ReactNode; account: EscolinhaAccount; logoUrl?: string | null }) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -29,7 +29,7 @@ export function EscolinhaShell({ children, account }: { children: ReactNode; acc
   return (
     <ToastProvider>
       <div style={{ display: 'flex', height: '100vh', background: 'var(--surface-canvas)', overflow: 'hidden' }}>
-        <SidebarNav brand="Craque" items={navItems} footerItems={navFootItems} activeKey={activeNav} onSelect={handleSelect} />
+        <SidebarNav brand="Craque" logoSrc={logoUrl ?? undefined} items={navItems} footerItems={navFootItems} activeKey={activeNav} onSelect={handleSelect} />
         <main style={{ flex: 1, overflowY: 'auto', padding: '34px 36px', display: 'flex', flexDirection: 'column' }}>
           <EscolinhaTopBar title={meta?.title ?? ''} subtitle={meta?.subtitle ?? ''} account={account} />
           {children}

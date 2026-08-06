@@ -93,7 +93,12 @@ export function EscolinhaTopBar({ title, subtitle, account }: EscolinhaTopBarPro
 
   const hasResults = results && (results.students.length > 0 || results.classGroups.length > 0);
 
-  const unreadCount = topBarNotifications.filter((n) => n.unread).length;
+  const [notifications, setNotifications] = useState(topBarNotifications.map((n, i) => ({ ...n, id: i })));
+  const unreadCount = notifications.filter((n) => n.unread).length;
+
+  const markAllRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
+  const markOneRead = (id: number) => setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)));
+  const removeOne = (id: number) => setNotifications((prev) => prev.filter((n) => n.id !== id));
 
   return (
     <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, paddingBottom: 28 }}>
@@ -195,18 +200,20 @@ export function EscolinhaTopBar({ title, subtitle, account }: EscolinhaTopBarPro
             style={{ position: 'relative', cursor: 'pointer' }}
           >
             <IconButton icon="bell" variant="outline" ariaLabel="Notificações" />
-            <span
-              style={{
-                position: 'absolute',
-                top: 7,
-                right: 7,
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                background: 'var(--danger)',
-                border: '2px solid var(--surface-canvas)',
-              }}
-            />
+            {unreadCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: 7,
+                  right: 7,
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: 'var(--danger)',
+                  border: '2px solid var(--surface-canvas)',
+                }}
+              />
+            )}
           </div>
           {showN && (
             <div style={dropStyle(0, 360)}>
@@ -226,88 +233,86 @@ export function EscolinhaTopBar({ title, subtitle, account }: EscolinhaTopBarPro
                   </span>
                 </div>
                 <button
-                  onClick={() => {
-                    setShowN(false);
-                    router.push('/escolinha/notificacoes');
-                  }}
+                  onClick={markAllRead}
+                  disabled={unreadCount === 0}
                   style={{
                     border: 'none',
                     background: 'transparent',
-                    cursor: 'pointer',
+                    cursor: unreadCount === 0 ? 'default' : 'pointer',
                     fontSize: 'var(--fs-xs)',
-                    color: 'var(--text-secondary)',
+                    color: unreadCount === 0 ? 'var(--gray-500)' : 'var(--text-secondary)',
                     fontFamily: 'var(--font-ui)',
                   }}
                 >
-                  Marcar como lidas
+                  Marcar todas como lidas
                 </button>
               </div>
-              {topBarNotifications.map((n, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: 'flex',
-                    gap: 12,
-                    padding: '13px 20px',
-                    borderBottom: '1px solid var(--border-subtle)',
-                    background: n.unread ? 'var(--surface-subtle)' : 'transparent',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <span
+              {notifications.length === 0 ? (
+                <div style={{ padding: '24px 20px', textAlign: 'center', fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>
+                  Nenhuma notificação.
+                </div>
+              ) : (
+                notifications.map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={() => markOneRead(n.id)}
                     style={{
-                      width: 34,
-                      height: 34,
-                      borderRadius: '50%',
-                      background: 'var(--surface-muted)',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
+                      display: 'flex',
+                      gap: 12,
+                      padding: '13px 20px',
+                      borderBottom: '1px solid var(--border-subtle)',
+                      background: n.unread ? 'var(--surface-subtle)' : 'transparent',
+                      cursor: 'pointer',
                     }}
                   >
-                    <Icon name={n.icon} size={15} style={{ color: n.color }} />
-                  </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 'var(--fs-sm)', fontWeight: n.unread ? 'var(--fw-semibold)' : 'var(--fw-medium)', lineHeight: 1.3 }}>
-                      {n.title}
-                    </div>
-                    <div
+                    <span
                       style={{
-                        fontSize: 'var(--fs-xs)',
-                        color: 'var(--text-secondary)',
-                        marginTop: 1,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        width: 34,
+                        height: 34,
+                        borderRadius: '50%',
+                        background: 'var(--surface-muted)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
                       }}
                     >
-                      {n.sub}
+                      <Icon name={n.icon} size={15} style={{ color: n.color }} />
+                    </span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 'var(--fs-sm)', fontWeight: n.unread ? 'var(--fw-semibold)' : 'var(--fw-medium)', lineHeight: 1.3 }}>
+                        {n.title}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 'var(--fs-xs)',
+                          color: 'var(--text-secondary)',
+                          marginTop: 1,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {n.sub}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 3 }}>{n.time}</div>
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 3 }}>{n.time}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                      {n.unread && <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)' }} />}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeOne(n.id);
+                        }}
+                        title="Excluir notificação"
+                        style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--gray-500)', padding: 2, display: 'flex' }}
+                      >
+                        <Icon name="x" size={14} />
+                      </button>
+                    </div>
                   </div>
-                  {n.unread && <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', flexShrink: 0, marginTop: 5 }} />}
-                </div>
-              ))}
-              <div style={{ padding: '10px 20px', textAlign: 'center' }}>
-                <button
-                  onClick={() => {
-                    setShowN(false);
-                    router.push('/escolinha/notificacoes');
-                  }}
-                  style={{
-                    border: 'none',
-                    background: 'transparent',
-                    cursor: 'pointer',
-                    fontSize: 'var(--fs-sm)',
-                    color: 'var(--text-link)',
-                    fontWeight: 'var(--fw-semibold)',
-                    fontFamily: 'var(--font-ui)',
-                  }}
-                >
-                  Ver todas as notificações
-                </button>
-              </div>
+                ))
+              )}
             </div>
           )}
         </div>

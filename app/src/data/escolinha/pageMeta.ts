@@ -14,5 +14,4 @@ export const escolinhaPageMeta: Record<string, PageMeta> = {
   '/escolinha/professores': { title: 'Professores & equipe', subtitle: 'Membros da equipe e turmas atribuídas.' },
   '/escolinha/professores/novo': { title: 'Adicionar membro', subtitle: 'Convide um professor ou membro da equipe.' },
   '/escolinha/config': { title: 'Configurações da escolinha', subtitle: 'Dados, notificações e equipe.' },
-  '/escolinha/notificacoes': { title: 'Notificações', subtitle: 'Todos os avisos da sua escolinha.' },
 };

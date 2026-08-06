@@ -101,6 +101,10 @@ export function LogoUploader() {
           </>
         )}
       </div>
+      <p style={{ margin: '8px 0 0', fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+        Aparece no menu lateral do sistema. Use uma imagem quadrada (ideal: 256×256px), fundo transparente.
+        PNG é o formato recomendado — também aceitamos JPG, WEBP e SVG (vetor). Até 4MB.
+      </p>
     </div>
   );
 }

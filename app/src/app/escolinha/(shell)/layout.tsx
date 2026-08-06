@@ -11,5 +11,9 @@ const ROLE_LABEL: Record<string, string> = {
 export default async function EscolinhaRouteLayout({ children }: { children: React.ReactNode }) {
   const { user, membership, organization } = await requireOrgContext();
   const account = { name: user.name, role: ROLE_LABEL[membership.role] ?? membership.role, orgName: organization.name };
-  return <EscolinhaShell account={account}>{children}</EscolinhaShell>;
+  return (
+    <EscolinhaShell account={account} logoUrl={organization.logoUrl}>
+      {children}
+    </EscolinhaShell>
+  );
 }
