@@ -40,7 +40,7 @@ const dropStyle = (right: number, width: number): CSSProperties => ({
 const userMenuItems: [string, string, string | null][] = [
   ['user', 'Meu perfil', null],
   ['settings', 'Configurações', '/escolinha/config'],
-  ['life-buoy', 'Suporte', null],
+  ['life-buoy', 'Suporte', 'mailto:craqueapp@gmail.com'],
 ];
 
 export function EscolinhaTopBar({ title, subtitle, account }: EscolinhaTopBarProps) {
@@ -226,6 +226,10 @@ export function EscolinhaTopBar({ title, subtitle, account }: EscolinhaTopBarPro
                   </span>
                 </div>
                 <button
+                  onClick={() => {
+                    setShowN(false);
+                    router.push('/escolinha/notificacoes');
+                  }}
                   style={{
                     border: 'none',
                     background: 'transparent',
@@ -287,6 +291,10 @@ export function EscolinhaTopBar({ title, subtitle, account }: EscolinhaTopBarPro
               ))}
               <div style={{ padding: '10px 20px', textAlign: 'center' }}>
                 <button
+                  onClick={() => {
+                    setShowN(false);
+                    router.push('/escolinha/notificacoes');
+                  }}
                   style={{
                     border: 'none',
                     background: 'transparent',
@@ -341,7 +349,9 @@ export function EscolinhaTopBar({ title, subtitle, account }: EscolinhaTopBarPro
                   key={lbl}
                   onClick={() => {
                     setShowU(false);
-                    if (go) router.push(go);
+                    if (!go) return;
+                    if (go.startsWith('mailto:')) window.location.href = go;
+                    else router.push(go);
                   }}
                   style={{
                     display: 'flex',

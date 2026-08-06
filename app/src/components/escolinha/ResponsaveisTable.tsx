@@ -5,6 +5,7 @@ import type { CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
 import { Avatar, Badge, Button, Card, useToast } from '../ds';
 import { resendGuardianInvite } from '@/server/actions/responsaveis';
+import { GuardianDetailsModal } from './GuardianDetailsModal';
 
 const th: CSSProperties = {
   padding: '24px',
@@ -29,8 +30,14 @@ export interface ResponsavelRow {
   name: string;
   email: string;
   alunos: string;
+  studentsList: string[];
   tel: string;
   completo: boolean;
+  addressLine: string;
+  addressCity: string;
+  addressState: string;
+  addressZip: string;
+  internalNote: string;
 }
 
 export function ResponsaveisTable({ responsaveis }: { responsaveis: ResponsavelRow[] }) {
@@ -38,6 +45,7 @@ export function ResponsaveisTable({ responsaveis }: { responsaveis: ResponsavelR
   const [chip, setChip] = useState('all');
   const [hov, setHov] = useState<string | null>(null);
   const [resendingId, setResendingId] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<ResponsavelRow | null>(null);
   const [, startTransition] = useTransition();
   const { showToast } = useToast();
 
@@ -120,13 +128,14 @@ export function ResponsaveisTable({ responsaveis }: { responsaveis: ResponsavelR
                   {r.completo ? <Badge tone="success" dot>Completo</Badge> : <Badge tone="warning" dot>Convite pendente</Badge>}
                 </td>
                 <td style={{ ...td, textAlign: 'right' }}>
-                  {r.completo ? (
-                    <Button variant="ghost" size="sm">Ver</Button>
-                  ) : (
-                    <Button variant="ghost" size="sm" disabled={resendingId === r.id} onClick={() => handleResend(r)}>
-                      {resendingId === r.id ? 'Enviando…' : 'Reenviar'}
-                    </Button>
-                  )}
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4 }}>
+                    <Button variant="ghost" size="sm" onClick={() => setViewing(r)}>Ver</Button>
+                    {!r.completo && (
+                      <Button variant="ghost" size="sm" disabled={resendingId === r.id} onClick={() => handleResend(r)}>
+                        {resendingId === r.id ? 'Enviando…' : 'Reenviar'}
+                      </Button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -134,6 +143,7 @@ export function ResponsaveisTable({ responsaveis }: { responsaveis: ResponsavelR
         </table>
       )}
       <div style={{ height: 12 }} />
+      {viewing && <GuardianDetailsModal responsavel={viewing} onClose={() => setViewing(null)} />}
     </Card>
   );
 }

@@ -96,6 +96,10 @@ model User {
   name             String
   email            String            @unique
   phone            String?
+  addressLine      String?
+  addressCity      String?
+  addressState     String?
+  addressZip       String?
   passwordHash     String
   emailVerified    DateTime?
   platformRole     PlatformRole?
@@ -132,6 +136,7 @@ model Membership {
   organizationId    String
   role              MembershipRole
   status            MemberStatus      @default(ACTIVE)
+  internalNote      String?
   user              User              @relation(fields: [userId], references: [id])
   organization      Organization      @relation(fields: [organizationId], references: [id])
   teachingClasses   ClassGroup[]      @relation("ClassTeacher")

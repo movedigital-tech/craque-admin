@@ -19,8 +19,14 @@ export default async function EscolinhaResponsaveisPage() {
       name: m.user.name,
       email: m.user.email,
       alunos,
-      tel: m.user.phone ?? '—',
+      studentsList: students,
+      tel: m.user.phone ?? '',
       completo: m.status === 'ACTIVE',
+      addressLine: m.user.addressLine ?? '',
+      addressCity: m.user.addressCity ?? '',
+      addressState: m.user.addressState ?? '',
+      addressZip: m.user.addressZip ?? '',
+      internalNote: m.internalNote ?? '',
     };
   });
 

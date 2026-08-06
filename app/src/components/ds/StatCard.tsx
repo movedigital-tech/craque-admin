@@ -25,8 +25,9 @@ export function StatCard({ icon, label, value, trend, trendDirection = 'up', var
         gap: 16,
         padding: '22px 24px',
         borderRadius: 'var(--radius-md)',
-        background: dark ? 'var(--surface-stat-dark)' : 'var(--surface-subtle)',
-        border: dark ? 'none' : '1px solid var(--gray-200)',
+        background: dark ? 'var(--surface-stat-dark)' : 'var(--surface-card)',
+        border: dark ? 'none' : '1px solid var(--border-default)',
+        boxShadow: dark ? 'none' : 'var(--shadow-sm)',
         minWidth: 0,
         ...style,
       }}
@@ -41,7 +42,7 @@ export function StatCard({ icon, label, value, trend, trendDirection = 'up', var
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: dark ? 'rgba(255,255,255,0.08)' : 'var(--surface-card)',
+          background: dark ? 'rgba(255,255,255,0.08)' : 'var(--surface-subtle)',
         }}
       >
         <Icon name={icon} size={22} color={dark ? 'var(--accent)' : 'var(--text-primary)'} />
